@@ -133,12 +133,18 @@ Also check `shopifyOrderAgg`:
 
 ### Step 2D: If Ad Performance Dropped → Platform Drill-down
 
+First check `v2MarketingSourceStatuses` (`references/reports.md`): a failed sync or a tracking break looks exactly like a performance drop. If a source failed or conversions stopped, that is the finding.
+
+Run each query with `default` = the period with the drop and `comparison` = the period before (same length). Recent days are not settled yet: conversions keep arriving for about a week, so a drop in the last few days may partly fill in.
+
 **Google Ads:**
 ```graphql
-query($input: GadsCustomerMetricsInput!) {
-  gadsCustomerMetrics(input: $input) {
-    dated metricsImpressions metricsClicks metricsCtr
-    metricsCostMicros metricsAverageCpc metricsConversions metricsConversionsValue
+query($input: V2GadsCustomerMetricsInput!) {
+  v2GadsCustomerMetrics(input: $input) {
+    meta { coverage { latestAvailableDate missingDays } freshness { status lastFailureAt failureMessage } }
+    summary { impressions clicks cost conversions conversionValue ctr cpc cpa roas }
+    comparison { summary { impressions clicks cost conversions conversionValue ctr cpc cpa roas } }
+    rows { dated impressions clicks cost conversions conversionValue }
   }
 }
 ```
@@ -147,20 +153,24 @@ Check: Did CPCs increase? Did CTR drop (ad fatigue)? Did impressions drop (budge
 
 **Meta Ads:**
 ```graphql
-query($input: FbInput!) {
-  fbAccountInsights(input: $input) {
-    dated impressions clicks spend cpc cpm ctr
+query($input: V2MetaAccountMetricsInput!) {
+  v2MetaAccountMetrics(input: $input) {
+    meta { coverage { latestAvailableDate missingDays } freshness { status lastFailureAt failureMessage } }
+    summary { impressions clicks spend reach purchases purchaseValue cpc cpm ctr frequency cpa }
+    comparison { summary { impressions clicks spend reach purchases purchaseValue cpc cpm ctr frequency cpa } }
   }
 }
 ```
 
-Check: Did CPMs spike? Did reach decrease? Did frequency get too high (ad fatigue)?
+Check: Did CPMs spike? Did reach decrease? Did frequency rise (the same people seeing the ads more often)?
 
 **TikTok:**
 ```graphql
-query($input: TiktokInput!) {
-  tiktokAdvertiserInsights(input: $input) {
-    dated impressions clicks spend cpc ctr cvr conversion cpa
+query($input: V2TiktokAdvertiserMetricsInput!) {
+  v2TiktokAdvertiserMetrics(input: $input) {
+    meta { coverage { latestAvailableDate missingDays } freshness { status lastFailureAt failureMessage } }
+    summary { impressions clicks spend conversions ctr cpc cvr cpm cpa }
+    comparison { summary { impressions clicks spend conversions ctr cpc cvr cpm cpa } }
   }
 }
 ```
@@ -172,10 +182,8 @@ If conversion dropped, check which landing pages degraded:
 ```graphql
 query($input: Ga4LandingPageInput!) {
   ga4LandingPages(input: $input) {
-    landingPages {
-      landingPage metricsSessions metricsBounceRate
-      metricsEcommPurchases metricsTotalRevenue
-    }
+    landingPage metricsSessions metricsBounceRate
+    metricsEcommPurchases metricsTotalRevenue
   }
 }
 ```

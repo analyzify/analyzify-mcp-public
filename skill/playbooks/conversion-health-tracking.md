@@ -12,8 +12,8 @@ Silent tracking failures are one of the most expensive problems in ecommerce —
 
 1. `gadsLastSeenConversions` — when each conversion action last fired (the critical check)
 2. `gadsConversions` — conversion action details and values
-3. `gadsCustomerMetrics` — overall conversion trend (is it dropping?)
-4. `gadsCampaignsPerformance` — which campaigns are affected?
+3. `v2GadsCustomerMetrics` — overall conversion trend (is it dropping?)
+4. `v2GadsCampaigns` — which campaigns are affected?
 
 ## Queries
 
@@ -59,30 +59,27 @@ With `groupByDate: true` for the last 30 days.
 ### 3. Overall Conversion Trend
 
 ```graphql
-query($input: GadsCustomerMetricsInput!) {
-  gadsCustomerMetrics(input: $input) {
-    dated
-    metricsClicks metricsConversions metricsConversionsValue
-    metricsCostMicros metricsCostPerConversion
+query($input: V2GadsCustomerMetricsInput!) {
+  v2GadsCustomerMetrics(input: $input) {
+    meta { coverage { latestAvailableDate missingDays } freshness { status lastFailureAt failureMessage } }
+    rows { dated clicks conversions conversionValue cost }
   }
 }
 ```
 
-With `groupByDate: true` for last 14 days.
+For the last 14 days: one row per day. Compute conversion rate and CPA per day from these totals.
 
 ### 4. Campaign-Level Conversion Check
 
 ```graphql
-query($input: GadsCampaignsPerformanceInput!) {
-  gadsCampaignsPerformance(input: $input) {
-    name advertisingChannelType
-    metricsClicks metricsConversions metricsConversionsValue
-    metricsCostMicros
+query($input: V2GadsCampaignsInput!) {
+  v2GadsCampaigns(input: $input) {
+    rows { campaignName campaignType clicks conversions conversionValue cost }
   }
 }
 ```
 
-With `groupByDate: false` for summary.
+With `groupByDate: false` for summary. `campaignType` is a label (Search, Shopping, Performance Max…).
 
 ## How to Present
 
@@ -114,17 +111,18 @@ Flag any day with 0 conversions but normal clicks — likely tracking failure.
 
 ### Campaign Impact
 
-| Campaign | Type | Clicks | Conversions | Spend (No Conv Data) |
+| Campaign | Type | Clicks | Conversions | Spend with no conversion recorded |
 |----------|------|--------|-------------|---------------------|
-| PMax Campaign | PERFORMANCE_MAX | X | 0 | $X wasted |
-| Brand Search | SEARCH | X | X | OK |
-| Shopping | SHOPPING | X | 0 | $X wasted |
+| PMax Campaign | Performance Max | X | 0 | $X |
+| Brand Search | Search | X | X | OK |
+| Shopping | Shopping | X | 0 | $X |
 
 ### Diagnosis
 
 **If purchase conversion hasn't fired in 2+ days:**
 - "Your purchase conversion tag hasn't fired since [date]. This means Google's Smart Bidding and PMax campaigns are running blind — they can't optimize without conversion data."
-- "Estimated wasted spend since tracking broke: $X (ad spend with no conversion signal)"
+- "Since [date], $X was spent with no conversion recorded. Sales may still have happened; Google just didn't see them, so its bidding had nothing to learn from."
+- "Until tracking is fixed, don't judge these campaigns on ROAS: the numbers for this period are incomplete."
 - "Action: Check your Google Tag / Analyzify tag setup on the checkout confirmation page."
 
 **If conversions exist but values are $0:**

@@ -70,19 +70,15 @@ Then run `ga4Scorecards` or `ga4Channels` to understand conversion by device (if
 ```graphql
 query($input: Ga4LandingPageInput!) {
   ga4LandingPages(input: $input) {
-    landingPages {
-      landingPage currencyCode
-      metricsSessions metricsBounceRate
-      metricsEcommPurchases metricsTotalRevenue
-      metricsActiveUsers metricsNewUsers
-    }
-    metricsTotalSessions metricsAverageBounceRate
-    metricsTotalEcommPurchases metricsTotalRevenue
+    landingPage currencyCode
+    metricsSessions metricsBounceRate
+    metricsEcommPurchases metricsTotalRevenue
+    metricsActiveUsers metricsNewUsers
   }
 }
 ```
 
-With `groupByDate: false` for page ranking.
+With `groupByDate: false` for page ranking. The result is a flat list of pages; add up sessions and purchases yourself for totals, and compute conversion rate as purchases / sessions per page.
 
 ### 5. Conversion by Channel
 
@@ -195,5 +191,5 @@ Based on where the biggest funnel leak is:
 - "How does mobile compare?" → device breakdown + channel by device
 - "Which products have the worst conversion?" → `ga4ProductPerformances` sorted by views with low purchase rate
 - "Show me the trend" → run funnel with `groupByDate: true, dateArgs: [{groupBy: WEEK}]`
-- "What about cart abandonment emails?" → outside Analyzify scope, suggest Shopify/Klaviyo flows
+- "What about cart abandonment emails?" → if Klaviyo is connected, show the abandoned-cart flow's results with `v2KlaviyoFlows` (`references/klaviyo.md`); Analyzify can't change the flow itself
 - "Compare to last month" → run same queries with previous period dates

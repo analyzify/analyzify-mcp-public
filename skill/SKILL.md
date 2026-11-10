@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.0
+version: 0.1.1
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -8,6 +8,7 @@ description: >
   query Google Analytics 4 data, run GA4 reports, check GA4 traffic,
   query Google Search Console data, view search performance, top queries,
   query Google Ads campaigns and performance, view ad spend and ROAS,
+  Meta and TikTok ad results, Klaviyo email and SMS campaigns and flows,
   access Shopify store data via Admin API, list products, collections, orders,
   query historical analytics reports, campaign attribution, traffic trends,
   check connected accounts, view API key capabilities,
@@ -59,7 +60,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 | **Sales & Orders** | "Total sales?", "Orders?", "AOV?", "Returns?", "Find order #X?" | `playbooks/sales-and-orders.md` |
 | **Product Optimization** | "Best/worst products?", "What should I promote?", "High views low sales?", "Dead stock?" | `playbooks/product-optimization.md` |
 | **Ad Performance** | "How are my ads?", "ROAS?", "Campaign performance?", "Best/worst campaigns?" | `playbooks/ad-performance.md` |
-| **Budget Allocation** | "Where to spend more?", "Budget optimization?", "Scale ads?", "Cut wasteful spend?" | `playbooks/budget-allocation.md` |
+| **Budget Allocation** | "Where to spend more?", "Budget optimization?", "Scale ads?", "Cut wasteful spend?", "Losing campaigns?" | `playbooks/budget-allocation.md` |
 | **Attribution** | "Where do orders come from?", "First/last touch?", "Channel attribution?" | `playbooks/attribution.md` |
 | **Conversion Optimization** | "Improve conversion rate?", "Cart abandonment?", "Funnel?", "Bounce rate?", "Mobile conversion?" | `playbooks/conversion-optimization.md` |
 | **Traffic & SEO** | "Traffic sources?", "SEO?", "Top queries?", "Landing pages?", "404s?" | `playbooks/traffic-and-seo.md` |
@@ -68,6 +69,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 | **Conversion Health** | "Is tracking working?", "Last conversion?", "Tags broken?", "PMax not converting?" | `playbooks/conversion-health-tracking.md` |
 | **Store Health** | "How's my store?", "Overview?", "Dashboard?", "KPIs?" | `playbooks/store-health.md` |
 | **Customer Insights** | "New vs returning?", "Segments?", "CAC?", "Repeat rate?", "LTV?" | `playbooks/customer-insights.md` |
+| **Email & SMS (Klaviyo)** | "How are my emails doing?", "Flow revenue?", "Best campaign?", "Open rate?" | `references/klaviyo.md` |
 
 **Priority matching:**
 - If the user describes a **problem** ("sales dropped", "why did X change") → use **Diagnose Sales Drop**
@@ -85,6 +87,8 @@ Match the user's question to the right playbook. Each playbook has exact queries
 | Google Search Console | User wants search performance, top queries, impressions, clicks, CTR | `references/gsc.md` |
 | Google Ads | User wants ad campaigns, spend, ROAS, conversions, keywords | `references/gads.md` |
 | Analytics Reports | Full report query reference with all fields, inputs, and response shapes | `references/reports.md` |
+| Klaviyo | Email and SMS campaigns, flows, Klaviyo's share of sales | `references/klaviyo.md` |
+| Judging performance | Before calling anything losing money, wasted, a loser or a winner, or suggesting cuts or scaling | `references/judging-performance.md` |
 
 ## Query Strategy: Report API First
 
@@ -99,7 +103,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 
 **Examples:**
 - "What's my revenue?" → Report API (`ga4Scorecards` or `profitMerReport`)
-- "Show my top campaigns" → Report API (`gadsCampaignsPerformance` or `fbCampaignInsights`)
+- "Show my top campaigns" → Report API (`v2GadsCampaigns`, `v2MetaCampaigns`, `v2TiktokCampaigns`)
 - "Realtime visitors right now" → Live proxy (`ga4Proxy` with realtime endpoint)
 - "List my products" → Live proxy (`shopifyProxy`)
 
@@ -112,10 +116,21 @@ Match the user's question to the right playbook. Each playbook has exact queries
 5. Use `introspect_schema` or `introspect_report_schema` if you need field details
 6. Execute and present results cleanly — no technical jargon
 
+## Answer Rules
+
+These keep the same question giving the same, correct answer in every chat:
+
+- **Rates come from totals.** For Google Ads, Meta and TikTok use the `v2*` reports, which compute CTR, CPC, CPA and ROAS from totals. In legacy reports, never read a rate (CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin, AOV) from a row covering more than one day: compute it from the totals in that row. When combining rows, add the totals first, then divide.
+- **Empty is not zero.** If a report is empty or shows zero spend, check `v2MarketingSourceStatuses` first and say what you found: not connected, sync failing since a date, data only up to a date, or connected with nothing to report.
+- **A failed read is not zero.** If a query returns errors, tell the user the data couldn't be read (in plain words, without error codes) and what they can do. Never present it as 0 orders or 0 sales.
+- **Say where a number came from:** the stored report (synced daily, up to which date) or a live read, and the date range.
+- **Recent days aren't settled.** Ad platforms keep adding conversions for about a week. Say so when the range includes the last 7 days.
+- **No verdicts from a raw ROAS.** Never call a campaign or product "losing money", "wasted", a loser or a winner, and never tell the user to pause, cut or scale, unless the checks in `references/judging-performance.md` hold. Break-even is not ROAS 1.0.
+
 ## Behavior Rules
 
 - NEVER mention GraphQL, APIs, queries, mutations, tool names, schemas, or any technical details to the user
-- NEVER show raw JSON, query strings, or error codes
+- NEVER show raw JSON, query strings, or error codes (but do say plainly when data couldn't be read)
 - If a Google service is null in extMe: "That service isn't connected to your store yet. You can set it up in your Analyzify dashboard."
 - Present data in clean tables, lists, or summaries
 - Act like a knowledgeable assistant who just knows things about the store

@@ -8,7 +8,7 @@
 
 **Primary:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view.
 
-**Fallback:** If profitMerReport returns empty (no data synced), use `shopifyOrderAgg` for revenue + `gadsCustomerMetrics`/`fbAccountInsights`/`tiktokAdvertiserInsights` separately.
+**Fallback:** If profitMerReport returns empty (no data synced), use `shopifyOrderAgg` for revenue + `v2GadsCustomerMetrics`/`v2MetaAccountMetrics`/`v2TiktokAdvertiserMetrics` separately.
 
 ## Queries
 
@@ -51,6 +51,10 @@ Same query but with `groupByFields: ["month"]` instead of `groupByDate: true`.
 
 Same query but with `groupByDate: false` — returns one row with totals.
 
+**In any row covering more than one day (monthly or total), `mer`, `grossMargin` and `aov` are averages of the daily values, not the period's real figure.** Compute them from the totals in the row: MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`. `grossMargin` is a percentage (40 means 40%).
+
+**Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit, margin and net profit come out too high. If `costOfGoodsSold` is 0 or looks low for the store, say so.
+
 ## How to Present
 
 ### Quick Summary (when user asks "how's my profit?")
@@ -62,7 +66,7 @@ Present a clean summary table:
 | Net Revenue | $X |
 | Ad Spend | $X (Google: $X, Meta: $X, TikTok: $X) |
 | COGS | $X |
-| Shipping | $X |
+| Shipping | $X (shown for reference; not subtracted in net profit) |
 | **Net Profit** | **$X** |
 | Gross Margin | X% |
 | MER | X.Xx |
@@ -99,9 +103,9 @@ Run the daily query and present as a time series. Highlight:
 
 ## Key Calculations
 
-- **MER** = Net Revenue / Total Ad Spend (higher is better, >3x is good)
+- **MER** = Net Revenue / Total Ad Spend (higher is better; whether it is "good" depends on the margin: compare with break-even, `references/judging-performance.md`)
 - **Gross Margin** = (Revenue - COGS) / Revenue × 100
-- **Net Profit** = Revenue - COGS - Ad Spend - Shipping
+- **Net Profit** = Net Revenue - COGS - Ad Spend (as the report computes it; shipping costs, fees and other costs are not subtracted, so say "profit after product cost and ads")
 - **CPA** = Total Ad Spend / Total Orders
 - **CAC** = Total Ad Spend / Total Customers
 - **NCAC** = Total Ad Spend / New Customers Only
@@ -111,5 +115,5 @@ Run the daily query and present as a time series. Highlight:
 
 - "Break it down by day/week/month" → adjust `groupByDate`/`dateArgs`
 - "Compare to last month" → run same query with previous period dates
-- "Which ads are most profitable?" → pivot to `gadsCampaignsPerformance` + `fbCampaignInsights`
+- "Which ads are most profitable?" → pivot to `playbooks/ad-performance.md` (`v2GadsCampaigns` + `v2MetaCampaigns`); judge profit against break-even ROAS, not 1.0 (`references/judging-performance.md`)
 - "What's my best selling product?" → pivot to `ga4ProductPerformances` or `shopifyOrderAgg`
