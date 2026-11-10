@@ -222,10 +222,10 @@ Structure the response as a clear investigation:
 **4. Secondary Factors:**
 "Additionally, [other smaller factors]..."
 
-**5. Recommended Actions:**
-- Specific, actionable steps based on findings
-- "Check your [X] — it may need [Y]"
-- "Consider [action] to recover [metric]"
+**5. What to Check Next:**
+- Checks that follow from the findings: "Check your [page / tag / payment method / campaign] — [metric] dropped there from [date]"
+- If tracking or a data sync broke, say that first: the drop may be in the numbers, not in the sales.
+- If the cause lies outside the data (pricing, stock, competitors, a site change), say so and ask the merchant what changed on those dates. Don't prescribe a fix the data doesn't support.
 
 ## Common Diagnostic Patterns
 

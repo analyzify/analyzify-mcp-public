@@ -8,6 +8,7 @@
 - Source status check (`v2MarketingSourceStatuses`) before treating empty results as zero
 - Google Ads results by product: roll-up recipe from variants (top items by spend, Shopify `nodes` 250 per call, sums per product)
 - Klaviyo reference (campaigns, flows, attribution)
+- Conversion, discount and sales-drop playbooks compare the store with its own history instead of generic benchmarks, and state findings instead of prescribing actions
 - Fix queries that failed: `advertising_channel_type`, `ga4LandingPages` (flat list), a syntax error in channel attribution; replace the removed `ALL` attribution model with `LINEAR`, `U_SHAPED`, `ANY_CLICK`
 - Profit: `grossMargin` is a percentage; MER, margin and AOV computed from totals; net profit does not subtract shipping
 
