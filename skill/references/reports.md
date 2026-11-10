@@ -1,6 +1,6 @@
 # Analytics Reports (Historical Data)
 
-The Report API stores historical analytics data synced from all connected platforms. Use `introspect_report_schema` to discover queries and `execute_report_graphql` to run them.
+The Report API stores historical analytics data synced from all connected platforms. Use `execute_report_graphql` to run the queries below. `introspect_report_schema` can lag behind: if it doesn't list a query shown here (for example the `v2*`, Klaviyo or source-status queries), the query still works; run it as written.
 
 Authentication is handled automatically — a report token is fetched before each request.
 
@@ -72,7 +72,7 @@ query($input: V2MarketingSourceStatusesInput!) {
 
 Variables: `{ "input": { "default": { "spaceId": "...", "startDate": "2024-01-01", "endDate": "2024-01-31" } } }`
 
-Sources: `ga4`, `gads`, `meta`, `tiktok`, `shopify`, `sc`, `klaviyo`. `freshness.status` is `disconnected`, `syncing`, `failed` or `enabled`.
+Sources: `ga4`, `gads`, `meta`, `tiktok`, `shopify`, `sc`, `klaviyo`. `freshness.status` is usually `disconnected`, `syncing`, `failed` or `enabled` (also possible: `created`, `archived`).
 
 **Use when:** a report comes back empty or low, before any "you spent nothing" or "no orders" answer, and before judging ad performance. Tell the user what you found: "Meta isn't connected", "Meta's sync has been failing since 30 Sep", or "Meta is connected and current, and there was no spend".
 
@@ -285,7 +285,7 @@ query($input: V2GadsProductsInput!) {
   v2GadsProducts(input: $input) {
     meta { currencyCode coverage { latestAvailableDate partialData staleData } }
     summary { impressions clicks cost conversions conversionValue ctr cpc cvr cpa roas }
-    rows { itemId productTitle campaignId campaignName impressions clicks cost conversions conversionValue ctr cpc cvr cpa roas }
+    rows { itemId productTitle impressions clicks cost conversions conversionValue ctr cpc cvr cpa roas }
     pageInfo { page limit totalCount totalPages hasNextPage }
   }
 }
@@ -303,7 +303,7 @@ Variables:
 }
 ```
 
-- Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`). Use `["item_id", "product_title"]` for one row per item.
+- Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`). Use `["item_id", "product_title"]` for one row per item; then leave out `campaignId` and `campaignName` (they would show one arbitrary campaign).
 - An item is a variant, not a product. To answer "by product", follow the roll-up recipe in `playbooks/product-optimization.md`.
 - `limit` defaults to 20 and must be 1000 or less (a larger value quietly falls back to 20). Check `pageInfo.totalCount` before saying "these are all your products".
 - Also accepts `search`, `filters` and `presetFilter` (see the legacy product report below).
@@ -335,7 +335,9 @@ query($input: V2MetaCampaignsInput!) {
 }
 ```
 
-`v2MetaAccountMetrics(input: V2MetaAccountMetricsInput!)` has the same `meta` and `summary` shape and daily `rows { dated impressions clicks spend reach purchases purchaseValue cpc cpm ctr frequency cvr cpa }`.
+`v2MetaAccountMetrics(input: V2MetaAccountMetricsInput!)` has the same `meta`, a `summary { impressions clicks spend reach purchases purchaseValue linkClicks cpc cpm ctr frequency cvr cpa }` (no `roas`: compute `purchaseValue / spend`) and daily `rows { dated impressions clicks spend reach purchases purchaseValue cpc cpm ctr frequency cvr cpa }`.
+
+**Reach and frequency over more than one day:** `reach` is the sum of daily reach, so it overstates the people reached; `frequency` is impressions / that sum, roughly the average daily frequency. Use them for trends, not as "people reached this month".
 
 **Use when:** "How are my Meta ads doing?", "Meta ROAS?", "Which Meta campaigns perform best?"
 
@@ -363,7 +365,7 @@ See `references/klaviyo.md`.
 
 ## Google Ads Reports (legacy)
 
-Prefer the `v2*` reports above. Use these legacy reports for what v2 doesn't have: search terms, Performance Max by network, and conversion action details. **Their rate fields are wrong over multi-day rows**, so the examples below leave them out: compute rates from the totals.
+Prefer the `v2*` reports above. Use these legacy reports for what v2 doesn't have: search terms, per-campaign daily history, and PMax by network per campaign. **Their rate fields are wrong over multi-day rows**, so the examples below leave them out: compute rates from the totals.
 
 ### gadsCustomerMetrics — Account-level performance
 
@@ -441,7 +443,7 @@ Variables include: `limit`, `offset`, `page`, `sort` (`{ field: COST, direction:
 
 `aggregates` are computed from totals and are safe to read. Node rate fields are not.
 
-**Preset filters:** `HIGHER_COST_LOWER_ROAS` (spend above the range's average and ROAS below 1), `LOWER_COST_LOWER_ROAS`, `UNDERPERFORMERS` (high spend, under 1 conversion), `HIGH_PERFORMERS`, `HIGH_CPC_LOW_CTR`, `LOW_CPA_HIGH_CVR`. ROAS 1 is not the store's break-even, so these presets give a list to look at, never a verdict (see `references/judging-performance.md`).
+**Preset filters:** `HIGHER_COST_LOWER_ROAS` (spend above the range's average and ROAS below 1), `LOWER_COST_LOWER_ROAS`, `UNDERPERFORMERS` (spend above average, under 1 conversion), `HIGH_PERFORMERS`, `HIGH_CPC_LOW_CTR`, `LOW_CPA_HIGH_CVR`. ROAS 1 is not the store's break-even, so these presets give a list to look at, never a verdict (see `references/judging-performance.md`).
 
 **Use when:** "Which products perform best in ads?", "High spend low ROAS products?"
 
@@ -829,7 +831,7 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 - `aov` = Average Order Value
 - `grossMargin` = (Revenue - COGS) / Revenue × 100, a **percentage** (40 means 40%)
 
-**Over more than one day, `mer`, `grossMargin` and `aov` are averages of the daily values.** Compute them from the totals instead: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`.
+**Rows are always one per day**, whatever `groupByDate` says (or one per month number with `groupByFields: ["month"]`; that mode also merges the same month of different years, so use it only within one calendar year). For a period, **add up the daily rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`. Never read `mer`, `grossMargin`, `aov`, `cpa`, `ncac`, `cac`, `cvr` or `newCustomerPercentage` from a monthly row: they are averages of daily values. The newest day comes first, and at most 1,000 days are returned.
 
 **Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit and margin come out too high. If `costOfGoodsSold` is 0 or very low, say so and ask the merchant for their margin.
 

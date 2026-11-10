@@ -1,4 +1,4 @@
-# Playbook: Budget Allocation & Scaling Decisions
+# Playbook: Budget Allocation
 
 ## Triggers
 
@@ -10,7 +10,7 @@ Combine cross-platform ad data with attribution and profit metrics, so the merch
 
 **Queries to run:**
 
-1. `profitMerReport` — net revenue, gross profit, COGS and ad spend by platform (compute MER and margin from the totals)
+1. `profitMerReport` — net revenue, gross profit, COGS and ad spend by platform, one row per day (add up the days, then compute MER and margin)
 2. `v2GadsCustomerMetrics` / `v2GadsCampaigns` — Google Ads totals and campaigns
 3. `v2MetaCampaigns` — Meta spend, purchases and purchase value
 4. `v2TiktokCampaigns` — TikTok spend and conversions (no conversion value)
@@ -24,13 +24,15 @@ Use settled days for anything you compare (the window ends 8 days before today);
 
 ### Channel Efficiency Comparison
 
-| Channel | Spend | Revenue (Attributed) | ROAS | CPA | New Customers | NCAC |
-|---------|-------|---------------------|------|-----|---------------|------|
-| Google Ads | $X | $X | X.Xx | $X | X | $X |
-| Meta Ads | $X | $X | X.Xx | $X | X | $X |
-| TikTok Ads | $X | $X | X.Xx | $X | X | $X |
-| Organic | $0 | $X | — | — | X | — |
-| **Total** | **$X** | **$X** | **X.Xx (MER)** | **$X** | **X** | **$X** |
+| Channel | Spend | Revenue (Analyzify attribution) | Revenue / spend | New Customers | NCAC |
+|---------|-------|--------------------------------|-----------------|---------------|------|
+| Google Ads | $X | $X | X.Xx | X | $X |
+| Meta Ads | $X | $X | X.Xx | X | $X |
+| TikTok Ads | $X | $X | X.Xx | X | $X |
+| Organic | $0 | $X | — | X | — |
+| **Total** | **$X** | **$X** | **MER X.Xx** | **X** | **$X** |
+
+Take revenue per channel from one attribution model (`shopifyCampaignAttributionReport` / `shopifyChannelAttributionReport`, say which model) so each order is counted once. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
 
 ### Revenue Dependency Analysis
 
@@ -39,7 +41,7 @@ Use settled days for anything you compare (the window ends 8 days before today);
 | Paid Channels | $X | X% |
 | Organic/Free | $X | X% |
 
-Flag if paid > 70%: "Your business is heavily reliant on paid traffic. Consider investing in SEO, email, and content to reduce dependency."
+State the split as a fact ("70% of revenue came through paid channels in this period") and compare with the store's own past periods, not with a fixed benchmark.
 
 ### Campaign-Level Efficiency
 
@@ -55,32 +57,33 @@ Show facts in this table, not a "Recommendation" column. Brand campaigns usually
 
 Calculate it, don't assume 1.0:
 
-- **margin** = `grossProfit / netRevenue` from `profitMerReport`, summed over the same settled 30 days or more. `grossMargin` in a multi-day row is a percentage averaged over days; don't use it directly.
-- **net share** = `netSales / totalSales` from `shopifyOrderAgg` for the same window (the value sent to ad platforms often includes tax and shipping).
-- **break-even ROAS = 1 / (margin × net share)**. Example: margin 40%, net share 80% → 1 / 0.32 ≈ 3.1.
+- **margin** = `grossProfit / netRevenue`, each added up over the daily rows of `profitMerReport` for the same settled 30 days or more. A row's `grossMargin` is one day's figure, as a percentage; don't use it for a period.
+- **net share** defaults to 1. Only if the merchant confirms the value sent to ad platforms includes tax and shipping, use `netSales / totalSales` from `shopifyOrderAgg` for the same window; if unsure, show both.
+- **break-even ROAS = 1 / (margin × net share)**. Example: margin 40% → 2.5; with net share 80% → 1 / 0.32 ≈ 3.1.
 - If product costs are missing in Shopify (`costOfGoodsSold` is 0 or very low), the margin is too high. Ask for the merchant's own margin and say which you used.
 
 ### What to Say About Each Campaign
 
-Follow `references/judging-performance.md`. A campaign is only "below break-even" when, on settled days, it is below in the last 30 days **and** the 30 before, with enough volume (30+ conversions, or spend of 5× the account's cost per conversion), while tracking was healthy. Otherwise say "too new", "too little data" or "tracking issue in this window".
+Follow `references/judging-performance.md`. A campaign is only "below break-even" when, on settled days, it is below in the last 30 days **and** the 30 before, with enough volume (see the volume rule there), while tracking was healthy. Otherwise say "too new", "too little data" or "tracking issue in this window".
 
 Facts worth pointing out (not orders):
 - ROAS against break-even, for two settled periods
 - CPA and its trend against the store's average order value
-- Frequency above 3 on Meta (the same people see the ads often)
+- Meta frequency rising over recent weeks (`v2MetaAccountMetrics` daily rows; the period figure is roughly an average daily frequency, not a monthly one)
 - CPM rising faster than conversion rate
 
 Don't say "cut", "pause", "scale" or "shift budget". If the merchant asks what to do, lay out the options and what each would need to be true (for example: "more budget here only helps if the campaign isn't already limited by demand; check impression share first"), and ask what they know that the numbers don't: promotions, launches, brands they protect on purpose.
 
-### Paid vs Organic Health Check
+### Paid vs Organic Over Time
 
-| Metric | Current | Healthy Range |
-|--------|---------|---------------|
-| Paid Revenue % | X% | 40-60% |
-| Organic Revenue % | X% | 30-50% |
-| Email/SMS Revenue % | X% | 15-30% |
-| MER (net revenue / ad spend, from totals) | X.Xx | depends on margin: compare with break-even |
-| Blended CAC | $X | < 1/3 of LTV |
+| Metric | This period | Previous period | Same period last year |
+|--------|-------------|-----------------|-----------------------|
+| Paid revenue share | X% | X% | X% |
+| Email/SMS revenue share | X% | X% | X% |
+| MER (net revenue / ad spend, from totals) | X.Xx | X.Xx | X.Xx |
+| Blended CAC (ad spend / new customers) | $X | $X | $X |
+
+Compare the store with itself, not with generic "healthy ranges": what is healthy depends on margin, price point and category.
 
 ## Common Follow-ups
 

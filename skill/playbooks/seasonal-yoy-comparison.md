@@ -44,7 +44,7 @@ query($input: ProfitMerInput!) {
 
 Run twice with current year dates and last year dates.
 
-For monthly grouping, use `groupByFields: ["month"]`.
+For monthly grouping, use `groupByFields: ["month"]` only within one calendar year (it groups by month number and would merge the same month of two years). Otherwise add up the daily rows per month yourself. Rows are one per day by default: add them up for each period's totals, then compute ratios from the sums.
 
 ### 2. Traffic YoY
 
@@ -76,7 +76,7 @@ query($input: Ga4ChannelInput!) {
 
 ### 4. Monthly Trend (Full Year View)
 
-Run `profitMerReport` with `groupByFields: ["month"]` for the last 12 months:
+Run `profitMerReport` for the last 12 months and add up the daily rows per calendar month (don't use `groupByFields: ["month"]` here: a 12-month range crosses a year boundary, and month-number grouping would merge the same month of both years):
 
 ```json
 {

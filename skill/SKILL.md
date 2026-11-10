@@ -92,6 +92,8 @@ Match the user's question to the right playbook. Each playbook has exact queries
 
 ## Query Strategy: Report API First
 
+**The queries in this skill are valid even when `introspect_report_schema` doesn't list them.** The schema search can lag behind the Report API (the `v2*`, Klaviyo and source-status queries may be missing from it). Run the queries as written here; only introspect for something this skill doesn't cover.
+
 **ALWAYS try the Report API first.** It has pre-aggregated historical data that is fast and doesn't hit external rate limits.
 
 1. Match the user's request to a Report API query (see `references/reports.md`)
@@ -123,6 +125,7 @@ These keep the same question giving the same, correct answer in every chat:
 - **Rates come from totals.** For Google Ads, Meta and TikTok use the `v2*` reports, which compute CTR, CPC, CPA and ROAS from totals. In legacy reports, never read a rate (CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin, AOV) from a row covering more than one day: compute it from the totals in that row. When combining rows, add the totals first, then divide.
 - **Empty is not zero.** If a report is empty or shows zero spend, check `v2MarketingSourceStatuses` first and say what you found: not connected, sync failing since a date, data only up to a date, or connected with nothing to report.
 - **A failed read is not zero.** If a query returns errors, tell the user the data couldn't be read (in plain words, without error codes) and what they can do. Never present it as 0 orders or 0 sales.
+- **`profitMerReport` returns one row per day** (it ignores `groupByDate`). For a period, add up the daily rows, then compute MER, margin, AOV and CPA from the sums (`playbooks/profit-and-revenue.md`).
 - **Say where a number came from:** the stored report (synced daily, up to which date) or a live read, and the date range.
 - **Recent days aren't settled.** Ad platforms keep adding conversions for about a week. Say so when the range includes the last 7 days.
 - **No verdicts from a raw ROAS.** Never call a campaign or product "losing money", "wasted", a loser or a winner, and never tell the user to pause, cut or scale, unless the checks in `references/judging-performance.md` hold. Break-even is not ROAS 1.0.

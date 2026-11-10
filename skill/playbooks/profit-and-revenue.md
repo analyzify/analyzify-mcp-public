@@ -45,13 +45,13 @@ query($input: ProfitMerInput!) {
 
 ### 2. Monthly Summary (for period comparison)
 
-Same query but with `groupByFields: ["month"]` instead of `groupByDate: true`.
+Same query with `groupByFields: ["month"]`. Use it only within one calendar year: it groups by month number, so January of two years would be merged. For ranges across years, add up the daily rows per month yourself.
 
-### 3. Total Summary (single number)
+### 3. Period Totals
 
-Same query but with `groupByDate: false` — returns one row with totals.
+There is no single "totals" row: `groupByDate` is ignored and rows are one per day. For a period, add up the daily rows (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `shippingCost`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `netProfit`).
 
-**In any row covering more than one day (monthly or total), `mer`, `grossMargin` and `aov` are averages of the daily values, not the period's real figure.** Compute them from the totals in the row: MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`. `grossMargin` is a percentage (40 means 40%).
+**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`. Never average the daily `mer`, `grossMargin` or `aov`, and never read them from a monthly row (they are averages of daily values there). `grossMargin` is a percentage (40 means 40%).
 
 **Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit, margin and net profit come out too high. If `costOfGoodsSold` is 0 or looks low for the store, say so.
 
@@ -113,7 +113,7 @@ Run the daily query and present as a time series. Highlight:
 
 ## Common Follow-ups
 
-- "Break it down by day/week/month" → adjust `groupByDate`/`dateArgs`
+- "Break it down by day/week/month" → daily rows as returned; for weeks, add up the days yourself; for months, `groupByFields: ["month"]` within one year
 - "Compare to last month" → run same query with previous period dates
 - "Which ads are most profitable?" → pivot to `playbooks/ad-performance.md` (`v2GadsCampaigns` + `v2MetaCampaigns`); judge profit against break-even ROAS, not 1.0 (`references/judging-performance.md`)
 - "What's my best selling product?" → pivot to `ga4ProductPerformances` or `shopifyOrderAgg`

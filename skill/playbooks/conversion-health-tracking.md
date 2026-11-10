@@ -149,7 +149,7 @@ Flag any day with 0 conversions but normal clicks — likely tracking failure.
 
 ## Common Follow-ups
 
-- "How much did this cost me?" → calculate spend during days with broken tracking
+- "How much did this cost me?" → show the spend during the days with broken tracking as "spend with no conversion recorded"; sales may still have happened, so it is not money lost
 - "Which tag is broken?" → outside Analyzify scope — suggest Google Tag Assistant or Analyzify dashboard
-- "Is my PMax campaign wasting money?" → check PMax conversion count vs spend
+- "Is my PMax campaign wasting money?" → first check that its conversions are being recorded (this playbook); then judge it with `references/judging-performance.md`
 - "How do I fix this?" → suggest checking Analyzify tracking setup in their dashboard

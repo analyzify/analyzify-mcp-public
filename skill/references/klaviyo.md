@@ -6,6 +6,8 @@ Before answering, check that Klaviyo is connected and current: run `v2MarketingS
 
 All queries take `{ "input": { "default": { "spaceId": "...", "startDate": "...", "endDate": "...", "groupByDate": false } } }`, with an optional `"comparison"` period. Campaigns and flows default to email only; add `"sendChannels": ["email", "sms"]` (or `"push-notification"`) next to `default` to include other channels.
 
+**Dates and freshness:** Klaviyo data follows sends, not days, so `coverage` gaps and `partialData` don't apply; use `latestAvailableDate` and `freshness`. Attributed revenue is booked on the **send date**, not the order date, so a campaign sent on 30 Sep that sells in October counts in September.
+
 **Units:** `openRate`, `clickRate`, `bounceRate` and `cvr` are fractions (0.35 means 35%). `revenue` is the order value Klaviyo attributes within its own attribution window, in the account currency. `rpr` is revenue per recipient (revenue / delivered).
 
 ## v2KlaviyoCampaigns — Campaign (one-off send) results
@@ -13,14 +15,14 @@ All queries take `{ "input": { "default": { "spaceId": "...", "startDate": "..."
 ```graphql
 query($input: V2KlaviyoCampaignsInput!) {
   v2KlaviyoCampaigns(input: $input) {
-    meta { currencyCode coverage { latestAvailableDate partialData staleData } freshness { status lastFailureAt } }
+    meta { currencyCode coverage { latestAvailableDate } freshness { status lastFailureAt } }
     summary { revenue delivered opensUnique clicksUnique conversions unsubscribed openRate clickRate bounceRate cvr rpr aov }
-    rows { campaignName messageName subject sendChannel sendTime delivered openRate clickRate conversions revenue rpr cvr unsubscribed audience }
+    rows { campaignId campaignName messageName subject sendChannel sendTime delivered openRate clickRate conversions revenue rpr cvr unsubscribed audience }
   }
 }
 ```
 
-Rows are one per campaign message: a campaign sent to several audiences can have several rows. Add them up per `campaignName` (totals first, then rates).
+Rows are one per campaign message: a campaign sent to several audiences can have several rows. Add them up per `campaignId` (totals first, then rates).
 
 **Use when:** "How did my email campaigns do?", "Best campaign last month?", "Open rate?"
 
@@ -29,7 +31,7 @@ Rows are one per campaign message: a campaign sent to several audiences can have
 ```graphql
 query($input: V2KlaviyoFlowsInput!) {
   v2KlaviyoFlows(input: $input) {
-    meta { currencyCode coverage { latestAvailableDate partialData staleData } freshness { status lastFailureAt } }
+    meta { currencyCode coverage { latestAvailableDate } freshness { status lastFailureAt } }
     summary { revenue delivered opensUnique clicksUnique conversions openRate clickRate cvr rpr }
     rows { flowId flowName activeMessages delivered openRate clickRate conversions revenue rpr cvr }
   }

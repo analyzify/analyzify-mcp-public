@@ -8,7 +8,7 @@
 
 **Primary:** the `v2*` Report API queries: `v2GadsCustomerMetrics`, `v2GadsCampaigns`, `v2MetaCampaigns`, `v2MetaAccountMetrics`, `v2TiktokCampaigns`, `v2TiktokAdvertiserMetrics`. Their `summary` and rows already compute CTR, CPC, CPA and ROAS from totals. Don't read rates from multi-day rows of the legacy reports (`gadsCampaignsPerformance`, `fbCampaignInsights`, `tiktokCampaignInsights`): those are added up across days.
 
-**For cross-platform totals:** add up spend and conversion value from each platform's `summary`, then divide. `profitMerReport` gives total ad spend next to Shopify net revenue (compute MER from the totals).
+**For cross-platform totals:** add up spend across platforms, but **don't add up the platforms' conversion value or compute a "blended ROAS"**: each platform claims the same orders, so the sum overstates sales. For an overall figure use MER = Shopify net revenue / total ad spend from `profitMerReport` (computed from its totals).
 
 **If a platform comes back empty:** check `v2MarketingSourceStatuses` before saying there was no spend (see `references/reports.md`).
 
@@ -50,7 +50,7 @@ query($input: V2GadsCampaignsInput!) {
 query($input: V2GadsProductsInput!) {
   v2GadsProducts(input: $input) {
     summary { cost conversions conversionValue cpa roas }
-    rows { itemId productTitle campaignName impressions clicks cost conversions conversionValue ctr cpc cpa roas }
+    rows { itemId productTitle impressions clicks cost conversions conversionValue ctr cpc cpa roas }
     pageInfo { page totalCount totalPages hasNextPage }
   }
 }
@@ -90,12 +90,14 @@ TikTok reports conversions but no conversion value, so there is no TikTok ROAS. 
 
 ### Cross-Platform Summary
 
-| Platform | Spend | Clicks | Conversions | ROAS | CPA |
+| Platform | Spend | Clicks | Conversions (platform's count) | ROAS (platform's numbers) | CPA |
 |----------|-------|--------|-------------|------|-----|
 | Google Ads | $X | X | X | X.Xx | $X |
 | Meta | $X | X | X | X.Xx | $X |
-| TikTok | $X | X | X | X.Xx | $X |
-| **Total** | **$X** | **X** | **X** | **X.Xx** | **$X** |
+| TikTok | $X | X | X | — (no value reported) | $X |
+| **Total** | **$X** | **X** | — | **MER X.Xx** (Shopify net revenue / total spend) | — |
+
+Platforms count overlapping orders, so conversions and ROAS are per platform only.
 
 ### Campaign Rankings (when asked "best/worst campaigns")
 
@@ -113,7 +115,7 @@ Follow `references/judging-performance.md`. In short:
 - Judge settled days only (the window ends 8 days before today), over two periods of 30 days.
 - Compare ROAS with the store's break-even ROAS = 1 / (margin × net share), never with 1.0.
 - Check tracking first; a broken tag makes every campaign look like a loser.
-- Ask for enough volume (30+ conversions, or spend of 5× the account's cost per conversion).
+- Ask for enough volume (30+ conversions, or a clear shortfall against the conversions expected at break-even).
 - State the facts and what they don't mean. Don't say pause, cut or scale.
 
 Signals worth pointing out as facts (not verdicts):

@@ -10,8 +10,8 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **Required queries (run in sequence):**
 
-1. `profitMerReport` — revenue, profit, costs, unit economics (totals)
-2. `profitMerReport` — same but with `groupByDate: true` for trend
+1. `profitMerReport` — revenue, profit, costs, unit economics (one row per day: add up the days, then compute ratios from the sums)
+2. The same daily rows give the trend
 3. `ga4Scorecards` — traffic + conversion with auto-comparison
 4. `ga4Channels` — channel breakdown (groupByDate: false, groupByFields: ["channel_name"])
 5. `v2GadsCampaigns` — top campaigns (if Google Ads connected)

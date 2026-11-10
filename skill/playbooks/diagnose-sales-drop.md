@@ -162,7 +162,7 @@ query($input: V2MetaAccountMetricsInput!) {
 }
 ```
 
-Check: Did CPMs spike? Did reach decrease? Did frequency rise (the same people seeing the ads more often)?
+Check: Did CPMs spike? Did reach decrease? Did frequency rise (the same people seeing the ads more often)? Over a period, `reach` is a sum of daily reach and `frequency` roughly the average daily frequency: compare the two periods with each other, not with a fixed number.
 
 **TikTok:**
 ```graphql

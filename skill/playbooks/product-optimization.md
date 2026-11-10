@@ -62,19 +62,18 @@ Variables:
 
 One row per item. An item is usually a **variant**, not a product. `limit` must be 1000 or less (a larger value quietly falls back to 20).
 
-### 3. Meta Product Performance (paginated)
+### 3. Meta Product Performance (top 250 by spend)
 
 ```graphql
 query($input: V2MetaProductsInput!) {
   v2MetaProducts(input: $input) {
     summary { impressions clicks spend purchases cpa }
     rows { productId productName impressions clicks spend purchases cpa }
-    pageInfo { page totalCount totalPages hasNextPage }
   }
 }
 ```
 
-`productId` is Meta's catalogue ID, not Shopify's. There is no purchase value, so no ROAS per product on Meta.
+Not paginated: it returns the top 250 products by spend, and `summary` covers only those 250. `productId` is Meta's catalogue ID, not Shopify's. There is no purchase value, so no ROAS per product on Meta.
 
 ### 4. Google Ads Results by Product (roll-up recipe)
 
@@ -138,6 +137,9 @@ Follow `references/judging-performance.md`, with these product-specific rules:
 
 - **Unit:** the product, with its variants added up (recipe 4 above), never a single variant.
 - **Windows:** two settled windows of 90 days each (the latest ending 8 days before today). A store with less history: say how many days are missing.
+- **Still active:** only products with spend in the last 14 settled days.
+- **Mapping first:** if less than 80% of the period's product spend maps to a Shopify product (recipe 4), publish no product list; say how much mapped and why the rest didn't.
+- **Margin:** use the account margin unless the merchant gives a product's own; say which.
 - **No sale:** a product with spend and zero conversions in **both** windows is worth listing only if its spend would have bought two to three sales at the account's cost per conversion. Then check Shopify: if it sold through other channels, list it apart as "sells, but not through its ads".
 - **Below break-even:** below the store's break-even ROAS in both windows, separately, with at least one sale. Show the largest gaps first, at most 20.
 - **Leave out:** products first advertised less than 60 days ago, products on promotion, and out-of-stock products (that is a different finding: "ads on products you can't sell").
@@ -145,7 +147,7 @@ Follow `references/judging-performance.md`, with these product-specific rules:
 - **Never a long-tail total as the headline** ("2,000 spent on products that never sold" adds up hundreds of tiny amounts that each mean nothing).
 - **Limits line:** "Google credits the whole order to the clicked product. A product here may be the way in to larger baskets."
 
-The preset filters (`HIGHER_COST_LOWER_ROAS`, `UNDERPERFORMERS`) compare with ROAS 1 over one range. Use them only to find products to check, never as the answer.
+The preset filters (`HIGHER_COST_LOWER_ROAS` compares with ROAS 1; `UNDERPERFORMERS` is spend above average with under 1 conversion) look at one range only. Use them only to find products to check, never as the answer.
 
 | Product | Variants | Spend (both windows) | Conversions | ROAS (window 1 / window 2) | Break-even |
 |---------|----------|----------------------|-------------|----------------------------|------------|
