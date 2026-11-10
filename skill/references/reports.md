@@ -42,6 +42,40 @@ input DateArgs {
 
 Report API queries are pre-aggregated in ClickHouse — they're fast and don't hit external rate limits. Only fall back to live proxies (ga4Proxy, gadsProxy, etc.) when the Report API doesn't have what the user needs (e.g., realtime data, data not yet synced).
 
+## Read This First
+
+- **For Google Ads, Meta and TikTok, use the `v2*` reports** (section "Marketing Reports (v2)" below). They return a `summary` with rates already computed from totals, plus `meta` that says how fresh and complete the data is.
+- **Rates come from totals.** In the legacy reports, rate fields (CTR, CPC, CPM, CPA, cost per conversion, conversion rate, frequency, and `mer`, `grossMargin`, `aov` in `profitMerReport`) are added up or averaged across days, so any row covering more than one day is wrong. Compute rates from the totals in the same row. When you combine rows, add up the totals first, then divide.
+- **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Check `v2MarketingSourceStatuses` (below) before saying "you spent nothing" or "no orders".
+- **A failed read is not zero.** If a query returns errors, say the data couldn't be read and why. Never present a failed read as 0.
+- **Say where a number came from:** stored report (synced daily) or live read, and up to which date.
+- **Before calling anything "losing money"** or suggesting cuts, follow `references/judging-performance.md`.
+
+### v2MarketingSourceStatuses — Is each source connected and current?
+
+```graphql
+query($input: V2MarketingSourceStatusesInput!) {
+  v2MarketingSourceStatuses(input: $input) {
+    statuses {
+      source connected reportEnabled accountLabel currencyCode timezone
+      freshness { connected status lastRunAt lastFailureAt failureMessage }
+      coverage {
+        firstAvailableDate latestAvailableDate availableDays missingDays
+        gapRanges { startDate endDate }
+        partialData staleData
+      }
+      warnings { code level message }
+    }
+  }
+}
+```
+
+Variables: `{ "input": { "default": { "spaceId": "...", "startDate": "2024-01-01", "endDate": "2024-01-31" } } }`
+
+Sources: `ga4`, `gads`, `meta`, `tiktok`, `shopify`, `sc`, `klaviyo`. `freshness.status` is `disconnected`, `syncing`, `failed` or `enabled`.
+
+**Use when:** a report comes back empty or low, before any "you spent nothing" or "no orders" answer, and before judging ad performance. Tell the user what you found: "Meta isn't connected", "Meta's sync has been failing since 30 Sep", or "Meta is connected and current, and there was no spend".
+
 ---
 
 ## GA4 Reports
@@ -149,19 +183,17 @@ query($input: Ga4ReferralRevenueInput!) {
 ```graphql
 query($input: Ga4LandingPageInput!) {
   ga4LandingPages(input: $input) {
-    landingPages {
-      dated landingPage currencyCode
-      metricsActiveUsers metricsNewUsers metricsTotalUsers metricsSessions
-      metricsEventCount metricsEcommPurchases metricsTotalRevenue metricsBounceRate
-    }
-    currencyCode metricsTotalActiveUsers metricsTotalNewUsers metricsTotalUsers
-    metricsTotalSessions metricsTotalEventCount metricsTotalEcommPurchases
-    metricsTotalRevenue metricsAverageBounceRate
+    dated landingPage currencyCode
+    metricsActiveUsers metricsNewUsers metricsTotalUsers metricsSessions
+    metricsEventCount metricsEcommPurchases metricsTotalRevenue metricsBounceRate
   }
 }
 ```
 
+Returns a flat list of rows (no totals object). Add up the rows yourself for totals.
+
 **Use when:** "Top landing pages?", "Which pages have highest bounce rate?"
+**Note:** over a multi-day range, `metricsBounceRate` is a plain average of the daily rates, not weighted by sessions. Treat it as approximate.
 
 ### ga4DeviceCategory — Device breakdown
 
@@ -193,7 +225,145 @@ query($input: Ga4404PagesInput!) {
 
 ---
 
-## Google Ads Reports
+## Marketing Reports (v2) — Preferred for Google Ads, Meta and TikTok
+
+Every `v2*` report takes `{ "input": { "default": StandardQueryInput, "comparison": StandardQueryInput } }` (comparison is optional: give it the previous period to get both in one call) and returns:
+
+- `summary`: totals for the whole range, with rates computed from those totals. Use these for "overall" answers.
+- `rows`: one row per campaign (or product, or day). Rates in each row are computed from that row's totals.
+- `meta`: `currencyCode`, `freshness` and `coverage` (latest synced date, gaps, `partialData`, `staleData`). Mention a gap or stale data in your answer.
+- `comparison`: the same `summary` and `rows` for the comparison range.
+
+Units in `v2*` reports: `cost` and `spend` are in the account currency (no micros). `ctr`, `cvr` and `linkCtr` are percentages (2.5 means 2.5%). `roas` = conversion value / cost. `cpa` = cost / conversions.
+
+Variables:
+```json
+{
+  "input": {
+    "default": { "spaceId": "...", "startDate": "2024-02-01", "endDate": "2024-02-29", "groupByDate": false },
+    "comparison": { "spaceId": "...", "startDate": "2024-01-01", "endDate": "2024-01-31", "groupByDate": false }
+  }
+}
+```
+
+### v2GadsCustomerMetrics — Google Ads account totals and daily trend
+
+```graphql
+query($input: V2GadsCustomerMetricsInput!) {
+  v2GadsCustomerMetrics(input: $input) {
+    meta { currencyCode coverage { latestAvailableDate missingDays partialData staleData } freshness { status lastFailureAt } }
+    summary { impressions clicks cost conversions conversionValue allConversions allConversionValue ctr cpc cpa roas cvr }
+    rows { dated impressions clicks cost conversions conversionValue ctr cpc cpa roas }
+    comparison { summary { cost conversions conversionValue cpa roas } }
+  }
+}
+```
+
+**Use when:** "How are my Google Ads doing?", "Total ad spend?", "Overall ROAS?", daily trend of spend or conversions.
+
+### v2GadsCampaigns — Google Ads by campaign
+
+```graphql
+query($input: V2GadsCampaignsInput!) {
+  v2GadsCampaigns(input: $input) {
+    meta { currencyCode coverage { latestAvailableDate missingDays partialData staleData } freshness { status lastFailureAt } }
+    summary { impressions clicks cost conversions conversionValue ctr cpc cpa roas }
+    rows { campaignId campaignName campaignType impressions clicks cost conversions conversionValue ctr cpc cpa roas }
+    comparison { rows { campaignId cost conversions conversionValue cpa roas } }
+  }
+}
+```
+
+Use `groupByDate: false`. Rows are one per campaign over the whole range. `campaignType` is a label such as Search, Shopping or Performance Max.
+
+**Use when:** "Which campaigns perform best?", "Campaign spend breakdown?", "CPA by campaign?"
+
+### v2GadsProducts — Google Ads by product (item) (paginated)
+
+```graphql
+query($input: V2GadsProductsInput!) {
+  v2GadsProducts(input: $input) {
+    meta { currencyCode coverage { latestAvailableDate partialData staleData } }
+    summary { impressions clicks cost conversions conversionValue ctr cpc cvr cpa roas }
+    rows { itemId productTitle campaignId campaignName impressions clicks cost conversions conversionValue ctr cpc cvr cpa roas }
+    pageInfo { page limit totalCount totalPages hasNextPage }
+  }
+}
+```
+
+Variables:
+```json
+{
+  "input": {
+    "default": { "spaceId": "...", "startDate": "...", "endDate": "...", "groupByDate": false, "groupByFields": ["item_id", "product_title"] },
+    "sort": [{ "field": "COST", "direction": "DESC" }],
+    "limit": 250,
+    "page": 1
+  }
+}
+```
+
+- Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`). Use `["item_id", "product_title"]` for one row per item.
+- An item is a variant, not a product. To answer "by product", follow the roll-up recipe in `playbooks/product-optimization.md`.
+- `limit` defaults to 20 and must be 1000 or less (a larger value quietly falls back to 20). Check `pageInfo.totalCount` before saying "these are all your products".
+- Also accepts `search`, `filters` and `presetFilter` (see the legacy product report below).
+
+**Use when:** "Which products get the most ad spend?", "Product ROAS?", "Results by product?"
+
+### v2GadsConversionActions — Conversion actions and when each last fired
+
+```graphql
+query($input: V2GadsConversionActionsInput!) {
+  v2GadsConversionActions(input: $input) {
+    summary { trackedActionCount primaryGoalActionCount allConversions allConversionValue }
+    rows { conversionAction categoryName primaryForGoal allConversions allConversionValue lastSeen }
+  }
+}
+```
+
+**Use when:** "Is conversion tracking working?", "Which actions count as conversions?", before judging any campaign.
+
+### v2MetaCampaigns / v2MetaAccountMetrics — Meta
+
+```graphql
+query($input: V2MetaCampaignsInput!) {
+  v2MetaCampaigns(input: $input) {
+    meta { currencyCode coverage { latestAvailableDate missingDays partialData staleData } freshness { status lastFailureAt } }
+    summary { impressions clicks linkClicks spend purchases purchaseValue ctr linkCtr cpc cpm cpa roas }
+    rows { campaignId campaignName impressions clicks linkClicks spend purchases purchaseValue ctr linkCtr cpc cpm cpa roas }
+  }
+}
+```
+
+`v2MetaAccountMetrics(input: V2MetaAccountMetricsInput!)` has the same `meta` and `summary` shape and daily `rows { dated impressions clicks spend reach purchases purchaseValue cpc cpm ctr frequency cvr cpa }`.
+
+**Use when:** "How are my Meta ads doing?", "Meta ROAS?", "Which Meta campaigns perform best?"
+
+### v2TiktokCampaigns / v2TiktokAdvertiserMetrics — TikTok
+
+```graphql
+query($input: V2TiktokCampaignsInput!) {
+  v2TiktokCampaigns(input: $input) {
+    meta { currencyCode coverage { latestAvailableDate missingDays partialData staleData } freshness { status lastFailureAt } }
+    summary { impressions clicks spend conversions ctr cpc cvr cpm cpa }
+    rows { campaignId campaignName impressions clicks spend conversions ctr cpc cvr cpm cpa }
+  }
+}
+```
+
+`v2TiktokAdvertiserMetrics(input: V2TiktokAdvertiserMetricsInput!)` gives the same per day (`rows { dated ... }`). TikTok reports conversions but no conversion value, so there is no TikTok ROAS here.
+
+**Use when:** "How are my TikTok ads doing?", "TikTok CPA?"
+
+### Klaviyo (email and SMS)
+
+See `references/klaviyo.md`.
+
+---
+
+## Google Ads Reports (legacy)
+
+Prefer the `v2*` reports above. Use these legacy reports for what v2 doesn't have: search terms, Performance Max by network, and conversion action details. **Their rate fields are wrong over multi-day rows**, so the examples below leave them out: compute rates from the totals.
 
 ### gadsCustomerMetrics — Account-level performance
 
@@ -202,17 +372,16 @@ query($input: GadsCustomerMetricsInput!) {
   gadsCustomerMetrics(input: $input) {
     dated year quarter month week day
     optimizationScore
-    metricsImpressions metricsClicks metricsCtr
-    metricsCostMicros metricsAverageCpc metricsAverageCost
+    metricsImpressions metricsClicks
+    metricsCostMicros
     metricsConversions metricsConversionsValue
     metricsAllConversions metricsAllConversionsValue
-    metricsCostPerConversion metricsCostPerAllConversions
-    metricsEngagementRate metricsEngagements
+    metricsEngagements
   }
 }
 ```
 
-**Use when:** "How are my ads performing?", "Total ad spend?", "Overall ROAS?"
+**Use when:** daily account history (prefer `v2GadsCustomerMetrics`).
 **Note:** `metricsCostMicros` must be divided by 1,000,000 for actual cost.
 
 ### gadsCampaignsPerformance — Campaign breakdown
@@ -221,17 +390,16 @@ query($input: GadsCustomerMetricsInput!) {
 query($input: GadsCampaignsPerformanceInput!) {
   gadsCampaignsPerformance(input: $input) {
     dated year quarter month week day
-    id name advertisingChannelType
-    metricsImpressions metricsClicks metricsCtr
-    metricsCostMicros metricsAverageCpc
+    id name advertising_channel_type
+    metricsImpressions metricsClicks
+    metricsCostMicros
     metricsConversions metricsConversionsValue
     metricsAllConversions metricsAllConversionsValue
-    metricsCostPerConversion
   }
 }
 ```
 
-**Use when:** "Which campaigns perform best?", "Campaign spend breakdown?"
+**Use when:** per-campaign history by day (prefer `v2GadsCampaigns`). `advertising_channel_type` is a number (2 = Search, 3 = Display, 4 = Shopping, 10 = Performance Max…); `v2GadsCampaigns` gives the label.
 
 ### gadsSearchTermViews — Search term performance
 
@@ -239,11 +407,10 @@ query($input: GadsCampaignsPerformanceInput!) {
 query($input: GadsSearchTermViewsInput!) {
   gadsSearchTermViews(input: $input) {
     dated searchTerm
-    metricsImpressions metricsClicks metricsCtr
-    metricsCostMicros metricsAverageCpc
+    metricsImpressions metricsClicks
+    metricsCostMicros
     metricsConversions metricsConversionsValue
     metricsAllConversions metricsAllConversionsValue
-    metricsCostPerConversion
   }
 }
 ```
@@ -257,11 +424,9 @@ query($input: GadsProductPerformanceInput!) {
   gadsProductPerformance(input: $input) {
     nodes {
       dated itemId productTitle campaignId campaignName
-      metricsImpressions metricsClicks metricsCtr
-      metricsCostMicros metricsAverageCpc
+      metricsImpressions metricsClicks
+      metricsCostMicros
       metricsConversions metricsConversionsValue
-      metricsConversionsFromInteractionsRate
-      metricsCostPerConversion
     }
     aggregates {
       totalCost totalImpressions totalClicks totalConversions
@@ -272,9 +437,11 @@ query($input: GadsProductPerformanceInput!) {
 }
 ```
 
-Variables include: `limit`, `offset`, `page`, `sort` (`{ field: COST, direction: DESC }`), `filters`, `presetFilter`
+Variables include: `limit`, `offset`, `page`, `sort` (`{ field: COST, direction: DESC }`), `filters`, `presetFilter`. Prefer `v2GadsProducts`.
 
-**Preset filters:** `HIGHER_COST_LOWER_ROAS`, `HIGH_PERFORMERS`, `UNDERPERFORMERS`, `HIGH_CPC_LOW_CTR`, `LOW_CPA_HIGH_CVR`
+`aggregates` are computed from totals and are safe to read. Node rate fields are not.
+
+**Preset filters:** `HIGHER_COST_LOWER_ROAS` (spend above the range's average and ROAS below 1), `LOWER_COST_LOWER_ROAS`, `UNDERPERFORMERS` (high spend, under 1 conversion), `HIGH_PERFORMERS`, `HIGH_CPC_LOW_CTR`, `LOW_CPA_HIGH_CVR`. ROAS 1 is not the store's break-even, so these presets give a list to look at, never a verdict (see `references/judging-performance.md`).
 
 **Use when:** "Which products perform best in ads?", "High spend low ROAS products?"
 
@@ -286,7 +453,7 @@ query($input: GadsPmaxChannelPerformanceInput!) {
     nodes {
       dated campaignId campaignName adNetworkType
       metricsClicks metricsImpressions metricsCostMicros
-      metricsConversions metricsConversionsValue metricsCtr metricsAverageCpc
+      metricsConversions metricsConversionsValue
     }
     aggregates {
       totalCost totalImpressions totalClicks totalConversions
@@ -297,7 +464,7 @@ query($input: GadsPmaxChannelPerformanceInput!) {
 }
 ```
 
-**Use when:** "How is Performance Max doing?", "PMax channel breakdown?"
+**Use when:** "How is Performance Max doing?", "PMax channel breakdown?" (or `v2GadsPmaxChannels` for totals per network)
 
 ### gadsConversions — Conversion actions
 
@@ -324,7 +491,9 @@ query($input: GadsLastConversionsInput!) {
 
 ---
 
-## Meta/Facebook Ads Reports
+## Meta/Facebook Ads Reports (legacy)
+
+Prefer `v2MetaCampaigns` and `v2MetaAccountMetrics` above. Rate fields here (`cpc`, `cpm`, `ctr`, `frequency`) are added up across days, so the examples leave them out: compute rates from the totals.
 
 All Meta queries use `FbInput` with `default: StandardQueryInput!` plus optional `limit`, `offset`, `page`.
 
@@ -335,7 +504,7 @@ query($input: FbInput!) {
   fbAccountInsights(input: $input) {
     dated year quarter month week day
     adAccountId objective
-    impressions clicks spend reach cpc cpm ctr frequency uniqueClicks
+    impressions clicks spend reach uniqueClicks
   }
 }
 ```
@@ -349,7 +518,7 @@ query($input: FbInput!) {
   fbCampaignInsights(input: $input) {
     dated year quarter month week day
     adAccountId campaignId campaignName objective
-    impressions clicks spend reach cpc cpm ctr frequency uniqueClicks
+    impressions clicks spend reach uniqueClicks
   }
 }
 ```
@@ -387,10 +556,10 @@ query($input: FbInput!) {
   fbProductPerformance(input: $input) {
     nodes {
       dated productId productName
-      impressions clicks spend purchases linkClicks cpc ctr
+      impressions clicks spend purchases linkClicks
     }
     aggregates {
-      totalSpend totalImpressions totalClicks totalPurchases totalLinkClicks avgCpc avgCtr
+      totalSpend totalImpressions totalClicks totalPurchases totalLinkClicks
     }
     totalCount hasMore currentPage totalPages
   }
@@ -398,10 +567,13 @@ query($input: FbInput!) {
 ```
 
 **Use when:** "Which products perform best on Facebook ads?"
+**Note:** `productId` is Meta's catalogue ID, not the Shopify product ID, and this report has no purchase value, so no product ROAS.
 
 ---
 
-## TikTok Ads Reports
+## TikTok Ads Reports (legacy)
+
+Prefer `v2TiktokCampaigns` and `v2TiktokAdvertiserMetrics` above. Rate fields here (`cpc`, `ctr`, `cvr`, `cpm`, `cpa`) are added up across days, so the examples leave them out.
 
 ### tiktokAdvertiserInsights — Account-level metrics
 
@@ -409,7 +581,7 @@ query($input: FbInput!) {
 query($input: TiktokInput!) {
   tiktokAdvertiserInsights(input: $input) {
     dated year quarter month week day
-    advertiserId impressions clicks spend cpc ctr cvr cpm conversion cpa
+    advertiserId impressions clicks spend conversion
   }
 }
 ```
@@ -423,7 +595,7 @@ query($input: TiktokInput!) {
   tiktokCampaignInsights(input: $input) {
     dated year quarter month week day
     advertiserId campaignId campaignName
-    impressions clicks spend cpc ctr cvr cpm conversion cpa
+    impressions clicks spend conversion
   }
 }
 ```
@@ -545,7 +717,7 @@ query($input: ShopifyCampaignAttributionInput!) {
 ```
 
 Variables: `page: 1, limit: 50, attributionModel: LAST_NON_DIRECT`
-Attribution models: `FIRST_TOUCH`, `LAST_TOUCH`, `LAST_NON_DIRECT`, `ALL`
+Attribution models: `FIRST_TOUCH`, `LAST_TOUCH`, `LAST_NON_DIRECT`, `LINEAR` (equal credit across touchpoints), `U_SHAPED` (40% first, 40% last, 20% split across the middle), `ANY_CLICK` (full order value to every touchpoint: not additive, the sum exceeds revenue). There is no `ALL` model; to compare models, run the report once per model.
 
 **Use when:** "Campaign attribution?", "Which campaigns drive new customers?"
 
@@ -560,7 +732,7 @@ query($input: ShopifyChannelAttributionInput!) {
       analyzifyTotalOrders analyzifyRevenue analyzifyNewCustomers analyzifyReturningCustomers
       averageOrderValue totalUniqueCustomers sessions
       cost clicks impressions ctr cpc cpm roas cpa
-      campaigns { campaignName source medium ... }
+      campaigns { campaignName source medium shopifyTotalOrders shopifyRevenue analyzifyTotalOrders analyzifyRevenue cost }
     }
     totalCount totalPage currentPage
     summary {
@@ -655,7 +827,11 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 - `ncac` = New Customer Acquisition Cost
 - `cpa` = Cost Per Acquisition (Total Spend / Total Orders)
 - `aov` = Average Order Value
-- `grossMargin` = (Revenue - COGS) / Revenue
+- `grossMargin` = (Revenue - COGS) / Revenue × 100, a **percentage** (40 means 40%)
+
+**Over more than one day, `mer`, `grossMargin` and `aov` are averages of the daily values.** Compute them from the totals instead: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`.
+
+**Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit and margin come out too high. If `costOfGoodsSold` is 0 or very low, say so and ask the merchant for their margin.
 
 ---
 
