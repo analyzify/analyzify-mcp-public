@@ -6,7 +6,7 @@
 
 ## Strategy
 
-**Primary:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view. First read `v2MarketingSourceStatuses`: if a connected ad source's data stops before the end of the period, its spend is missing from those days, so name it and call the profit for those days provisional.
+**Primary:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view. First read `v2MarketingSourceStatuses`: if a connected ad source's data stops before the end of the period, its spend may be missing from those days (or the account had no delivery), so name it and call the profit for those days provisional.
 
 **Fallback:** If profitMerReport returns empty (no data synced), use `shopifyOrderAgg` for revenue + `v2GadsCustomerMetrics`/`v2MetaAccountMetrics`/`v2TiktokAdvertiserMetrics` separately.
 
@@ -56,7 +56,7 @@ There is no single "totals" row: `groupByDate` is ignored and rows are one per d
 
 **Ad spend not synced yet:** a row with `adSpendComplete: false` (today and up to two days before it, in UTC) may be missing the spend of the sources in `incompleteAdSources` (or the account simply had no delivery), so its net profit may be too high and its ad spend too low. Say those days are provisional, or end the period before them. On a monthly row, `mer`, `cpa`, `ncac`, `cac` and `cvr` leave those days out while `netProfit` and `totalAdSpend` include them: for the current month, end the period before the flagged days and add up the daily rows. A monthly ratio of 0 with `adSpendComplete: false` means "not known yet", not zero.
 
-**Older gaps are not flagged:** `adSpendComplete: true` does not prove the spend is complete. A sync that has been failing for weeks is not flagged on older days. Before reporting profit, check `v2MarketingSourceStatuses` covers the whole period for every connected ad source, and name any source whose data stops early.
+**Older gaps are not flagged:** `adSpendComplete: true` does not prove the spend is complete. A sync that has been failing for weeks is not flagged on older days. Before reporting profit, check `v2MarketingSourceStatuses` covers the whole period for every connected ad source, and name any source whose data stops early (a paused account also has no rows, so say spend may be missing, not that it is).
 
 **Days without orders:** only days with Shopify orders or refunds are in the report. Ad spend on a day with neither is not counted, so `totalAdSpend` can be a little lower than the ad platforms show.
 

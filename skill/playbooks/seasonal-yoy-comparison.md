@@ -38,6 +38,7 @@ query($input: ProfitMerInput!) {
     mer grossMargin
     newCustomers newCustomerPercentage
     cpa cac
+    adSpendComplete incompleteAdSources
   }
 }
 ```

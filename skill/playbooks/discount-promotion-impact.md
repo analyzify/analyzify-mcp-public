@@ -54,6 +54,7 @@ query($input: ProfitMerInput!) {
     totalAdSpend googleAdsSpend metaAdsSpend
     newCustomers newCustomerPercentage
     mer cpa
+    adSpendComplete incompleteAdSources
   }
 }
 ```

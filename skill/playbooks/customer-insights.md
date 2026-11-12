@@ -26,6 +26,7 @@ query($input: ProfitMerInput!) {
     dated
     orders newCustomers newCustomerPercentage
     aov cac ncac netRevenue
+    adSpendComplete incompleteAdSources
   }
 }
 ```

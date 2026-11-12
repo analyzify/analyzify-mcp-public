@@ -20,9 +20,9 @@ All workspace queries use `execute_graphql`.
 | `capabilities` | API key permissions (e.g. `["mcp", "reports"]`) |
 | `keyName` | Name of the API key being used |
 | `reportSpaceId` | Report space ID for analytics queries (null if not created) |
-| `ga4` | Connected GA4 property — `propertyID` + `accountName` (null if not connected) |
-| `googleAds` | Connected Google Ads — `accountID` (null if not connected) |
-| `googleSearchConsole` | Connected GSC — `url` (null if not connected) |
+| `ga4` | Connected GA4 property — `propertyID` + `accountName` (null if not connected, or its sync is failing or running) |
+| `googleAds` | Connected Google Ads — `accountID` (null if not connected, or its sync is failing or running) |
+| `googleSearchConsole` | Connected GSC — `url` (null if not connected, or its sync is failing or running) |
 | `meta` | Meta Ads report source — `adAccountID` + `adAccountName` (null if not connected, or its sync is failing or running) |
 | `tiktok` | TikTok Ads report source — `advertiserID` (same null rule) |
 | `klaviyo` | Klaviyo report source — `accountID` + `accountName` (same null rule) |
@@ -31,7 +31,7 @@ All workspace queries use `execute_graphql`.
 
 - "What is my space ID?" → `workspaceId`
 - "What is my store?" → `shopName` + `shopUrl`
-- "What accounts are connected?" → Check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo`. Non-null means connected and enabled; null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
+- "What accounts are connected?" → Check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo`. Non-null means connected and enabled (as of the last status copy, up to 30 minutes old); null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
 - "What's my GA4 property?" → `ga4.propertyID` + `ga4.accountName`
 - "What timezone is my store in?" → `shopifyIanaTimezone`
 - "What can this API key do?" → `capabilities`

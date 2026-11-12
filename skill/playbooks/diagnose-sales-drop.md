@@ -21,6 +21,7 @@ query($input: ProfitMerInput!) {
     googleAdsSpend metaAdsSpend tiktokAdsSpend totalAdSpend
     mer newCustomers newCustomerPercentage
     cpa ncac cac cvr
+    adSpendComplete incompleteAdSources
   }
 }
 ```
@@ -135,7 +136,7 @@ Also check `shopifyOrderAgg`:
 
 First check `v2MarketingSourceStatuses` (`references/reports.md`): a failed sync or a tracking break looks exactly like a performance drop. If a source failed or conversions stopped, that is the finding.
 
-Run each query with `default` = the period with the drop and `comparison` = the period before (same length). Recent days are not settled yet: conversions keep arriving for about a week, so a drop in the last few days may partly fill in.
+Run each query with `default` = the period with the drop and `comparison` = the period before (same length). Recent days are not settled yet: conversions keep arriving for about 8 days (Meta: up to 28), so a drop in the last few days may partly fill in.
 
 **Google Ads:**
 ```graphql

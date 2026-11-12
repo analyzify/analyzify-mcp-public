@@ -81,7 +81,7 @@ Don't say "cut", "pause", "scale" or "shift budget". If the merchant asks what t
 | Paid revenue share | X% | X% | X% |
 | Email/SMS revenue share | X% | X% | X% |
 | MER (net revenue / ad spend, from totals) | X.Xx | X.Xx | X.Xx |
-| Blended CAC (ad spend / new customers) | $X | $X | $X |
+| NCAC (ad spend / new customers) | $X | $X | $X |
 
 Compare the store with itself, not with generic "healthy ranges": what is healthy depends on margin, price point and category.
 
