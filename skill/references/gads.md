@@ -76,7 +76,9 @@ Variables:
 
 ### Products (items) over a period: count and top items
 
-Questions like "how many products had ad spend last month", "list every product with spend" or "top products by spend" need one row per item. The Shopping performance view gives exactly that, summed over the period:
+Questions like "how many products had ad spend last month" or "list every product with spend" need one row per item. The Shopping performance view gives exactly that, summed over the period.
+
+**Items are not products.** An item is usually one variant in one country feed: `shopify_us_123_456` and `shopify_gb_123_456` are two items of the same product. Always say "items (variants)" in the answer. For a count of *products*, when the item IDs look like `shopify_<country>_<productId>_<variantId>`, count the distinct `productId` values (that needs every part and page of the answer); for other ID formats, use the roll-up recipe in `playbooks/product-optimization.md`.
 
 Count of items with spend (path `customers/{accountID}/googleAds:search`):
 ```json
@@ -86,10 +88,11 @@ Count of items with spend (path `customers/{accountID}/googleAds:search`):
   }
 }
 ```
-- Each page holds up to 10,000 items. A long page comes back in parts: part 1 already says how many rows the page has (`_rowsInThisAnswer`, with Analyzify MCP 0.4.0 or later), so you don't need the other parts to count.
+- Each page holds up to 10,000 items. A long page comes back in parts: part 1 already says how many rows the page has (`_rowsInThisAnswer`, with Analyzify MCP 0.4.0 or later), so you don't need the other parts to count items. A short page comes back whole, without `_rowsInThisAnswer`: count the rows in its `results` (a table's `rows`).
 - If the answer has a `nextPageToken`, send it as `"pageToken"` in the same body for the next page, and add up the row counts of all pages.
+- Use `googleAds:search`, not `searchStream`: search answers one page at a time with a row count per page.
 
-Top items by spend:
+Top items by spend (an item whose title changed during the period can come back as two rows: add rows with the same `product_item_id` together before you rank):
 ```json
 {
   "body": {
@@ -99,6 +102,8 @@ Top items by spend:
 ```
 
 When the user asks for every item and there are thousands: give the exact count and the top items, and say the full list is too long for a chat. Never ask the user to narrow the question because the answer is long.
+
+Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is settled up to its last sync; say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
 
 ### List Accessible Customers
 ```graphql

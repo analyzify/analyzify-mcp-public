@@ -60,7 +60,7 @@ Variables:
 }
 ```
 
-One row per item (with exactly these `groupByFields`). An item is usually a **variant**, not a product. `limit` must be 1000 or less (a larger value quietly falls back to 20). `pageInfo.totalCount` includes items with no spend; for the number of items with spend, use the live count in `references/gads.md`.
+One row per item and title (with exactly these `groupByFields`; an item whose title changed in the range appears once per title). An item is usually a **variant**, not a product. `limit` must be 1000 or less (a larger value quietly falls back to 20). `pageInfo.totalCount` includes items with no spend; for the number of items with spend, use the live count in `references/gads.md`.
 
 ### 3. Meta Product Performance (top 250 by spend)
 
