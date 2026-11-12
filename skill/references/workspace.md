@@ -1,6 +1,6 @@
 # Workspace & Account Info
 
-All workspace queries use `execute_graphql`.
+Start with the `whoami` tool (Analyzify MCP 0.4.0 or later): it answers "which store is this", "what can you see" and "what is connected" in one call, with every stored source's state and whether customer-level data is available. The extMe query below gives the IDs other queries need; it runs via `execute_graphql`.
 
 ## Get Full Workspace Info
 
@@ -31,11 +31,11 @@ All workspace queries use `execute_graphql`.
 
 - "What is my space ID?" → `workspaceId`
 - "What is my store?" → `shopName` + `shopUrl`
-- "What accounts are connected?" → Check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo`. Non-null means connected and enabled (as of the last status copy, up to 30 minutes old); null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
+- "What accounts are connected?" → whoami: each live source, and each stored source with its state (ok, syncing, sync failing, not connected) and the dates its data covers. Without whoami (an older connector): check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo` in extMe. Non-null means connected and enabled (as of the last status copy, up to 30 minutes old). Null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
 - "What's my GA4 property?" → `ga4.propertyID` + `ga4.accountName`
 - "What timezone is my store in?" → `shopifyIanaTimezone`
-- "What can this API key do?" → `capabilities`
+- "What can this API key do?" → whoami (or `capabilities` in extMe). Customer contact details and segment customers need the `pii` capability
 
 ## Report access
 
-The report tools get their own access token; you never need one. They need the `mcp` or `reports` capability on the key. If `reportSpaceId` is null, Analyzify has no stored reports for this store yet: say so, and use the live reads instead. A non-null `reportSpaceId` does not prove there is data: check `v2MarketingSourceStatuses`.
+The report tools get their own access token; you never need one. They need the `mcp` or `reports` capability on the key. If `reportSpaceId` is null, Analyzify has no stored reports for this store yet: say so, and use the live reads instead. A non-null `reportSpaceId` does not prove there is data: check whoami's source states (or `v2MarketingSourceStatuses`).
