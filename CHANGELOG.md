@@ -1,5 +1,12 @@
 # Changelog
 
+## Skill 0.1.2 (2026-11-12)
+
+- Per-item Google Ads questions (how many products had spend, every product, top products) use the live Shopping performance view: one row per item, summed over the period, counted page by page; top items with ORDER BY and LIMIT
+- `googleAds:search` (10,000 rows a page) over `searchStream` for long lists
+- Stored product report: row counts without grouping are item × campaign rows; with grouping they include items without spend
+- Answer rule: long answers come complete or in parts, never "narrow your question"; thousands of items get the exact count and the top items
+
 ## Skill 0.1.1 (2026-11-11)
 
 - Take out the naive "losing money" rules: break-even is 1 / (margin × net share), not ROAS 1.0; settled days, two periods, enough volume and a tracking check before any verdict; facts instead of "pause", "cut" or "scale" (new `references/judging-performance.md`)
