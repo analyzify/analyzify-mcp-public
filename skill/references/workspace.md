@@ -1,6 +1,6 @@
 # Workspace & Account Info
 
-Start with the `whoami` tool (Analyzify MCP 0.4.0 or later): it answers "which store is this", "what can you see" and "what is connected" in one call, with every stored source's state and whether customer-level data is available. The extMe query below gives the IDs other queries need; it runs via `execute_graphql`.
+Run extMe first (below), then the `whoami` tool (Analyzify MCP 0.4.0 or later): whoami answers "which store is this", "what can you see" and "what is connected" in one call, with every stored source's state and whether customer-level data is available. The extMe query below gives the IDs other queries need; it runs via `execute_graphql`.
 
 ## Get Full Workspace Info
 
