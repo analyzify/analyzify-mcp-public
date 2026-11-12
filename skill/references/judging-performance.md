@@ -6,7 +6,7 @@ A raw ROAS read gives the wrong answer more often than the right one. In one sto
 
 ## 1. Rates come from totals
 
-In a legacy report, don't read CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin or AOV from a row that covers more than one day: compute the rate from the totals in that row. That gives the right answer however the report computed its rate field. `profitMerReport` computes the ratios of a monthly row from the month's totals; for any other period, add up its daily rows, then divide.
+In a legacy report, don't read CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin or AOV from a row that covers more than one day: compute the rate from the totals in that row. `profitMerReport` computes the ratios of a monthly row from the month's totals; for any other period, add up its daily rows, then divide. For a period that includes days with `adSpendComplete: false`, end it before those days.
 
 - Use the `v2*` reports. Their rates are already computed from totals (see `references/reports.md`, "Marketing reports (v2)").
 - Otherwise compute the rate yourself from the totals in the same row:

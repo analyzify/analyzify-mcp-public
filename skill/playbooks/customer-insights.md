@@ -10,7 +10,7 @@
 - `profitMerReport` — new customer count, new customer %, CAC, NCAC
 - `shopifyCampaignAttributionReport` — new vs returning by marketing channel
 - `shopifyPurchaseAttributionReport` — per-order new/returning flag
-- `segments` / `segmentTemplates` / `executeSegmentQuery` — custom audience segments
+- `segments` / `segmentTemplates` — the store's segments and templates (definitions and counts; the customers inside a segment are not available)
 
 **Fallback:** `shopifyProxy` for customer-level Shopify data.
 
@@ -72,17 +72,7 @@ query {
 
 Categories: `LOYALTY`, `RETENTION`, `BEHAVIOR`
 
-Execute a segment query:
-```graphql
-query($input: SegmentQueryInput!) {
-  executeSegmentQuery(input: $input) {
-    columns { name displayName dataType }
-    rows
-    totals
-    totalCount hasMore
-  }
-}
-```
+The customers inside a segment (names, e-mails) are not available through the assistant. Point the user to the Analyzify app for customer lists.
 
 ### 4. High-Value Orders (from attribution)
 
@@ -148,11 +138,11 @@ While Analyzify doesn't calculate LTV directly, you can estimate from available 
 - **Repeat Rate** from new vs returning ratio
 - **Simple LTV** = AOV × Average Orders per Customer
 
-For more precise LTV, suggest the user check Shopify's customer analytics or use segment queries.
+For more precise LTV, suggest the user check Shopify's customer analytics.
 
 ## Common Follow-ups
 
 - "Which campaign acquires best customers?" → attribution with new customer filter, sorted by AOV
 - "Show me repeat customers" → attribution with `RETURNING_CUSTOMER_LAST_TOUCH_ATTRIBUTION` preset
-- "Create a high-value customer segment" → use segmentTemplates for LOYALTY category
-- "Email list of customers who..." → executeSegmentQuery with custom criteria
+- "Create a high-value customer segment" → show the LOYALTY templates from segmentTemplates; creating the segment is done in the Analyzify app
+- "Email list of customers who..." → not available through the assistant; point to the Analyzify app

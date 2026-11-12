@@ -6,7 +6,7 @@
 
 ## Strategy
 
-**Primary:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view.
+**Primary:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view. First read `v2MarketingSourceStatuses`: if a connected ad source's data stops before the end of the period, its spend is missing from those days, so name it and call the profit for those days provisional.
 
 **Fallback:** If profitMerReport returns empty (no data synced), use `shopifyOrderAgg` for revenue + `v2GadsCustomerMetrics`/`v2MetaAccountMetrics`/`v2TiktokAdvertiserMetrics` separately.
 
@@ -52,9 +52,11 @@ Same query with `groupByFields: ["month"]`: one row per calendar month (`year` a
 
 There is no single "totals" row: `groupByDate` is ignored and rows are one per day (or one per month, above). For a period, add up the rows (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `shippingCost`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`, `netProfit`).
 
-**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks`. Never average the daily `mer`, `grossMargin` or `aov`. `grossMargin` is a percentage (40 means 40%).
+**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks × 100`. Never average the daily `mer`, `grossMargin` or `aov`. `totalCustomers` counts customers per day, so summed over days a customer who ordered on two days counts twice. `grossMargin` is a percentage (40 means 40%).
 
-**Ad spend not synced yet:** a row with `adSpendComplete: false` (usually the last one or two days) is missing the spend of the sources in `incompleteAdSources`, so its net profit is too high and its ad spend too low. Say those days are provisional, or end the period before them.
+**Ad spend not synced yet:** a row with `adSpendComplete: false` (today and up to two days before it, in UTC) may be missing the spend of the sources in `incompleteAdSources` (or the account simply had no delivery), so its net profit may be too high and its ad spend too low. Say those days are provisional, or end the period before them. On a monthly row, `mer`, `cpa`, `ncac`, `cac` and `cvr` leave those days out while `netProfit` and `totalAdSpend` include them: for the current month, end the period before the flagged days and add up the daily rows. A monthly ratio of 0 with `adSpendComplete: false` means "not known yet", not zero.
+
+**Older gaps are not flagged:** `adSpendComplete: true` does not prove the spend is complete. A sync that has been failing for weeks is not flagged on older days. Before reporting profit, check `v2MarketingSourceStatuses` covers the whole period for every connected ad source, and name any source whose data stops early.
 
 **Days without orders:** only days with Shopify orders or refunds are in the report. Ad spend on a day with neither is not counted, so `totalAdSpend` can be a little lower than the ad platforms show.
 
@@ -104,7 +106,7 @@ Run the daily query and present as a time series. Highlight:
 | CAC | $X | Cost to acquire one customer |
 | NCAC | $X | Cost to acquire one NEW customer |
 | MER | X.Xx | $X revenue per $1 ad spend |
-| CVR | X% | Visitors who become buyers |
+| CVR | X% | Orders per 100 ad clicks |
 
 ## Key Calculations
 
@@ -118,7 +120,7 @@ Run the daily query and present as a time series. Highlight:
 
 ## Common Follow-ups
 
-- "Break it down by day/week/month" → daily rows as returned; for weeks, add up the days yourself; for months, `groupByFields: ["month"]` within one year
+- "Break it down by day/week/month" → daily rows as returned; for weeks, add up the days yourself; for months, `groupByFields: ["month"]`
 - "Compare to last month" → run same query with previous period dates
 - "Which ads are most profitable?" → pivot to `playbooks/ad-performance.md` (`v2GadsCampaigns` + `v2MetaCampaigns`); judge profit against break-even ROAS, not 1.0 (`references/judging-performance.md`)
 - "What's my best selling product?" → pivot to `ga4ProductPerformances` or `shopifyOrderAgg`

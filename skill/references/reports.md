@@ -45,7 +45,7 @@ Report API queries are pre-aggregated in ClickHouse — they're fast and don't h
 ## Read This First
 
 - **For Google Ads, Meta and TikTok, use the `v2*` reports** (section "Marketing Reports (v2)" below). They return a `summary` with rates already computed from totals, plus `meta` that says how fresh and complete the data is.
-- **Rates come from totals.** In the legacy reports, rate fields (CTR, CPC, CPM, CPA, cost per conversion, conversion rate, frequency, and `mer`, `grossMargin`, `aov` in `profitMerReport`) are added up or averaged across days, so any row covering more than one day is wrong. Compute rates from the totals in the same row. When you combine rows, add up the totals first, then divide.
+- **Rates come from totals.** In the legacy ad reports, don't read a rate field (CTR, CPC, CPM, CPA, cost per conversion, conversion rate, frequency) from a row covering more than one day: compute it from the totals in the same row. When you combine rows, add up the totals first, then divide. For `profitMerReport`, see its section below.
 - **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Check `v2MarketingSourceStatuses` (below) before saying "you spent nothing" or "no orders".
 - **A failed read is not zero.** If a query returns errors, say the data couldn't be read and why. Never present a failed read as 0.
 - **Say where a number came from:** stored report (synced daily) or live read, and up to which date.
@@ -826,15 +826,16 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 
 **Key metrics explained:**
 - `mer` = Marketing Efficiency Ratio (Revenue / Total Ad Spend)
-- `cac` = Customer Acquisition Cost (Total Spend / New Customers)
-- `ncac` = New Customer Acquisition Cost
+- `cac` = Customer Acquisition Cost (Total Ad Spend / customers who ordered, `totalCustomers`)
+- `ncac` = New Customer Acquisition Cost (Total Ad Spend / `newCustomers`)
+- `cvr` = orders / ad clicks × 100, a **percentage**
 - `cpa` = Cost Per Acquisition (Total Spend / Total Orders)
 - `aov` = Average Order Value
 - `grossMargin` = (Revenue - COGS) / Revenue × 100, a **percentage** (40 means 40%)
 
-**Rows are one per day**, whatever `groupByDate` says, or one per calendar month with `groupByFields: ["month"]`. On a monthly row every ratio is computed from the month's totals. For any other period, **add up the rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks`. Never average daily ratios. Dates must be `YYYY-MM-DD`. The newest day comes first, and at most 1,000 days are returned.
+**Rows are one per day**, whatever `groupByDate` says, or one per calendar month with `groupByFields: ["month"]`. On a monthly row every ratio is computed from the month's totals. For any other period, **add up the rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks × 100`. Never average daily ratios. `totalCustomers` counts customers per day, so summed over days a customer who ordered on two days counts twice. Dates must be `YYYY-MM-DD`. The newest day comes first, and at most 1,000 days are returned.
 
-**Provisional days:** `adSpendComplete: false` means the ad spend of the sources in `incompleteAdSources` has not synced yet for that row (usually the last one or two days). Its net profit is too high: say so, or end the period before those days. Only days with Shopify orders or refunds are in the report, so ad spend on a day with neither is not counted.
+**Provisional days:** `adSpendComplete: false` means the ad spend of the sources in `incompleteAdSources` may not have synced yet for that row (today and up to two days before, in UTC). Its net profit may be too high: say so, or end the period before those days. On a monthly row the five ad ratios leave those days out while `netProfit` and `totalAdSpend` include them. `true` does not prove older days are complete: check `v2MarketingSourceStatuses` for the period. Only days with Shopify orders or refunds are in the report, so ad spend on a day with neither is not counted.
 
 **Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit and margin come out too high. If `costOfGoodsSold` is 0 or very low, say so and ask the merchant for their margin.
 
@@ -842,7 +843,7 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 
 ## Segments
 
-Read only: you can list segments and run their queries, but you cannot create, change, delete or sync a segment.
+You can list segments and their templates. The customers inside a segment are not available through the assistant, and you cannot create, change, delete or sync a segment: for those, point the user to the Analyzify app.
 
 ### segments — List all segments
 
@@ -853,21 +854,6 @@ query {
   }
 }
 ```
-
-### executeSegmentQuery — Run a segment query
-
-```graphql
-query($input: SegmentQueryInput!) {
-  executeSegmentQuery(input: $input) {
-    columns { name displayName dataType }
-    rows
-    totals
-    totalCount hasMore query
-  }
-}
-```
-
-Variables: `{ "input": { "spaceId": "...", "query": { ... } } }`
 
 ### segmentTemplates — Pre-built segment templates
 
