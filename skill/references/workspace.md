@@ -5,7 +5,7 @@ All workspace queries use `execute_graphql`.
 ## Get Full Workspace Info
 
 ```graphql
-{ extMe { workspaceId shopUrl shopName shopifyShopId shopifyScope shopifyIanaTimezone capabilities keyName reportSpaceId ga4 { propertyID accountName } googleAds { accountID } googleSearchConsole { url } } }
+{ extMe { workspaceId shopUrl shopName shopifyShopId shopifyScope shopifyIanaTimezone capabilities keyName reportSpaceId ga4 { propertyID accountName } googleAds { accountID } googleSearchConsole { url } meta { adAccountID adAccountName } tiktok { advertiserID } klaviyo { accountID accountName } } }
 ```
 
 ## What Each Field Means
@@ -28,17 +28,11 @@ All workspace queries use `execute_graphql`.
 
 - "What is my space ID?" → `workspaceId`
 - "What is my store?" → `shopName` + `shopUrl`
-- "What accounts are connected?" → Check `ga4`, `googleAds`, `googleSearchConsole` for non-null values
+- "What accounts are connected?" → Check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo` for non-null values. Meta, TikTok and Klaviyo data come only from the stored reports; `v2MarketingSourceStatuses` says whether each sync is up to date
 - "What's my GA4 property?" → `ga4.propertyID` + `ga4.accountName`
 - "What timezone is my store in?" → `shopifyIanaTimezone`
 - "What can this API key do?" → `capabilities`
 
-## Create Report Space Token
+## Report access
 
-If you need a report token (e.g., for manual Report API access):
-
-```graphql
-mutation { reportSpaceToken }
-```
-
-Returns a short-lived JWT token (30 min expiry).
+The report tools get their own access token; you never need one. If `reportSpaceId` is null, Analyzify has no stored reports for this store yet: say so, and use the live reads instead.

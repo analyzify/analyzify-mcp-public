@@ -23,8 +23,9 @@ query($input: ProfitMerInput!) {
     costOfGoodsSold shippingCost
     mer grossProfit grossMargin
     orders aov
-    newCustomers newCustomerPercentage
-    cpa ncac cac cvr
+    newCustomers newCustomerPercentage totalCustomers
+    cpa ncac cac cvr adClicks
+    adSpendComplete incompleteAdSources
   }
 }
 ```
@@ -45,13 +46,17 @@ query($input: ProfitMerInput!) {
 
 ### 2. Monthly Summary (for period comparison)
 
-Same query with `groupByFields: ["month"]`. Use it only within one calendar year: it groups by month number, so January of two years would be merged. For ranges across years, add up the daily rows per month yourself.
+Same query with `groupByFields: ["month"]`: one row per calendar month (`year` and `month`), and every ratio on it (MER, margin, AOV, CPA, NCAC, CAC, CVR) is computed from the month's totals. A month that is not fully inside the date range covers only the days in the range.
 
 ### 3. Period Totals
 
-There is no single "totals" row: `groupByDate` is ignored and rows are one per day. For a period, add up the daily rows (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `shippingCost`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `netProfit`).
+There is no single "totals" row: `groupByDate` is ignored and rows are one per day (or one per month, above). For a period, add up the rows (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `shippingCost`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`, `netProfit`).
 
-**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`. Never average the daily `mer`, `grossMargin` or `aov`, and never read them from a monthly row (they are averages of daily values there). `grossMargin` is a percentage (40 means 40%).
+**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, gross margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks`. Never average the daily `mer`, `grossMargin` or `aov`. `grossMargin` is a percentage (40 means 40%).
+
+**Ad spend not synced yet:** a row with `adSpendComplete: false` (usually the last one or two days) is missing the spend of the sources in `incompleteAdSources`, so its net profit is too high and its ad spend too low. Say those days are provisional, or end the period before them.
+
+**Days without orders:** only days with Shopify orders or refunds are in the report. Ad spend on a day with neither is not counted, so `totalAdSpend` can be a little lower than the ad platforms show.
 
 **Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit, margin and net profit come out too high. If `costOfGoodsSold` is 0 or looks low for the store, say so.
 

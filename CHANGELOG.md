@@ -10,7 +10,9 @@
 - Klaviyo reference (campaigns, flows, attribution)
 - Conversion, discount and sales-drop playbooks compare the store with its own history instead of generic benchmarks, and state findings instead of prescribing actions
 - Fix queries that failed: `advertising_channel_type`, `ga4LandingPages` (flat list), a syntax error in channel attribution; replace the removed `ALL` attribution model with `LINEAR`, `U_SHAPED`, `ANY_CLICK`
-- Profit: `grossMargin` is a percentage; MER, margin and AOV computed from totals; net profit does not subtract shipping
+- Profit: `grossMargin` is a percentage; MER, margin and AOV computed from totals; net profit does not subtract shipping; monthly rows are one per calendar month with ratios from the month's totals; customer and ad-click totals for CAC and CVR; days whose ad spend has not synced yet are called provisional
+- Read only: Shopify reads take queries only, customer personal data is hidden unless the key has the `pii` capability, and the report access token is handled by the tools
+- Session start reads which Meta, TikTok and Klaviyo report sources are connected
 
 ## 0.2.0 (2026-04-04, MCP server binary and skill files)
 

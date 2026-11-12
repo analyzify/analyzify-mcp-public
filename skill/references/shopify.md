@@ -43,7 +43,8 @@ query($vars: JSON) { shopifyProxy(query: "<shopify_query_with_variables>", varia
 ## Notes
 
 - Uses the Shopify Admin GraphQL API — refer to Shopify docs for available queries
-- All standard Shopify Admin operations are supported (queries AND mutations)
+- Read only: queries are supported; a mutation is refused. You cannot change products, orders or anything else in the store
+- Customer personal data (names, e-mails, phone numbers, addresses) comes back as `[redacted: …]` unless the API key has the `pii` capability (see `capabilities` in extMe). Say it is hidden for this key; never say the customer has no e-mail or address
 - Pagination: use `pageInfo.endCursor` with `after:` argument
 - The response wraps Shopify's raw response: check `data` for results, `errors` for issues
 - Use `introspect_schema` and search "shopify" to see the exact type definition

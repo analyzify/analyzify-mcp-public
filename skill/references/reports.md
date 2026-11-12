@@ -36,7 +36,7 @@ input DateArgs {
 **Key IDs from extMe:**
 - `reportSpaceId` → use as `spaceId`
 - `workspaceId` → use as `refId`
-- If `reportSpaceId` is null, call `reportSpaceToken` mutation first via `execute_graphql`
+- If `reportSpaceId` is null, Analyzify has no stored reports for this store yet: say so, and use the live reads instead
 
 ## Priority: Always Try Report API First
 
@@ -813,8 +813,9 @@ query($input: ProfitMerInput!) {
     costOfGoodsSold shippingCost
     mer grossProfit grossMargin
     orders aov
-    newCustomers newCustomerPercentage
-    cpa ncac cac cvr
+    newCustomers newCustomerPercentage totalCustomers
+    cpa ncac cac cvr adClicks
+    adSpendComplete incompleteAdSources incompleteAdSpendDays
   }
 }
 ```
@@ -831,13 +832,17 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 - `aov` = Average Order Value
 - `grossMargin` = (Revenue - COGS) / Revenue × 100, a **percentage** (40 means 40%)
 
-**Rows are always one per day**, whatever `groupByDate` says (or one per month number with `groupByFields: ["month"]`; that mode also merges the same month of different years, so use it only within one calendar year). For a period, **add up the daily rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`. Never read `mer`, `grossMargin`, `aov`, `cpa`, `ncac`, `cac`, `cvr` or `newCustomerPercentage` from a monthly row: they are averages of daily values. The newest day comes first, and at most 1,000 days are returned.
+**Rows are one per day**, whatever `groupByDate` says, or one per calendar month with `groupByFields: ["month"]`. On a monthly row every ratio is computed from the month's totals. For any other period, **add up the rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks`. Never average daily ratios. Dates must be `YYYY-MM-DD`. The newest day comes first, and at most 1,000 days are returned.
+
+**Provisional days:** `adSpendComplete: false` means the ad spend of the sources in `incompleteAdSources` has not synced yet for that row (usually the last one or two days). Its net profit is too high: say so, or end the period before those days. Only days with Shopify orders or refunds are in the report, so ad spend on a day with neither is not counted.
 
 **Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit and margin come out too high. If `costOfGoodsSold` is 0 or very low, say so and ask the merchant for their margin.
 
 ---
 
 ## Segments
+
+Read only: you can list segments and run their queries, but you cannot create, change, delete or sync a segment.
 
 ### segments — List all segments
 

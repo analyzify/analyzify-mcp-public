@@ -6,7 +6,7 @@ A raw ROAS read gives the wrong answer more often than the right one. In one sto
 
 ## 1. Rates come from totals
 
-Never read CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin or AOV from a row that covers more than one day in a legacy report. Several legacy reports add up or average the daily rates (`gadsCampaignsPerformance`, `gadsCustomerMetrics`, `gadsSearchTermViews`, `gadsProductPerformance` nodes, `fbAccountInsights`, `fbCampaignInsights`, `tiktokAdvertiserInsights`, `tiktokCampaignInsights`, and the ratio fields of `profitMerReport`'s monthly rows). `profitMerReport` returns one row per day: add up the days, then divide.
+In a legacy report, don't read CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin or AOV from a row that covers more than one day: compute the rate from the totals in that row. That gives the right answer however the report computed its rate field. `profitMerReport` computes the ratios of a monthly row from the month's totals; for any other period, add up its daily rows, then divide.
 
 - Use the `v2*` reports. Their rates are already computed from totals (see `references/reports.md`, "Marketing reports (v2)").
 - Otherwise compute the rate yourself from the totals in the same row:
@@ -32,7 +32,7 @@ ROAS 1.0 means the platform credited sales equal to the spend. The product cost,
 
 **Break-even ROAS on the platform's numbers = 1 / (margin × net share)**
 
-- **margin** = `grossProfit / netRevenue`, each added up over the daily rows of `profitMerReport` for the same settled 30 days or more. Don't use a row's `grossMargin` for a period: it is one day's figure, as a percentage (40 means 40%).
+- **margin** = `grossProfit / netRevenue`, each added up over the rows of `profitMerReport` for the same settled 30 days or more. A daily row's `grossMargin` is that one day's figure, as a percentage (40 means 40%): don't use it for a period.
 - **net share** = how much of the value the platform reports is net sales. **Default to 1** (the value sent is net sales), which gives the lowest, most cautious break-even. Only if the merchant confirms the conversion value includes tax and shipping, use `netSales / totalSales` from `shopifyOrderAgg` for the same window. If you don't know, show both break-evens and say which assumption each makes.
 - **Missing product costs make the margin too high.** A product without a cost in Shopify counts as zero cost. If `costOfGoodsSold` is 0 or close to it, or the merchant says many products have no cost set, ask for their usual margin and use that. Always say which margin you used.
 
