@@ -54,6 +54,7 @@ query($input: ProfitMerInput!) {
     totalAdSpend googleAdsSpend metaAdsSpend
     newCustomers newCustomerPercentage
     mer cpa
+    adSpendComplete incompleteAdSources
   }
 }
 ```
@@ -134,11 +135,13 @@ Average Discount per Order = totalDiscounts / totalCount
 Discount as % of Gross = totalDiscounts / grossSales × 100
 ```
 
-| Metric | Value | Benchmark |
-|--------|-------|-----------|
-| Avg Discount per Order | $X | |
-| Discount % of Gross | X% | 5-15% typical |
-| Revenue Lift vs Pre-Promo | +X% | Need >X% to offset margin |
+| Metric | This promotion | Comparable period without a promotion |
+|--------|----------------|----------------------------------------|
+| Avg Discount per Order | $X | $X |
+| Discount % of Gross | X% | X% |
+| Revenue Lift vs Pre-Promo | +X% | — |
+
+Revenue lift needed to keep gross profit flat = discount ÷ (margin − discount), with both as shares of price (for example a 10% discount at a 40% margin needs about 33% more sales). Use the store's own margin and say which you used.
 
 ### Customer Quality Check
 
@@ -147,7 +150,7 @@ Discount as % of Gross = totalDiscounts / grossSales × 100
 | New Customer % | X% | X% |
 | AOV | $X | $X |
 
-Flag if promo attracts mostly low-value one-time buyers (high new customer % + low AOV) — these promotions erode long-term value.
+Point out if the promotion brought mostly new customers with a lower AOV. Whether they come back is a separate question: check their repeat orders after 60–90 days before calling them low-value.
 
 ### Daily Trend Through Promotion
 
@@ -159,22 +162,19 @@ Flag if promo attracts mostly low-value one-time buyers (high new customer % + l
 | ... | | | | | |
 | Day after end | X | $X | $X | $X | X% |
 
-Show the "hangover effect" — did sales drop below baseline after the promo ended? This indicates demand was pulled forward, not created.
+Show the "hangover effect": did sales drop below the baseline after the promotion ended? That can mean demand was pulled forward rather than created; say "can mean", since seasonality or other campaigns may also explain it.
 
-### Recommendations
+### What the Data Shows
 
-**Promo was profitable:**
-- "The promotion drove $X in incremental profit. Consider repeating with similar discount depth."
-- "New customer acquisition was strong at X% — good for long-term growth."
+State the findings, compared with a baseline period of the same length without a promotion, and let the merchant decide what to do next:
 
-**Promo was unprofitable:**
-- "Revenue increased X% but profit decreased X% — the discount was too deep."
-- "Consider shallower discounts (e.g., 10% vs 20%) or free gift/shipping instead of price cuts."
-- "AOV dropped $X — consider minimum order thresholds to protect AOV."
+- **Profit:** "Gross profit in the promotion period was $X, against $X in the baseline period" (after discounts and product cost; say if product costs are missing).
+- **Volume vs margin:** "Revenue rose X% while the average discount was X%; at your margin, sales needed to rise about X% to keep gross profit flat."
+- **Basket:** "AOV was $X during the promotion, against $X before."
+- **Customers:** "X% of promotion orders were from new customers, against X% normally."
+- **After the end:** "Daily sales in the week after were X% below / above the baseline."
 
-**Promo attracted low-quality customers:**
-- "X% were new customers but AOV was $X below average — these are likely deal seekers."
-- "Consider targeting promotions to existing customers (retention) rather than new acquisition."
+The baseline is a comparison, not proof of what would have happened without the promotion: seasonality, ads and stock changes also move sales. If the merchant asks what to try next, list the usual options (a shallower discount, a gift or free shipping, a minimum order value, targeting existing customers) with what each would need to be true, and ask what they know about their goal for the promotion.
 
 ## Common Follow-ups
 

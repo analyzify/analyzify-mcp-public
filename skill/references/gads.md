@@ -91,4 +91,4 @@ Queries use GAQL syntax in the `body.query` field. Key concepts:
 - Always pass `body` as a JSON variable
 - `cost_micros` needs conversion: divide by 1,000,000 to get the actual amount
 - Present ROAS as `conversions_value / (cost_micros / 1000000)`
-- If Google Ads is not connected (null in extMe), tell user to connect it in Analyzify dashboard
+- `googleAds` null in extMe means Google Ads is not connected, or its sync is failing or running: check `v2MarketingSourceStatuses` before telling the user to connect it in the Analyzify dashboard

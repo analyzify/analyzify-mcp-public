@@ -22,7 +22,11 @@ Start with campaign or channel attribution for overview. Drill into purchase att
 | `FIRST_TOUCH` | "How do people discover us?" | Credits the first interaction |
 | `LAST_TOUCH` | "What closes the sale?" | Credits the final interaction |
 | `LAST_NON_DIRECT` | Best default — "What marketing effort drove this?" | Credits last non-direct touchpoint |
-| `ALL` | "Show me the full picture" | Fractional credit across all touchpoints |
+| `LINEAR` | "Give every touch a share" | Equal credit across all touchpoints; adds up to the order value |
+| `U_SHAPED` | "Credit discovery and the close" | 40% first, 40% last, 20% split across the middle; adds up to the order value |
+| `ANY_CLICK` | "Which channels took part at all?" | Full order value to every touchpoint. Not additive: the total exceeds revenue, so never add these up or compare them with sales |
+
+There is no `ALL` model. To compare models, run the report once per model and show them side by side.
 
 **Analyzify vs Shopify attribution:** Analyzify tracks the full customer journey via UTM history (68%+ coverage). Shopify only tracks first and last touch natively. Always present Analyzify attribution as primary, Shopify as secondary/comparison.
 

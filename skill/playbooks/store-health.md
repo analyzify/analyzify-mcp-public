@@ -9,11 +9,11 @@
 This is the "catch-all" — when the user wants a general overview, run multiple queries in sequence and compose a comprehensive report.
 
 **Query sequence:**
-1. `profitMerReport` — profit, revenue, costs (totals for period)
+1. `profitMerReport` — profit, revenue, costs (one row per day: add up the days for the period's totals)
 2. `ga4Scorecards` — traffic + conversion metrics with period comparison
 3. `ga4Channels` — channel breakdown (top 5)
-4. `gadsCampaignsPerformance` — top campaigns (if Google Ads connected)
-5. `fbAccountInsights` — Meta performance (if Meta connected)
+4. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
+5. `v2MetaCampaigns` — Meta performance (if Meta connected)
 6. `shopifyCampaignAttributionReport` — top attribution sources
 
 Only query channels that are connected (check extMe response for null services).

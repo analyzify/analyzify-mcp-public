@@ -70,12 +70,9 @@ query($input: Ga4ReferralRevenueInput!) {
 ```graphql
 query($input: Ga4LandingPageInput!) {
   ga4LandingPages(input: $input) {
-    landingPages {
-      landingPage currencyCode
-      metricsActiveUsers metricsNewUsers metricsTotalUsers metricsSessions
-      metricsEcommPurchases metricsTotalRevenue metricsBounceRate
-    }
-    metricsTotalSessions metricsTotalRevenue metricsAverageBounceRate
+    landingPage currencyCode
+    metricsActiveUsers metricsNewUsers metricsTotalUsers metricsSessions
+    metricsEcommPurchases metricsTotalRevenue metricsBounceRate
   }
 }
 ```

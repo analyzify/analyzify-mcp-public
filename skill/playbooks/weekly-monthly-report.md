@@ -10,13 +10,13 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **Required queries (run in sequence):**
 
-1. `profitMerReport` — revenue, profit, costs, unit economics (totals)
-2. `profitMerReport` — same but with `groupByDate: true` for trend
+1. `profitMerReport` — revenue, profit, costs, unit economics (one row per day: add up the days, then compute ratios from the sums)
+2. The same daily rows give the trend
 3. `ga4Scorecards` — traffic + conversion with auto-comparison
 4. `ga4Channels` — channel breakdown (groupByDate: false, groupByFields: ["channel_name"])
-5. `gadsCampaignsPerformance` — top campaigns (if Google Ads connected)
-6. `fbCampaignInsights` — top Meta campaigns (if Meta connected)
-7. `tiktokCampaignInsights` — top TikTok campaigns (if TikTok connected)
+5. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
+6. `v2MetaCampaigns` — top Meta campaigns (if Meta connected)
+7. `v2TiktokCampaigns` — top TikTok campaigns (if TikTok connected)
 8. `ga4ProductPerformances` — top products (groupByDate: false, groupByFields: ["item_name"])
 9. `shopifyCampaignAttributionReport` — attribution summary
 
@@ -92,8 +92,10 @@ Present in this exact structure:
 | Campaign A | Google | $X | $X | X.Xx |
 | Campaign B | Meta | $X | $X | X.Xx |
 | Campaign C | Google | $X | $X | X.Xx |
-| Campaign D | TikTok | $X | $X | X.Xx |
+| Campaign D | TikTok | $X | — | — |
 | Campaign E | Meta | $X | $X | X.Xx |
+
+Revenue and ROAS here are the platform's own numbers (TikTok reports conversions but no value). A recent week isn't settled yet: say so instead of calling a campaign weak.
 
 #### Top 5 Products (by Revenue)
 

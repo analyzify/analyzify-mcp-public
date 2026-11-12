@@ -110,4 +110,4 @@ Each row contains: `clicks`, `impressions`, `ctr`, `position`
 - Dates must be `YYYY-MM-DD` format (no relative dates like "7daysAgo")
 - Use the store's timezone from extMe (`shopifyIanaTimezone`) when the user says "this week"
 - `rowLimit` caps results (default 1000, max 25000)
-- If GSC is not connected (null in extMe), tell user to connect it in Analyzify dashboard
+- `googleSearchConsole` null in extMe means Search Console is not connected, or its sync is failing or running: check `v2MarketingSourceStatuses` before telling the user to connect it in the Analyzify dashboard

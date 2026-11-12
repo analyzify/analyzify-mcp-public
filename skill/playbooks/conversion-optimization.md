@@ -37,7 +37,7 @@ query($input: Ga4ScorecardsInput!) {
 
 Calculate: `conversionRate = purchases / sessions × 100`
 
-Shopify average is ~1.5-2.5%. Above 3% is strong. Below 1% needs urgent attention.
+Compare it with the store's own previous period and the same period last year. Conversion rates vary widely by category, price point, device mix and traffic source, so don't grade the store against a generic "Shopify average".
 
 ### 2. Funnel Analysis
 
@@ -70,19 +70,15 @@ Then run `ga4Scorecards` or `ga4Channels` to understand conversion by device (if
 ```graphql
 query($input: Ga4LandingPageInput!) {
   ga4LandingPages(input: $input) {
-    landingPages {
-      landingPage currencyCode
-      metricsSessions metricsBounceRate
-      metricsEcommPurchases metricsTotalRevenue
-      metricsActiveUsers metricsNewUsers
-    }
-    metricsTotalSessions metricsAverageBounceRate
-    metricsTotalEcommPurchases metricsTotalRevenue
+    landingPage currencyCode
+    metricsSessions metricsBounceRate
+    metricsEcommPurchases metricsTotalRevenue
+    metricsActiveUsers metricsNewUsers
   }
 }
 ```
 
-With `groupByDate: false` for page ranking.
+With `groupByDate: false` for page ranking. The result is a flat list of pages; add up sessions and purchases yourself for totals, and compute conversion rate as purchases / sessions per page.
 
 ### 5. Conversion by Channel
 
@@ -120,17 +116,17 @@ Overall Conversion: 3.5%
 
 **Identify the biggest leak** — the step with the largest absolute drop. That's where to focus.
 
-### Funnel Benchmarks
+### Funnel Over Time
 
-| Step | Your Rate | Typical Shopify | Status |
-|------|-----------|----------------|--------|
-| Session → View Product | X% | 40-60% | |
-| View → Add to Cart | X% | 20-35% | |
-| Cart → Checkout | X% | 55-75% | |
-| Checkout → Purchase | X% | 40-60% | |
-| **Overall CVR** | **X%** | **1.5-3%** | |
+| Step | This period | Previous period | Same period last year |
+|------|-------------|-----------------|-----------------------|
+| Session → View Product | X% | X% | X% |
+| View → Add to Cart | X% | X% | X% |
+| Cart → Checkout | X% | X% | X% |
+| Checkout → Purchase | X% | X% | X% |
+| **Overall CVR** | **X%** | **X%** | **X%** |
 
-Mark each as good/needs attention/critical.
+Point out the step that changed most against the store's own history. A step that dropped suddenly (rather than slowly) often means something broke: a page, a payment method, or tracking.
 
 ### Device Comparison
 
@@ -195,5 +191,5 @@ Based on where the biggest funnel leak is:
 - "How does mobile compare?" → device breakdown + channel by device
 - "Which products have the worst conversion?" → `ga4ProductPerformances` sorted by views with low purchase rate
 - "Show me the trend" → run funnel with `groupByDate: true, dateArgs: [{groupBy: WEEK}]`
-- "What about cart abandonment emails?" → outside Analyzify scope, suggest Shopify/Klaviyo flows
+- "What about cart abandonment emails?" → if Klaviyo is connected, show the abandoned-cart flow's results with `v2KlaviyoFlows` (`references/klaviyo.md`); Analyzify can't change the flow itself
 - "Compare to last month" → run same queries with previous period dates

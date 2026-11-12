@@ -38,13 +38,14 @@ query($input: ProfitMerInput!) {
     mer grossMargin
     newCustomers newCustomerPercentage
     cpa cac
+    adSpendComplete incompleteAdSources
   }
 }
 ```
 
 Run twice with current year dates and last year dates.
 
-For monthly grouping, use `groupByFields: ["month"]`.
+For monthly figures, use `groupByFields: ["month"]`: one row per calendar month (`year` and `month`), with ratios from the month's totals. Without it rows are one per day: add them up for each period's totals, then compute ratios from the sums.
 
 ### 2. Traffic YoY
 
@@ -76,7 +77,7 @@ query($input: Ga4ChannelInput!) {
 
 ### 4. Monthly Trend (Full Year View)
 
-Run `profitMerReport` with `groupByFields: ["month"]` for the last 12 months:
+Run `profitMerReport` for the last 12 months with `groupByFields: ["month"]`: one row per calendar month, each labelled with its `year` and `month`:
 
 ```json
 {
