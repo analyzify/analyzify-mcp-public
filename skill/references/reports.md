@@ -46,7 +46,8 @@ Report API queries are pre-aggregated in ClickHouse — they're fast and don't h
 
 - **For Google Ads, Meta and TikTok, use the `v2*` reports** (section "Marketing Reports (v2)" below). They return a `summary` with rates already computed from totals, plus `meta` that says how fresh and complete the data is.
 - **Rates come from totals.** In the legacy ad reports, don't read a rate field (CTR, CPC, CPM, CPA, cost per conversion, conversion rate, frequency) from a row covering more than one day: compute it from the totals in the same row. When you combine rows, add up the totals first, then divide. For `profitMerReport`, see its section below.
-- **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Check `v2MarketingSourceStatuses` (below) before saying "you spent nothing" or "no orders".
+- **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Read the STATUS line for that source at the top of the result (Analyzify MCP 0.4.0 or later), or check `v2MarketingSourceStatuses` (below), before saying "you spent nothing" or "no orders".
+- **A result in parts is incomplete.** If it starts with `RESULT IN PARTS`, fetch the other parts with `fetch_more_results` before you total, rank or compare (`SKILL.md`, answer rules).
 - **A failed read is not zero.** If a query returns errors, say the data couldn't be read and why. Never present a failed read as 0.
 - **Say where a number came from:** stored report (synced daily) or live read, and up to which date.
 - **Before calling anything "losing money"** or suggesting cuts, follow `references/judging-performance.md`.

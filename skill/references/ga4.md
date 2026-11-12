@@ -113,4 +113,4 @@ Path: `properties/{propertyID}/dataStreams`
 - Always pass `body` as a JSON variable, not an inline string
 - Date formats: `YYYY-MM-DD`, `today`, `yesterday`, `NdaysAgo`
 - Check `statusCode` in response — 200 means success
-- `ga4` null in extMe means GA4 is not connected, or its sync is failing or running: check `v2MarketingSourceStatuses` before telling the user to connect it in the Analyzify dashboard
+- `ga4` null in extMe means GA4 is not connected, or its sync is failing or running: check whoami's source states (or `v2MarketingSourceStatuses`) before telling the user to connect it in the Analyzify dashboard

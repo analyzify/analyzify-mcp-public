@@ -2,7 +2,7 @@
 
 Klaviyo campaign, flow and attribution data synced into the Report API. Use `execute_report_graphql`.
 
-Before answering, check that Klaviyo is connected and current: run `v2MarketingSourceStatuses` (see `references/reports.md`) and look at the `klaviyo` entry. If it isn't connected, say so; never answer "Klaviyo made 0".
+Before answering, check that Klaviyo is connected and current: read the `klaviyo` STATUS line on the result or in whoami (Analyzify MCP 0.4.0 or later), or run `v2MarketingSourceStatuses` (see `references/reports.md`) and look at the `klaviyo` entry. If it isn't connected, say so; never answer "Klaviyo made 0".
 
 All queries take `{ "input": { "default": { "spaceId": "...", "startDate": "...", "endDate": "...", "groupByDate": false } } }`, with an optional `"comparison"` period. Campaigns and flows default to email only; add `"sendChannels": ["email", "sms"]` (or `"push-notification"`) next to `default` to include other channels.
 
