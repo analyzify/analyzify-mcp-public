@@ -45,7 +45,7 @@ At the very start of EVERY conversation, before responding to the user, run thes
    - what the API key may do, including whether customer-level data is available (the `pii` capability);
    - the connector version;
    - each live source (Google Analytics property, Google Ads account, Search Console site);
-   - every stored report source's state over the last 30 days: ok, syncing, sync failing or not connected, and the dates its data covers. If it says the sources' state could not be read, that is a failed read, not "not connected".
+   - every stored report source's state: ok, syncing, sync failing or not connected, and the dates its data covers. If it says the sources' state could not be read, that is a failed read, not "not connected".
 
 Store both for the session. extMe gives you:
 - **workspaceId**: the workspace/user ID (this IS the "space ID" if the user asks)
@@ -141,9 +141,9 @@ These keep the same question giving the same, correct answer in every chat:
   - **Days outside the stored span:** days before the first stored day have no data. Days after the newest stored day are either no activity or not synced yet, and the report cannot tell which. Never call either zero: read the later days live where a live read exists, or say they are not known yet.
   - **Live reads:** the line says whether the read worked.
   - **More to read:** a `MORE PAGES` or `MORE ROWS` line means the answer is not complete yet. Read the next page before you total or count. No such line is not proof the answer is complete: where a result has its own paging fields (`totalPages`/`currentPage`, `totalPage`, `hasMore`, `hasNextPage`), check them.
-  - **What STATUS lines leave out:** gaps inside the stored span and each source's time zone. For a total over a period, read `v2MarketingSourceStatuses` for the question's dates (`references/reports.md`).
+  - **What STATUS lines leave out:** gaps inside the stored span and each source's time zone. For a total over a period, check coverage for the question's dates: the `v2*` reports carry it in their own `meta`; otherwise read `v2MarketingSourceStatuses` (`references/reports.md`).
   - **Tell the user** what a line says ("Meta data stops on 27 Sep: the sync is failing") instead of presenting the numbers as complete.
-- **Empty is not zero.** If a report is empty or shows zero spend, go by its STATUS line or whoami, check `v2MarketingSourceStatuses` for the dates in question, and say what you found: not connected, sync failing since a date, data only up to a date, or connected with nothing to report.
+- **Empty is not zero.** If a report is empty or shows zero spend, go by its STATUS line or whoami, check coverage for the dates in question (the report's own `meta`, or `v2MarketingSourceStatuses`), and say what you found: not connected, sync failing since a date, data only up to a date, or connected with nothing to report.
 - **A failed read is not zero.** If a query returns errors, tell the user the data couldn't be read (in plain words, without error codes) and what they can do. Never present it as 0 orders or 0 sales.
 - **`profitMerReport` returns one row per day** (it ignores `groupByDate`), or one row per calendar month with `groupByFields: ["month"]`, whose ratios come from the month's totals. For any other period, add up the daily rows, then compute MER, margin, AOV and CPA from the sums. A row with `adSpendComplete: false` may be missing ad spend that has not synced yet: call its profit provisional, and check `v2MarketingSourceStatuses` covers the whole period (`playbooks/profit-and-revenue.md`).
 - **Dates are `YYYY-MM-DD`** in report queries. Shopify dates are in the store's time zone (`shopifyIanaTimezone`); GA4 and the ad platforms use their account's time zone (`timezone` in `v2MarketingSourceStatuses`); Klaviyo order data is dated in UTC; Search Console gives no time zone. Say which dates an answer covers.
