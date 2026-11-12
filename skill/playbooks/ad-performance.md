@@ -12,7 +12,7 @@
 
 **If a platform comes back empty:** check `v2MarketingSourceStatuses` before saying there was no spend (see `references/reports.md`).
 
-**Fallback to live proxy:** Only if report data isn't synced yet or user needs very recent (today's) data. Say the number is a live read and not settled.
+**Fallback to live proxy:** Only if report data isn't synced yet or user needs very recent (today's) data. Say the number is a live read and not settled. Exception: counts and complete lists of Google Ads items with spend always come from the live Shopping performance view (`references/gads.md`, "Products (items) over a period").
 
 ## Queries
 

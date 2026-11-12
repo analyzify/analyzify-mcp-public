@@ -303,7 +303,8 @@ Variables:
 }
 ```
 
-- Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`). Use `["item_id", "product_title"]` for one row per item; then leave out `campaignId` and `campaignName` (they would show one arbitrary campaign).
+- Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`), and `pageInfo.totalCount` counts those item × campaign rows, not items. Use `groupByFields: ["item_id", "product_title"]` (exactly these names) for one row per item; then leave out `campaignId` and `campaignName` (they would show one arbitrary campaign).
+- With that grouping, `pageInfo.totalCount` counts every item stored for the range, including items with no impressions or spend. An item whose title changed in the range can appear twice (once per title). For "how many products had spend", use the live count in `references/gads.md` ("Products (items) over a period").
 - An item is a variant, not a product. To answer "by product", follow the roll-up recipe in `playbooks/product-optimization.md`.
 - `limit` defaults to 20 and must be 1000 or less (a larger value quietly falls back to 20). Check `pageInfo.totalCount` before saying "these are all your products".
 - Also accepts `search`, `filters` and `presetFilter` (see the legacy product report below).
