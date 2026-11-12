@@ -92,18 +92,18 @@ Count of items with spend (path `customers/{accountID}/googleAds:search`):
 - If the answer has a `nextPageToken`, send it as `"pageToken"` in the same body for the next page, and add up the row counts of all pages.
 - Use `googleAds:search`, not `searchStream`: search answers one page at a time with a row count per page.
 
-Top items by spend (an item whose title changed during the period can come back as two rows: add rows with the same `product_item_id` together before you rank):
+Top items by spend (ranked on the item ID alone, so an item whose title changed during the period still counts once; get titles for the top IDs in a second call with `segments.product_title` and `WHERE segments.product_item_id IN (...)`):
 ```json
 {
   "body": {
-    "query": "SELECT segments.product_item_id, segments.product_title, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM shopping_performance_view WHERE segments.date BETWEEN '2026-10-01' AND '2026-10-31' AND metrics.cost_micros > 0 ORDER BY metrics.cost_micros DESC LIMIT 20"
+    "query": "SELECT segments.product_item_id, metrics.cost_micros, metrics.conversions, metrics.conversions_value FROM shopping_performance_view WHERE segments.date BETWEEN '2026-10-01' AND '2026-10-31' AND metrics.cost_micros > 0 ORDER BY metrics.cost_micros DESC LIMIT 20"
   }
 }
 ```
 
 When the user asks for every item and there are thousands: give the exact count and the top items, and say the full list is too long for a chat. Never ask the user to narrow the question because the answer is long.
 
-Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is settled up to its last sync; say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
+Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is complete up to its last sync (its last ~8 days are still not settled, as with any Google Ads read); say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
 
 ### List Accessible Customers
 ```graphql
