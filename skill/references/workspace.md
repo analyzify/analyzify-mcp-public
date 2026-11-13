@@ -31,7 +31,7 @@ Run extMe first (below), then the `whoami` tool (Analyzify MCP 0.4.0 or later): 
 
 - "What is my space ID?" → `workspaceId`
 - "What is my store?" → `shopName` + `shopUrl`
-- "What accounts are connected?" → whoami: each live source, and each stored source with its state (ok, syncing, sync failing, not connected) and the dates its data covers. Without whoami (an older connector): check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo` in extMe. Non-null means connected and enabled (as of the last status copy, up to 30 minutes old). Null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
+- "What accounts are connected?" → whoami: each live source, and each stored source with its state (see the STATUS states in SKILL.md: fresh, behind_by_design, behind, stale, failing, syncing, no_data, not_connected; older connectors say ok or sync_failing) and the dates its data covers. Without whoami (an older connector): check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo` in extMe. Non-null means connected and enabled (as of the last status copy, up to 30 minutes old). Null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
 - "What's my GA4 property?" → `ga4.propertyID` + `ga4.accountName`
 - "What timezone is my store in?" → `shopifyIanaTimezone`
 - "What can this API key do?" → whoami (or `capabilities` in extMe). Customer contact details and segment customers need the `pii` capability

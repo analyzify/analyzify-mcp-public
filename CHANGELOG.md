@@ -1,5 +1,13 @@
 # Changelog
 
+## Skill 0.1.4 (2026-11-13)
+
+- STATUS lines name each stored source's state in the connector's words from 0.4.4 (`fresh`, `behind_by_design`, `behind`, `stale`, `failing`, `syncing`, `no_data`, `not_connected`, `unknown`), with the newest stored day and how many days behind it is
+- A source whose data stops more than a week back is stale: say the day it stops and suggest checking the connection; never call it current or "syncing normally". 1 to 4 days behind is normal
+- Older connectors' words (`ok`, `sync_failing`) are still explained
+- Klaviyo's newest day is its last send: a quiet week is normal
+- Stored reports refresh about every second day (was "daily")
+
 ## Skill 0.1.2 (2026-11-12)
 
 - Per-item Google Ads questions (how many items had spend, every item) use the live Shopping performance view: one row per item, summed over the period, counted page by page; items are variants per country feed, and a product count uses distinct product IDs; top items with ORDER BY and LIMIT, rows of one item added together
