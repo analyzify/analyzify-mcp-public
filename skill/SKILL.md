@@ -140,7 +140,7 @@ These keep the same question giving the same, correct answer in every chat:
   - **Stored reports:** there is one line per source the report reads (a blend such as the profit report reads every ad source and Shopify). Each line gives the source's state, the newest stored day, how many days behind it is, and the last sync attempt (an attempt, not proof of a successful sync). The states (Analyzify MCP 0.4.4 or later):
     - `fresh`: up to date. `behind_by_design`: 1 to 4 days behind, which is normal (stored reports refresh about every second day); not a problem.
     - `behind`: a few days past the normal lag, up to 7, while syncs still run: either nothing new to report (no spend or activity) or the sync is not writing new days.
-    - `stale`: more than 7 days behind, or the sync stopped or is stuck: either no spend or activity for that long, or a sync problem. Tell the user the day the data stops and suggest checking the connection in Analyzify.
+    - `stale`: more than 7 days behind, or the sync stopped or is stuck: either no spend or activity for that long, or a sync problem, and Analyzify cannot tell which. Tell the user the day the data stops and both causes; if there was activity after that day, suggest checking the connection in Analyzify.
     - Klaviyo has rows only on days something was sent, so a quiet week is normal while its syncs run.
     - `failing`: the sync failed and stopped until the account is reconnected in Analyzify; when the line says the data is still current, one account failed and another still syncs. Also `syncing`, `no_data` (nothing stored yet), `not_connected` and `unknown`.
     - Never call a `stale`, `behind` or `failing` source healthy, current or "syncing normally": name the day its data stops.
