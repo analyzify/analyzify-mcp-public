@@ -60,6 +60,7 @@ Calculate it, don't assume 1.0:
 - **margin** = `grossProfit / netRevenue`, each added up over the daily rows of `profitMerReport` for the same settled 30 days or more. A row's `grossMargin` is one day's figure, as a percentage; don't use it for a period.
 - **net share** defaults to 1. Only if the merchant confirms the value sent to ad platforms includes tax and shipping, use `netSales / totalSales` from `shopifyOrderAgg` for the same window; if unsure, show both.
 - **break-even ROAS = 1 / (margin × net share)**. Example: margin 40% → 2.5; with net share 80% → 1 / 0.32 ≈ 3.1.
+- Write both factors in the answer and say which net share you used, even when it is 1. Never shorten the formula to 1 / margin.
 - If product costs are missing in Shopify (`costOfGoodsSold` is 0 or very low), the margin is too high. Ask for the merchant's own margin and say which you used.
 
 ### What to Say About Each Campaign

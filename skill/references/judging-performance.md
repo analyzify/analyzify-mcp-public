@@ -38,6 +38,10 @@ ROAS 1.0 means the platform credited sales equal to the spend. The product cost,
 
 Example: margin 40% gives break-even ROAS = 1 / 0.40 = 2.5. If the value sent includes tax and shipping and net sales are 80% of it, break-even = 1 / (0.40 × 0.80) ≈ 3.1.
 
+**Write both factors every time.** Give the formula as 1 / (margin × net share), never as 1 / margin, and say which net share you used, even when it is 1. A break-even without the net share runs low whenever the value sent includes tax or shipping. Worked example, margin not known yet:
+
+> Break-even ROAS = 1 ÷ (margin × net share). Net share is the part of the conversion value Google reports that is net sales: 1 if the value sent is net sales, less if it includes tax and shipping. At a 40% margin and a net share of 1, break-even is 1 ÷ (0.40 × 1) = 2.5; if net sales are 80% of the value sent, it is 1 ÷ (0.40 × 0.80) ≈ 3.1. Tell me your margin, and whether the value sent includes tax and shipping, and I'll check each campaign against it.
+
 Product verdicts use the account margin unless the merchant gives a product's own margin; say so.
 
 ## 4. Before any "below break-even" finding
