@@ -142,7 +142,7 @@ These keep the same question giving the same, correct answer in every chat:
     - `behind`: a few days past the normal lag, up to 7, while syncs still run: either nothing new to report (no spend or activity) or the sync is not writing new days.
     - `stale`: more than 7 days behind, or the sync stopped or is stuck: either no spend or activity for that long, or a sync problem. Tell the user the day the data stops and suggest checking the connection in Analyzify.
     - Klaviyo has rows only on days something was sent, so a quiet week is normal while its syncs run.
-    - `failing`: the sync failed and stopped until the account is reconnected in Analyzify. Also `syncing`, `no_data` (nothing stored yet), `not_connected` and `unknown`.
+    - `failing`: the sync failed and stopped until the account is reconnected in Analyzify; when the line says the data is still current, one account failed and another still syncs. Also `syncing`, `no_data` (nothing stored yet), `not_connected` and `unknown`.
     - Never call a `stale`, `behind` or `failing` source healthy, current or "syncing normally": name the day its data stops.
     - Older connectors write `ok` (with the stored span) and `sync_failing` instead: read the dates the same way.
   - **Days outside the stored span:** days before the first stored day have no data. Days after the newest stored day are either no activity or not synced yet, and the report cannot tell which. Never call either zero: read the later days live where a live read exists, or say they are not known yet.
