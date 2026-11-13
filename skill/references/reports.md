@@ -49,7 +49,7 @@ Report API queries are pre-aggregated in ClickHouse — they're fast and don't h
 - **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Read the STATUS line for that source at the top of the result (Analyzify MCP 0.4.0 or later), or check `v2MarketingSourceStatuses` (below), before saying "you spent nothing" or "no orders".
 - **A result in parts is incomplete.** If it starts with `RESULT IN PARTS`, fetch the other parts with `fetch_more_results` before you total, rank or compare (`SKILL.md`, answer rules).
 - **A failed read is not zero.** If a query returns errors, say the data couldn't be read and why. Never present a failed read as 0.
-- **Say where a number came from:** stored report (synced daily) or live read, and up to which date.
+- **Say where a number came from:** stored report (refreshed about every second day) or live read, and up to which date.
 - **Before calling anything "losing money"** or suggesting cuts, follow `references/judging-performance.md`.
 
 ### v2MarketingSourceStatuses — Is each source connected and current?
@@ -75,7 +75,7 @@ Variables: `{ "input": { "default": { "spaceId": "...", "startDate": "2024-01-01
 
 Sources: `ga4`, `gads`, `meta`, `tiktok`, `shopify`, `sc`, `klaviyo`. `freshness.status` is usually `disconnected`, `syncing`, `failed` or `enabled` (also possible: `created`, `archived`).
 
-**Use when:** a report comes back empty or low, before any "you spent nothing" or "no orders" answer, and before judging ad performance. Tell the user what you found: "Meta isn't connected", "Meta's sync has been failing since 30 Sep", or "Meta is connected and current, and there was no spend".
+**Use when:** a report comes back empty or low, before any "you spent nothing" or "no orders" answer, and before judging ad performance. Tell the user what you found: "Meta isn't connected", "Meta's sync has been failing since 30 Sep", "Meta's data stops on 30 Sep (44 days ago): either no spend since then or a sync problem, so check the Meta connection", or "Meta is connected and current, and there was no spend".
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.3
+version: 0.1.4
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -136,20 +136,27 @@ Match the user's question to the right playbook. Each playbook has exact queries
 These keep the same question giving the same, correct answer in every chat:
 
 - **Rates come from totals.** For Google Ads, Meta and TikTok use the `v2*` reports, which compute CTR, CPC, CPA and ROAS from totals. In legacy reports, never read a rate (CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin, AOV) from a row covering more than one day: compute it from the totals in that row. When combining rows, add the totals first, then divide.
-- **Read the STATUS lines before you trust a number.** A result can start with lines such as `STATUS meta (stored report, checked in the last 10 minutes): sync_failing; …` or `STATUS Google Ads (live read): ok.`
-  - **Stored reports:** there is one line per source the report reads (a blend such as the profit report reads every ad source and Shopify). Each line gives the source's state (ok, syncing, sync_failing, not_connected or unknown), the span of stored data and the last sync attempt (an attempt, not proof of a successful sync).
+- **Read the STATUS lines before you trust a number.** A result can start with lines such as `STATUS meta (stored report, checked in the last 10 minutes): stale: no data after 2026-09-30, 44 days behind, …` or `STATUS Google Ads (live read): ok.`
+  - **Stored reports:** there is one line per source the report reads (a blend such as the profit report reads every ad source and Shopify). Each line gives the source's state, the newest stored day, how many days behind it is, and the last sync attempt (an attempt, not proof of a successful sync). The states (Analyzify MCP 0.4.4 or later):
+    - `fresh`: up to date. `behind_by_design`: 1 to 4 days behind, which is normal (stored reports refresh about every second day); not a problem.
+    - `behind`: a few days past the normal lag, up to 7, while syncs still run: either nothing new to report (no spend or activity) or the sync is not writing new days.
+    - `stale`: more than 7 days behind, or the sync stopped or is stuck: either no spend or activity for that long, or a sync problem. Tell the user the day the data stops and suggest checking the connection in Analyzify.
+    - Klaviyo has rows only on days something was sent, so a quiet week is normal while its syncs run.
+    - `failing`: the sync failed and stopped until the account is reconnected in Analyzify. Also `syncing`, `no_data` (nothing stored yet), `not_connected` and `unknown`.
+    - Never call a `stale`, `behind` or `failing` source healthy, current or "syncing normally": name the day its data stops.
+    - Older connectors write `ok` (with the stored span) and `sync_failing` instead: read the dates the same way.
   - **Days outside the stored span:** days before the first stored day have no data. Days after the newest stored day are either no activity or not synced yet, and the report cannot tell which. Never call either zero: read the later days live where a live read exists, or say they are not known yet.
   - **Live reads:** the line says whether the read worked.
   - **More to read:** a `MORE PAGES` or `MORE ROWS` line means the answer is not complete yet. Read the next page before you total or count. No such line is not proof the answer is complete: where a result has its own paging fields (`totalPages`/`currentPage`, `totalPage`, `hasMore`, `hasNextPage`), check them.
   - **What STATUS lines leave out:** gaps inside the stored span and each source's time zone. For a total over a period, check coverage for the question's dates: the `v2*` reports carry it in their own `meta`; otherwise read `v2MarketingSourceStatuses` (`references/reports.md`).
-  - **Tell the user** what a line says ("Meta data stops on 27 Sep: the sync is failing") instead of presenting the numbers as complete.
-- **Empty is not zero.** If a report is empty or shows zero spend, go by its STATUS line or whoami, check coverage for the dates in question (the report's own `meta`, or `v2MarketingSourceStatuses`), and say what you found: not connected, sync failing since a date, data only up to a date, or connected with nothing to report.
+  - **Tell the user** what a line says ("Meta data stops on 30 Sep, 44 days ago: check the Meta connection in Analyzify") instead of presenting the numbers as complete.
+- **Empty is not zero.** If a report is empty or shows zero spend, go by its STATUS line or whoami, check coverage for the dates in question (the report's own `meta`, or `v2MarketingSourceStatuses`), and say what you found: not connected, failing, data only up to a date (stale or behind: name the day), or current with nothing to report.
 - **A failed read is not zero.** If a query returns errors, tell the user the data couldn't be read (in plain words, without error codes) and what they can do. Never present it as 0 orders or 0 sales.
 - **`profitMerReport` returns one row per day** (it ignores `groupByDate`), or one row per calendar month with `groupByFields: ["month"]`, whose ratios come from the month's totals. For any other period, add up the daily rows, then compute MER, margin, AOV and CPA from the sums. A row with `adSpendComplete: false` may be missing ad spend that has not synced yet: call its profit provisional, and check `v2MarketingSourceStatuses` covers the whole period (`playbooks/profit-and-revenue.md`).
 - **Dates are `YYYY-MM-DD`** in report queries. Shopify dates are in the store's time zone (`shopifyIanaTimezone`); GA4 and the ad platforms use their account's time zone (`timezone` in `v2MarketingSourceStatuses`); Klaviyo order data is dated in UTC; Search Console gives no time zone. Say which dates an answer covers.
 - **Hidden is not missing.** In live Shopify reads, customer e-mails, phone numbers, first and last names and addresses come back as `[redacted: …]` (e-mails inside text as `[redacted email]`) unless the API key has the `pii` capability. Say they are hidden for this key; never say the customer has none.
 - **Read only.** You cannot create, change, delete or sync anything in the store, its reports or its ad accounts. If asked, say so and point the user to the Analyzify app.
-- **Say where a number came from:** the stored report (synced daily, up to which date) or a live read, and the date range.
+- **Say where a number came from:** the stored report (refreshed about every second day, up to which date) or a live read, and the date range.
 - **Recent days aren't settled.** Ad platforms keep adding conversions after the click: Google Ads and TikTok for about 8 days, Meta for up to 28. Say so when the range includes those days (`references/judging-performance.md`).
 - **A result in parts: fetch the other parts.** A result whose first line says `RESULT IN PARTS: part 1 of N, cursor …` is incomplete.
   - Call `fetch_more_results` once per part, with that cursor and the part number (2, 3, … N), before you total, rank, compare or say "top", "all" or "none". Never answer from part 1 alone, and never change the dates or the scope the user asked for to avoid the parts.
