@@ -136,7 +136,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 These keep the same question giving the same, correct answer in every chat:
 
 - **Rates come from totals.** For Google Ads, Meta and TikTok use the `v2*` reports, which compute CTR, CPC, CPA and ROAS from totals. In legacy reports, never read a rate (CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, margin, AOV) from a row covering more than one day: compute it from the totals in that row. When combining rows, add the totals first, then divide.
-- **Read the STATUS lines before you trust a number.** A result can start with lines such as `STATUS meta (stored report, checked in the last 10 minutes): stale: no data after 2026-09-30, 44 days behind, …` or `STATUS Google Ads (live read): ok.`
+- **Read the STATUS lines before you trust a number.** A result can start with lines such as `STATUS meta (stored report, checked in the last 10 minutes): stale: connected, but no data after 2026-09-30, 44 days behind, …` or `STATUS Google Ads (live read): ok.`
   - **Stored reports:** there is one line per source the report reads (a blend such as the profit report reads every ad source and Shopify). Each line gives the source's state, the newest stored day, how many days behind it is, and the last sync attempt (an attempt, not proof of a successful sync). The states (Analyzify MCP 0.4.4 or later):
     - `fresh`: up to date. `behind_by_design`: 1 to 4 days behind, which is normal (stored reports refresh about every second day); not a problem.
     - `behind`: a few days past the normal lag, up to 7, while syncs still run: either nothing new to report (no spend or activity) or the sync is not writing new days.
