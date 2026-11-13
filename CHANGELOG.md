@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.5 (2026-11-13)
+
+- Google Ads counts over several pages: read every page, and give the total from the connector's `ALL PAGES READ` line (Analyzify MCP 0.4.5 or later), never your own sum; with an older connector, check the sum against 10,000 rows on every page but the last
+- Break-even ROAS: always written as 1 / (margin × net share) with the net share named, even when it is 1, never shortened to 1 / margin; a worked example for when the margin is not known yet
+
 ## Skill 0.1.4 (2026-11-13)
 
 - STATUS lines name each stored source's state in the connector's words from 0.4.4 (`fresh`, `behind_by_design`, `behind`, `stale`, `failing`, `syncing`, `no_data`, `not_connected`, `unknown`), with the newest stored day and how many days behind it is

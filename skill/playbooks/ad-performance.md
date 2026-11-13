@@ -113,7 +113,7 @@ Sort by ROAS descending, show top 10. Always show spend next to ROAS: a high ROA
 Follow `references/judging-performance.md`. In short:
 
 - Judge settled days only (the window ends 8 days before today), over two periods of 30 days.
-- Compare ROAS with the store's break-even ROAS = 1 / (margin × net share), never with 1.0.
+- Compare ROAS with the store's break-even ROAS = 1 / (margin × net share), never with 1.0. Write both factors in the answer and say which net share you used, even when it is 1; never shorten it to 1 / margin (worked example in `references/judging-performance.md`, section 3).
 - Check tracking first; a broken tag makes every campaign look like a loser.
 - Ask for enough volume (30+ conversions, or a clear shortfall against the conversions expected at break-even).
 - State the facts and what they don't mean. Don't say pause, cut or scale.
