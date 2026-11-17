@@ -818,6 +818,7 @@ query($input: ProfitMerInput!) {
     newCustomers newCustomerPercentage totalCustomers
     cpa ncac cac cvr adClicks
     adSpendComplete incompleteAdSources incompleteAdSpendDays
+    currencyMismatch currencyMismatchAdSources
   }
 }
 ```
