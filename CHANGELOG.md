@@ -4,7 +4,7 @@
 
 - Google Ads conversions are not orders: purchases come from a live read split by `segments.conversion_action_category`; otherwise the count mixes calls, leads and other actions
 - Units (micros, fractions vs percent) and one definition per metric (net revenue, orders, ROAS, MER, sales), each answer naming its definition, source, dates, time zone and currency
-- Shopify's own analytics changes (sessions and bot filtering 21–23 Sep 2026, Performance by marketing channel in Sep, channel and medium values from 18 Oct, three retired attribution reports) are not tracking failures
+- Shopify's own analytics changes (sessions and bot filtering 21–23 Sep 2026, Performance by marketing channel in Sep, channel and medium values from 18 Oct, three deprecated attribution reports) are not tracking failures in Shopify's own numbers
 
 ## Skill 0.1.6 (2026-11-18)
 
