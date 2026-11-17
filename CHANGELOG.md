@@ -1,5 +1,11 @@
 # Changelog
 
+## Skill 0.1.7 (2026-11-18)
+
+- Google Ads conversions are not orders: purchases come from a live read split by `segments.conversion_action_category`; otherwise the count mixes calls, leads and other actions
+- Units (micros, fractions vs percent) and one definition per metric (net revenue, orders, ROAS, MER, sales), each answer naming its definition, source, dates, time zone and currency
+- Shopify's own analytics changes (sessions and bot filtering 21–23 Sep 2026, Performance by marketing channel in Sep, channel and medium values from 18 Oct, three retired attribution reports) are not tracking failures
+
 ## Skill 0.1.6 (2026-11-18)
 
 - Profit answers: a `profitMerReport` row with `currencyMismatch: true` mixes currencies in `totalAdSpend`, `netProfit`, `mer`, `cpa`, `ncac` and `cac`; name the sources in `currencyMismatchAdSources`, give revenue and each source's spend in its own currency, and never add such rows into a total (stored reports since 17 Nov; Analyzify MCP 0.4.6 for the fields)
