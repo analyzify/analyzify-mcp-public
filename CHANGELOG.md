@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.6 (2026-11-18)
+
+- Profit answers: a `profitMerReport` row with `currencyMismatch: true` mixes currencies in `totalAdSpend`, `netProfit`, `mer`, `cpa`, `ncac` and `cac`; name the sources in `currencyMismatchAdSources`, give revenue and each source's spend in its own currency, and never add such rows into a total (stored reports since 17 Nov; Analyzify MCP 0.4.6 for the fields)
+- STATUS lines: the last successful sync, not the last attempt; `failing` also covers a source Analyzify keeps retrying while nothing newer is stored (Analyzify MCP 0.4.6 or later)
+
 ## Skill 0.1.5 (2026-11-13)
 
 - Google Ads counts over several pages: read every page, and give the total from the connector's `ALL PAGES READ` line (Analyzify MCP 0.4.5 or later), never your own sum; with an older connector, check the sum against 10,000 rows on every page but the last
