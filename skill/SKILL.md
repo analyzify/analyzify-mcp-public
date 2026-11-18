@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.8
+version: 0.1.9
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -64,13 +64,15 @@ Never ask the user for these IDs.
 
 ## Channels compared: `channel_breakdown` first
 
-For "how are my channels doing", "which channel works", "ROAS by channel", "spend by channel" or "compare Google, Meta and TikTok", call the **`channel_breakdown`** tool (Analyzify MCP 0.4.8 or later) before anything else. Give it `start_date` and `end_date` (YYYY-MM-DD, the store's own dates), or neither for the last 30 full days. In one call it returns Google Ads, Meta and TikTok (spend, the platform's own conversions and conversion value, ROAS, cost per conversion), Shopify's orders and net sales as the reference, and the blended MER and cost per Shopify order when every currency matches the shop's. Each channel comes with its state and the date its data reaches.
+For "how are my channels doing", "which channel works", "ROAS by channel", "spend by channel" or "compare Google, Meta and TikTok", call the **`channel_breakdown`** tool (Analyzify MCP 0.4.8 or later) before anything else. Give it `start_date` and `end_date` (YYYY-MM-DD, the store's own dates), or neither for the last 30 full days. In one call it returns Google Ads, Meta and TikTok (spend, the platform's own conversions and conversion value, ROAS, cost per conversion), Shopify's orders and net sales as the reference, and the blended MER and cost per Shopify order. From Analyzify MCP 0.4.9 the blended line is the profit report's (`profitMerReport`), so it matches every profit answer. Each channel comes with its state and the date its data reaches.
+
+**MER, profit, margin and cost per order on their own go to the profit report** (`playbooks/profit-and-revenue.md`), not to `channel_breakdown`: one computation for each number. `channel_breakdown` is for comparing channels.
 
 Present its lines as they are written:
 - **Google Ads conversions are never purchases or orders.** They count every primary conversion action (purchases, but also sign-ups, add-to-carts or calls if the account counts them). Use "conversions" for them, and never set them beside Shopify's orders as if they were the same thing.
 - Meta purchases and TikTok conversions are as each platform reports them, with its own attribution setting. The platforms overlap, so their conversions do not add up to Shopify's orders.
 - "could not be read" is a failed read and "no data" is not zero: never show either as 0. A channel whose data stops before the range ends is lagging, not weak: say up to which date it has data.
-- When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends, compute a MER yourself or estimate a converted figure (no rough or converted MER range). When it says the figures may be bounds (a channel has no stored data for the last days), say so with the figure.
+- When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends, compute a MER yourself or estimate a converted figure (no rough or converted MER range). When it says days are left out (their ad spend is not synced yet), say so with the figure. Never compute a MER from the channel rows.
 
 For a channel's campaigns, products or daily rows, use the playbooks below. With an older connector (no `channel_breakdown` tool), follow `playbooks/ad-performance.md`.
 

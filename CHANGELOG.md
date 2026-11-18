@@ -1,5 +1,9 @@
 # Changelog
 
+## Skill 0.1.9 (2026-11-18)
+
+- MER, profit, margin and cost per order go to the profit report (`profitMerReport`), one computation for every answer; `channel_breakdown` is for comparing channels, and from Analyzify MCP 0.4.9 its blended line is the profit report's figure
+
 ## Skill 0.1.8 (2026-11-18)
 
 - Channels compared: "how are my channels doing", ROAS or spend by channel go to the `channel_breakdown` tool first (Analyzify MCP 0.4.8 or later): Google Ads, Meta and TikTok against Shopify's orders and net sales in one call, with each channel's state and data date, and a blended MER only when every currency matches the shop's
