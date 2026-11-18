@@ -70,7 +70,7 @@ For "how are my channels doing", "which channel works", "ROAS by channel", "spen
 
 Present its lines as they are written:
 - **Google Ads conversions are never purchases or orders.** They count every primary conversion action (purchases, but also sign-ups, add-to-carts or calls if the account counts them). Use "conversions" for them, and never set them beside Shopify's orders as if they were the same thing.
-- Meta purchases and TikTok conversions are as each platform reports them, with its own attribution setting. The platforms count with their own attribution, and they overlap, so never add them up or compare their sum with Shopify's orders.
+- Meta purchases and TikTok conversions are as each platform reports them, with its own attribution setting. Each platform counts with its own attribution, and the platforms' conversions overlap, so never add them together, compare their total with Shopify's orders, or say they exceed or fall short of Shopify's orders.
 - "could not be read" is a failed read and "no data" is not zero: never show either as 0. A channel whose data stops before the range ends is lagging, not weak: say up to which date it has data.
 - When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends, compute a MER yourself or estimate a converted figure (no rough or converted MER range). When it says days are left out (their ad spend is not synced yet), say so with the figure. Never compute a MER from the channel rows.
 
