@@ -70,7 +70,7 @@ Present its lines as they are written:
 - **Google Ads conversions are never purchases or orders.** They count every primary conversion action (purchases, but also sign-ups, add-to-carts or calls if the account counts them). Use "conversions" for them, and never set them beside Shopify's orders as if they were the same thing.
 - Meta purchases and TikTok conversions are as each platform reports them, with its own attribution setting. The platforms overlap, so their conversions do not add up to Shopify's orders.
 - "could not be read" is a failed read and "no data" is not zero: never show either as 0. A channel whose data stops before the range ends is lagging, not weak: say up to which date it has data.
-- When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends or compute a MER yourself.
+- When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends or compute a MER yourself. When it says the figures are bounds (a channel's data stops before the range ends), say so with the figure.
 
 For a channel's campaigns, products or daily rows, use the playbooks below. With an older connector (no `channel_breakdown` tool), follow `playbooks/ad-performance.md`.
 

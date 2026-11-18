@@ -10,7 +10,7 @@
 
 **Primary:** the `v2*` Report API queries: `v2GadsCustomerMetrics`, `v2GadsCampaigns`, `v2MetaCampaigns`, `v2MetaAccountMetrics`, `v2TiktokCampaigns`, `v2TiktokAdvertiserMetrics`. Their `summary` and rows already compute CTR, CPC, CPA and ROAS from totals. Don't read rates from multi-day rows of the legacy reports (`gadsCampaignsPerformance`, `fbCampaignInsights`, `tiktokCampaignInsights`): those are added up across days.
 
-**For cross-platform totals:** add up spend across platforms, but **don't add up the platforms' conversion value or compute a "blended ROAS"**: each platform claims the same orders, so the sum overstates sales. For an overall figure use MER = Shopify net revenue / total ad spend from `profitMerReport` (computed from its totals).
+**For cross-platform totals:** add up spend across platforms only when every platform's `meta.currencyCode` is the same as the shop's (otherwise give each platform's spend in its own currency and say a total needs converting first), but **don't add up the platforms' conversion value or compute a "blended ROAS"**: each platform claims the same orders, so the sum overstates sales. For an overall figure use MER = Shopify net revenue / total ad spend from `profitMerReport` (computed from its totals).
 
 **If a platform comes back empty:** check `v2MarketingSourceStatuses` before saying there was no spend (see `references/reports.md`).
 
