@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.10 (2026-11-18)
+
+- "Is my data OK", "is X connected", "why is X missing" and "when did X last sync" go to the `source_status` tool first (Analyzify MCP 0.4.10 or later): every stored source's state, the day its data reaches, the last successful sync, why it fails and the account's currency next to the shop's, in one call
+- A lag within the normal 1 to 4 days is not a failure; "no data", "never synced" and "not connected" are never zero
+
 ## Skill 0.1.9 (2026-11-18)
 
 - MER, profit, margin and cost per order go to the profit report (`profitMerReport`), one computation for every answer; `channel_breakdown` is for comparing channels, and from Analyzify MCP 0.4.9 its blended line is the profit report's figure

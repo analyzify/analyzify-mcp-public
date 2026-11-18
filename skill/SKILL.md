@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.9
+version: 0.1.10
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -11,12 +11,14 @@ description: >
   Meta and TikTok ad results, Klaviyo email and SMS campaigns and flows,
   access Shopify store data via Admin API, list products, collections, orders,
   query historical analytics reports, campaign attribution, traffic trends,
-  check connected accounts, view API key capabilities,
+  check connected accounts, check whether data is connected and up to date,
+  view API key capabilities,
   or any Analyzify-related task.
   Example questions: "what is my store", "show my GA4 traffic",
   "top search queries this week", "how are my Google Ads performing",
   "list my products", "show campaign attribution",
   "how are my channels doing", "which channel works best",
+  "is my data OK", "why is my Meta data missing",
   "compare organic vs paid traffic", "daily sessions this month".
 ---
 
@@ -75,6 +77,18 @@ Present its lines as they are written:
 - When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends, compute a MER yourself or estimate a converted figure (no rough or converted MER range). When it says days are left out (their ad spend is not synced yet), say so with the figure. Never compute a MER from the channel rows.
 
 For a channel's campaigns, products or daily rows, use the playbooks below. With an older connector (no `channel_breakdown` tool), follow `playbooks/ad-performance.md`.
+
+## Is my data OK: `source_status` first
+
+For "is my data OK", "is my data up to date", "is Meta connected", "why is my TikTok data missing", "why don't the numbers match" or "when did Klaviyo last sync", call the **`source_status`** tool (Analyzify MCP 0.4.10 or later, no arguments) before anything else. In one call it gives every stored source (Shopify, Google Ads, Meta, TikTok, Klaviyo, Google Analytics, Search Console): its state, the day its data reaches, the last successful sync, why it fails in plain words, and the account's currency next to the shop's.
+
+Present its lines as they are written:
+- **A lag the tool calls normal is not a failure** (2 to 4 days, by source: Analyzify refreshes about every second day). Never call such a source failing, broken or out of date.
+- "failing", "stale" and "behind" are not up to date: name the day the data stops, and pass on why and what to do as the tool says (reconnect only when it says so). A source "failing for one account, its data is still current" is current: say a sync failed for one account, not that the data stops.
+- "no data (not zero)", "never synced" and "not connected" are never zero: never give a number for such a source.
+- An account whose currency differs from the shop's: its amounts are in its own currency. Say so, and never add them to the shop's amounts or convert them yourself.
+
+It covers Analyzify's stored reports; whoami says whether the live reads (Shopify, Google Ads, Google Analytics, Search Console) are connected. The raw reads stay for detail (`v2MarketingSourceStatuses`, `references/reports.md`). With an older connector (no `source_status` tool), use whoami's source states.
 
 ## Playbooks (Business Questions)
 
@@ -206,6 +220,8 @@ These keep the same question giving the same, correct answer in every chat:
 ## Quick Reference
 
 **Which store, what the key may do, every source's state:** call the `whoami` tool.
+
+**Is my data connected, fresh and complete:** call the `source_status` tool.
 
 **Get workspace info (the IDs for queries):**
 ```graphql
