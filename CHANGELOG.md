@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.8 (2026-11-18)
+
+- Channels compared: "how are my channels doing", ROAS or spend by channel go to the `channel_breakdown` tool first (Analyzify MCP 0.4.8 or later): Google Ads, Meta and TikTok against Shopify's orders and net sales in one call, with each channel's state and data date, and a blended MER only when every currency matches the shop's
+- Google Ads conversions in its answer are never called purchases or orders; a failed or missing channel is never 0; a lagging channel is not a weak one
+
 ## Skill 0.1.7 (2026-11-18)
 
 - Google Ads conversions are not orders: purchases come from a live read split by `segments.conversion_action_category`; otherwise the count mixes calls, leads and other actions

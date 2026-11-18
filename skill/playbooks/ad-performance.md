@@ -6,6 +6,8 @@
 
 ## Strategy
 
+**Channels compared** ("how are my channels doing", ROAS or spend by channel): call the `channel_breakdown` tool first (Analyzify MCP 0.4.8 or later; see SKILL.md, "Channels compared"). It already returns each channel against Shopify, the currency check and each channel's state. The queries below are for one channel's detail, and for an older connector without that tool.
+
 **Primary:** the `v2*` Report API queries: `v2GadsCustomerMetrics`, `v2GadsCampaigns`, `v2MetaCampaigns`, `v2MetaAccountMetrics`, `v2TiktokCampaigns`, `v2TiktokAdvertiserMetrics`. Their `summary` and rows already compute CTR, CPC, CPA and ROAS from totals. Don't read rates from multi-day rows of the legacy reports (`gadsCampaignsPerformance`, `fbCampaignInsights`, `tiktokCampaignInsights`): those are added up across days.
 
 **For cross-platform totals:** add up spend across platforms, but **don't add up the platforms' conversion value or compute a "blended ROAS"**: each platform claims the same orders, so the sum overstates sales. For an overall figure use MER = Shopify net revenue / total ad spend from `profitMerReport` (computed from its totals).

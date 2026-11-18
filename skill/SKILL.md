@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.7
+version: 0.1.8
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -16,6 +16,7 @@ description: >
   Example questions: "what is my store", "show my GA4 traffic",
   "top search queries this week", "how are my Google Ads performing",
   "list my products", "show campaign attribution",
+  "how are my channels doing", "which channel works best",
   "compare organic vs paid traffic", "daily sessions this month".
 ---
 
@@ -61,6 +62,18 @@ Never ask the user for these IDs.
 
 **Connected or not:** go by whoami's source states. A null service in extMe means not connected, or its sync is failing or running. A source that is not connected can still have older stored data ("historical data only"): say so instead of "not set up".
 
+## Channels compared: `channel_breakdown` first
+
+For "how are my channels doing", "which channel works", "ROAS by channel", "spend by channel" or "compare Google, Meta and TikTok", call the **`channel_breakdown`** tool (Analyzify MCP 0.4.8 or later) before anything else. Give it `start_date` and `end_date` (YYYY-MM-DD, the store's own dates), or neither for the last 30 full days. In one call it returns Google Ads, Meta and TikTok (spend, the platform's own conversions and conversion value, ROAS, cost per conversion), Shopify's orders and net sales as the reference, and the blended MER and cost per Shopify order when every currency matches the shop's. Each channel comes with its state and the date its data reaches.
+
+Present its lines as they are written:
+- **Google Ads conversions are never purchases or orders.** They count every primary conversion action (purchases, but also sign-ups, add-to-carts or calls if the account counts them). Use "conversions" for them, and never set them beside Shopify's orders as if they were the same thing.
+- Meta purchases and TikTok conversions are as each platform reports them, with its own attribution setting. The platforms overlap, so their conversions do not add up to Shopify's orders.
+- "could not be read" is a failed read and "no data" is not zero: never show either as 0. A channel whose data stops before the range ends is lagging, not weak: say up to which date it has data.
+- When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends or compute a MER yourself.
+
+For a channel's campaigns, products or daily rows, use the playbooks below. With an older connector (no `channel_breakdown` tool), follow `playbooks/ad-performance.md`.
+
 ## Playbooks (Business Questions)
 
 Match the user's question to the right playbook. Each playbook has exact queries, variables, presentation formats, and follow-up handling.
@@ -72,7 +85,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 | **Profit & Revenue** | "What's my profit?", "Revenue?", "MER?", "Costs?", "P&L?", "Margin?" | `playbooks/profit-and-revenue.md` |
 | **Sales & Orders** | "Total sales?", "Orders?", "AOV?", "Returns?", "Find order #X?" | `playbooks/sales-and-orders.md` |
 | **Product Optimization** | "Best/worst products?", "What should I promote?", "High views low sales?", "Dead stock?" | `playbooks/product-optimization.md` |
-| **Ad Performance** | "How are my ads?", "ROAS?", "Campaign performance?", "Best/worst campaigns?" | `playbooks/ad-performance.md` |
+| **Ad Performance** | "How are my ads?", "ROAS?", "Campaign performance?", "Best/worst campaigns?" (channels compared: `channel_breakdown` first, above) | `playbooks/ad-performance.md` |
 | **Budget Allocation** | "Where to spend more?", "Budget optimization?", "Scale ads?", "Cut wasteful spend?", "Losing campaigns?" | `playbooks/budget-allocation.md` |
 | **Attribution** | "Where do orders come from?", "First/last touch?", "Channel attribution?" | `playbooks/attribution.md` |
 | **Conversion Optimization** | "Improve conversion rate?", "Cart abandonment?", "Funnel?", "Bounce rate?", "Mobile conversion?" | `playbooks/conversion-optimization.md` |
