@@ -83,12 +83,12 @@ For a channel's campaigns, products or daily rows, use the playbooks below. With
 For "is my data OK", "is my data up to date", "is Meta connected", "why is my TikTok data missing", "why don't the numbers match" or "when did Klaviyo last sync", call the **`source_status`** tool (Analyzify MCP 0.4.10 or later, no arguments) before anything else. In one call it gives every stored source (Shopify, Google Ads, Meta, TikTok, Klaviyo, Google Analytics, Search Console): its state, the day its data reaches, the last successful sync, why it fails in plain words, and the account's currency next to the shop's.
 
 Present its lines as they are written:
-- **A lag of 1 to 4 days within the normal lag is not a failure.** Analyzify refreshes about every second day. Never call such a source failing, broken or out of date.
-- "failing", "stale" and "behind" are not up to date: name the day the data stops, pass on why in the tool's words, and what to do (for example, reconnect the account in Analyzify).
+- **A lag the tool calls normal is not a failure** (2 to 4 days, by source: Analyzify refreshes about every second day). Never call such a source failing, broken or out of date.
+- "failing", "stale" and "behind" are not up to date: name the day the data stops, and pass on why and what to do as the tool says (reconnect only when it says so). A source "failing for one account, its data is still current" is current: say a sync failed for one account, not that the data stops.
 - "no data (not zero)", "never synced" and "not connected" are never zero: never give a number for such a source.
 - An account whose currency differs from the shop's: its amounts are in its own currency. Say so, and never add them to the shop's amounts or convert them yourself.
 
-The raw reads stay for detail (`v2MarketingSourceStatuses`, `references/reports.md`). With an older connector (no `source_status` tool), use whoami's source states.
+It covers Analyzify's stored reports; whoami says whether the live reads (Shopify, Google Ads, Google Analytics, Search Console) are connected. The raw reads stay for detail (`v2MarketingSourceStatuses`, `references/reports.md`). With an older connector (no `source_status` tool), use whoami's source states.
 
 ## Playbooks (Business Questions)
 
