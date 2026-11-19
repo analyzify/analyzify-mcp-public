@@ -3,7 +3,7 @@
 ## Skill 0.1.12 (2026-11-19)
 
 - "How is my store doing", a period against the one before or the year before, and sales, profit or MER up or down go to the `performance_summary` tool first (Analyzify MCP 0.4.12 or later): Shopify's sales and the profit report's figures for both periods, with each change or why it is not computed
-- A change the tool does not compute (a comparison period only partly stored, an ad platform starting or stopping inside it, unsynced days) is never estimated, and a missing source is never a drop; no product costs is never a 100% margin
+- A change the tool does not compute (a comparison period only partly stored, an ad platform starting or stopping inside it, unsynced days) is never estimated, and a missing source is never a drop; no product costs is never a 100% margin, in the tool or in a raw profit report read
 
 ## Skill 0.1.10 (2026-11-18)
 
