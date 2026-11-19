@@ -82,7 +82,7 @@ For a channel's campaigns, products or daily rows, use the playbooks below. With
 
 For "which products waste ad spend", "which products get the best ROAS" or "top products by ad spend" on Google Ads or Meta, call the **`product_performance`** tool (Analyzify MCP 0.4.15 or later) before assembling `v2GadsProducts` or `v2MetaProducts` yourself. It gives each platform's products with the most spend and the best and worst return, in that platform's own numbers and currency.
 
-- **It is not revenue per product.** It is what each ad platform spent and attributed. For "my best selling products" by sales, say first that Analyzify's stored reports have no sales per product, then use what its first lines name.
+- **It is not revenue per product.** It is what each ad platform spent and attributed. For "my best selling products" by sales, say first that Analyzify has no report that adds up sales per product, then use what its first lines name (order line items added up, or GA4's item revenue).
 - Never add Google Ads and Meta together, or rank one platform's products against the other's. Meta has a cost per purchase, not a ROAS.
 - Best and worst return rank only products at or above the floor it names. Pass on the floor and the share of spend below it.
 - It never counts products. For "how many products had spend", count live (`references/gads.md`).
@@ -146,7 +146,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 
 **The queries in this skill are valid even when `introspect_report_schema` doesn't list them.** The schema search can lag behind the Report API (the `v2*`, Klaviyo and source-status queries may be missing from it). Run the queries as written here; only introspect for something this skill doesn't cover.
 
-**Try the Report API first.** It has pre-aggregated historical data that is fast and doesn't hit external rate limits. The exception: per-product Google Ads spend, clicks or conversions over a period (counts, lists, top items) come from the live Shopping performance view (`references/gads.md`).
+**Try the Report API first.** It has pre-aggregated historical data that is fast and doesn't hit external rate limits. The exception: per-product Google Ads spend, clicks or conversions over a period (counts, complete lists, items over a spend you name) come from the live Shopping performance view (`references/gads.md`). Rankings of products by ad spend or return go to `product_performance` first (connector 0.4.15 or later).
 
 1. Match the user's request to a Report API query (see `references/reports.md`)
 2. If the Report API has the data → use `execute_report_graphql`

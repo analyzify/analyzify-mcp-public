@@ -114,11 +114,13 @@ Use Main API when user asks about product details, inventory, collections:
 
 ```graphql
 {
-  shopifyProxy(query: "{ products(first: 25, sortKey: BEST_SELLING) { edges { node { id title handle status totalInventory priceRangeV2 { maxVariantPrice { amount currencyCode } } } } } }") {
+  shopifyProxy(query: "{ products(first: 25, sortKey: TITLE) { edges { node { id title handle status totalInventory priceRangeV2 { maxVariantPrice { amount currencyCode } } } } } }") {
     data errors
   }
 }
 ```
+
+The `products` query has no best-selling sort (only a collection's products can be sorted `BEST_SELLING`). For best sellers, add up the order line items above.
 
 ## How to Present
 
