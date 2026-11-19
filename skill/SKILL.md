@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.10
+version: 0.1.12
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -90,6 +90,19 @@ Present its lines as they are written:
 
 It covers Analyzify's stored reports; whoami says whether the live reads (Shopify, Google Ads, Google Analytics, Search Console) are connected. The raw reads stay for detail (`v2MarketingSourceStatuses`, `references/reports.md`). With an older connector (no `source_status` tool), use whoami's source states.
 
+## How the store did: `performance_summary` first
+
+For "how is my store doing", "how did this month go", "this month against last month", "this week vs last week", "vs last year", "are sales up or down" or "revenue, profit or MER trend", call the **`performance_summary`** tool (Analyzify MCP 0.4.12 or later) before anything else. Give it `start_date` and `end_date` (YYYY-MM-DD, the store's own dates), or neither for the last 30 full days. It compares with the same number of days just before (`compare: previous_period`, the default), the same dates a year earlier (`previous_year`) or nothing (`none`); for a calendar month against the month before, give `compare_start_date` and `compare_end_date`. In one call it returns Shopify's orders, gross sales, discounts, returns, net sales and average order value (the order report), and the profit report's net revenue, cost of goods sold, gross profit and margin, ad spend by platform, net profit, MER, cost per order and new customers, each with the comparison period's figure and the change.
+
+Present its lines as they are written:
+- **Every figure and every change is the tool's.** Never recompute one, add the platforms' spend yourself, or compute a change it does not give.
+- **A change "not computed" is not a change.** Give the line's reason in its words: the comparison period is only partly stored, an ad platform's data starts inside it or stops early, or days are not synced yet. Never estimate the change, and never call a missing or unsynced source a drop in spend.
+- The sales lines and the profit lines come from two reports, so their orders and net sales can differ a little: keep each figure with its own line and never mix them.
+- Gross profit, margin and net profit need a cost per item in Shopify. When the tool says no product costs are stored, never give a 100% margin; suggest setting the costs.
+- "could not be read" and "not computed" are never zero.
+
+For one figure by day or month (MER, profit, margin), use the profit report (`playbooks/profit-and-revenue.md`); for channels against each other, `channel_breakdown`. With an older connector (no `performance_summary` tool), follow the playbooks below.
+
 ## Playbooks (Business Questions)
 
 Match the user's question to the right playbook. Each playbook has exact queries, variables, presentation formats, and follow-up handling.
@@ -97,7 +110,7 @@ Match the user's question to the right playbook. Each playbook has exact queries
 | Playbook | Triggers | File |
 |----------|----------|------|
 | **Diagnose Sales Drop** | "Why are sales down?", "Revenue dropped", "What changed?", "Why did X decline?", "Something broke" | `playbooks/diagnose-sales-drop.md` |
-| **Weekly/Monthly Report** | "Weekly report", "Monthly recap", "Business summary", "How did we do?" | `playbooks/weekly-monthly-report.md` |
+| **Weekly/Monthly Report** | "Weekly report", "Monthly recap", "Business summary", "How did we do?" (the period's figures: `performance_summary` first, above) | `playbooks/weekly-monthly-report.md` |
 | **Profit & Revenue** | "What's my profit?", "Revenue?", "MER?", "Costs?", "P&L?", "Margin?" | `playbooks/profit-and-revenue.md` |
 | **Sales & Orders** | "Total sales?", "Orders?", "AOV?", "Returns?", "Find order #X?" | `playbooks/sales-and-orders.md` |
 | **Product Optimization** | "Best/worst products?", "What should I promote?", "High views low sales?", "Dead stock?" | `playbooks/product-optimization.md` |
@@ -106,10 +119,10 @@ Match the user's question to the right playbook. Each playbook has exact queries
 | **Attribution** | "Where do orders come from?", "First/last touch?", "Channel attribution?" | `playbooks/attribution.md` |
 | **Conversion Optimization** | "Improve conversion rate?", "Cart abandonment?", "Funnel?", "Bounce rate?", "Mobile conversion?" | `playbooks/conversion-optimization.md` |
 | **Traffic & SEO** | "Traffic sources?", "SEO?", "Top queries?", "Landing pages?", "404s?" | `playbooks/traffic-and-seo.md` |
-| **Seasonal / YoY** | "Compare to last year?", "YoY growth?", "Seasonal trends?", "Am I on track?", "BFCM planning?" | `playbooks/seasonal-yoy-comparison.md` |
+| **Seasonal / YoY** | "Compare to last year?", "YoY growth?", "Seasonal trends?", "Am I on track?", "BFCM planning?" (a period against the year before: `performance_summary` first, above) | `playbooks/seasonal-yoy-comparison.md` |
 | **Discount & Promo Impact** | "Are discounts working?", "Promotion results?", "Margin impact?", "Should I run a sale?" | `playbooks/discount-promotion-impact.md` |
 | **Conversion Health** | "Is tracking working?", "Last conversion?", "Tags broken?", "PMax not converting?" | `playbooks/conversion-health-tracking.md` |
-| **Store Health** | "How's my store?", "Overview?", "Dashboard?", "KPIs?" | `playbooks/store-health.md` |
+| **Store Health** | "How's my store?", "Overview?", "Dashboard?", "KPIs?" (sales and profit: `performance_summary` first, above) | `playbooks/store-health.md` |
 | **Customer Insights** | "New vs returning?", "Segments?", "CAC?", "Repeat rate?", "LTV?" | `playbooks/customer-insights.md` |
 | **Email & SMS (Klaviyo)** | "How are my emails doing?", "Flow revenue?", "Best campaign?", "Open rate?" | `references/klaviyo.md` |
 
