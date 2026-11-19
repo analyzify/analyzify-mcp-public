@@ -33,6 +33,8 @@ input DateArgs {
 }
 ```
 
+A `groupByFields` value the report does not support is refused with an error that lists the allowed keys (it used to be dropped, so the rows came back ungrouped). Retry with one of the listed keys; the error is never "no data".
+
 **Key IDs from extMe:**
 - `reportSpaceId` → use as `spaceId`
 - `workspaceId` → use as `refId`
@@ -306,6 +308,8 @@ Variables:
 
 - Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`), and `pageInfo.totalCount` counts those item × campaign rows, not items. Use `groupByFields: ["item_id", "product_title"]` (exactly these names) for one row per item; then leave out `campaignId` and `campaignName` (they would show one arbitrary campaign).
 - With that grouping, `pageInfo.totalCount` counts every item stored for the range, including items with no impressions or spend. An item whose title changed in the range can appear twice (once per title). For "how many products had spend", use the live count in `references/gads.md` ("Products (items) over a period").
+- `summary.uniqueItems` (connector 0.4.13 or later) counts item ID and title pairs in the filtered rows, so a retitled item counts once per title too. Even with a cost filter it can be well above Google's count of items with spend (by half or more on a store that retitles often). Never give it as the number of products; count live.
+- Any `groupByFields` value other than the ones above, or a grouping without `item_id` and `product_title`, is refused with an error that names the allowed keys. Retry with an allowed key; never read the error as "no data".
 - An item is a variant, not a product. To answer "by product", follow the roll-up recipe in `playbooks/product-optimization.md`.
 - `limit` defaults to 20 and must be 1000 or less (a larger value quietly falls back to 20). Check `pageInfo.totalCount` before saying "these are all your products".
 - Also accepts `search`, `filters` and `presetFilter` (see the legacy product report below).
