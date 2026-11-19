@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.13
+version: 0.1.15
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -77,6 +77,16 @@ Present its lines as they are written:
 - When the blended line says "not computed", give its reason and each channel's spend in its own currency. Never add the spends, compute a MER yourself or estimate a converted figure (no rough or converted MER range). When it says days are left out (their ad spend is not synced yet), say so with the figure. Never compute a MER from the channel rows.
 
 For a channel's campaigns, products or daily rows, use the playbooks below. With an older connector (no `channel_breakdown` tool), follow `playbooks/ad-performance.md`.
+
+## Ads per product: `product_performance` first
+
+For "which products waste ad spend", "which products get the best ROAS" or "top products by ad spend" on Google Ads or Meta, call the **`product_performance`** tool (Analyzify MCP 0.4.15 or later) before assembling `v2GadsProducts` or `v2MetaProducts` yourself. It gives each platform's products with the most spend and the best and worst return, in that platform's own numbers and currency.
+
+- **It is not revenue per product.** It is what each ad platform spent and attributed. For "my best selling products" by sales, say first that Analyzify's stored reports have no sales per product, then use what its first lines name.
+- Never add Google Ads and Meta together, or rank one platform's products against the other's. Meta has a cost per purchase, not a ROAS.
+- Best and worst return rank only products at or above the floor it names. Pass on the floor and the share of spend below it.
+- It never counts products. For "how many products had spend", count live (`references/gads.md`).
+- For a ranking above a spend the user names, by variant, or a complete list, read the product reports directly (`playbooks/product-optimization.md`).
 
 ## Is my data OK: `source_status` first
 
