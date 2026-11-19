@@ -33,7 +33,7 @@ input DateArgs {
 }
 ```
 
-A `groupByFields` value the report does not support is refused with an error that lists the allowed keys (it used to be dropped, so the rows came back ungrouped). Retry with one of the listed keys; the error is never "no data".
+`v2GadsProducts`, `profitMerReport` and the Search Console reports refuse a `groupByFields` value they do not support, with an error that lists the allowed keys: retry with one of them; the error is never "no data". Other reports may ignore an unsupported value: check that the rows really are grouped before you read them as grouped.
 
 **Key IDs from extMe:**
 - `reportSpaceId` → use as `spaceId`
