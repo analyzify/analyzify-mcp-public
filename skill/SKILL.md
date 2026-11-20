@@ -48,7 +48,7 @@ At the very start of EVERY conversation, before responding to the user, run thes
    - what the API key may do, including whether customer-level data is available (the `pii` capability);
    - the connector version;
    - each live source (Google Analytics property, Google Ads account, Search Console site);
-   - every stored report source's state: ok, syncing, sync failing or not connected, and the dates its data covers. If it says the sources' state could not be read, that is a failed read, not "not connected".
+   - every stored report source's state (the words are listed under the STATUS lines below; older connectors write ok and sync failing), and the dates its data covers. If it says the sources' state could not be read, that is a failed read, not "not connected".
 
 Store both for the session. extMe gives you:
 - **workspaceId**: the workspace/user ID (this IS the "space ID" if the user asks)
