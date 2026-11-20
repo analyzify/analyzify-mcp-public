@@ -109,7 +109,7 @@ If you prefer to configure manually instead of using `analyzify-mcp setup`:
 }
 ```
 
-> Without the API key, the server works in schema-only mode.
+> Without the API key, only the schema tools work; every read answers that the connector has no API key.
 
 ## What You Can Ask
 

@@ -75,7 +75,7 @@ query($input: V2MarketingSourceStatusesInput!) {
 
 Variables: `{ "input": { "default": { "spaceId": "...", "startDate": "2024-01-01", "endDate": "2024-01-31" } } }`
 
-Sources: `ga4`, `gads`, `meta`, `tiktok`, `shopify`, `sc`, `klaviyo`. `freshness.status` is usually `disconnected`, `syncing`, `failed` or `enabled` (also possible: `created`, `archived`).
+Sources: `ga4`, `gads`, `meta`, `tiktok`, `shopify`, `sc`, `klaviyo`. `freshness.status` is `disconnected`, `syncing`, `failed` or `enabled`; otherwise it is an account's own state, such as `created` or `disabled`. Any other word means the sync state is not known: never call that source current from its dates.
 
 **Use when:** a report comes back empty or low, before any "you spent nothing" or "no orders" answer, and before judging ad performance. Tell the user what you found: "Meta isn't connected", "Meta's sync has been failing since 30 Sep", "Meta's data stops on 30 Sep (44 days ago): either no spend since then or a sync problem, so check the Meta connection", or "Meta is connected and current, and there was no spend".
 
