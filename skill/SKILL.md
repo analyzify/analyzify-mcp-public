@@ -116,7 +116,7 @@ For one figure by day or month (MER, profit, margin), use the profit report (`pl
 
 ## Did the platforms get my orders: `order_delivery` first
 
-For "did Meta get my orders", "why does Meta show fewer purchases than Shopify", "were my orders sent to TikTok", "why did an order not reach GA4" or "is the server-side tracking working", call the **`order_delivery`** tool (Analyzify MCP 0.4.17 or later) before you say orders were or were not sent. Give it `start_date` and `end_date` (YYYY-MM-DD, order days in the store's time zone, at most 31 days), or neither for the last 7 full days, and `platform` (`meta`, `tiktok`, `klaviyo`, `reddit`, `openai`, `bing`, `ga4` or `google_ads`) or nothing for all. In one call it gives, per platform, integration and kind (purchases, refunds), and for each order day: how many orders Analyzify's server sent, held back by a rule, failed or still retries, with the most common reasons, from Analyzify's own record of each server-side send. The first number on each line counts every order with an outcome, not the orders sent. Each integration counts the same order again (a store with two Meta setups has each order under both), and refunds are counted apart from purchases: never add integrations or kinds together.
+For "did Meta get my orders", "why does Meta show fewer purchases than Shopify", "were my orders sent to TikTok", "why did an order not reach GA4" or "is the server-side tracking working", call the **`order_delivery`** tool (Analyzify MCP 0.4.17 or later) before you say orders were or were not sent. Give it `start_date` and `end_date` (YYYY-MM-DD, order days in the store's time zone, at most 31 days), or neither for the last 7 full days, and `platform` (`meta`, `tiktok`, `klaviyo`, `reddit`, `openai`, `bing`, `ga4` or `google_ads`) or nothing for all. In one call it gives, per platform, integration and kind (purchases, refunds), and for each order day: how many orders Analyzify's server sent, held back by a rule, failed or still retries, with the most common reasons, from Analyzify's own record of each server-side send. The first number on each line counts every order with an outcome, not the orders sent. Each integration counts the same order again (a store with two Meta setups can have each order under both), and refunds are counted apart from purchases: never add integrations or kinds together.
 
 Read each outcome as it is written:
 - **sent**: the platform's API accepted Analyzify's request. That is all it proves.
@@ -124,7 +124,7 @@ Read each outcome as it is written:
 - **failed**: the platform refused the request, or Analyzify gave up retrying. Pass on the most common reasons in plain words.
 - **waiting for a retry**: not sent yet; Analyzify tries again. Not a failure yet.
 - **skipped (too old for GA4)**: GA4 does not take events past its age limit.
-- **in another state**: an outcome the connector does not name yet. Not sent, not a failure, and never zero: pass it on as written.
+- **in another state**: an outcome the connector does not name yet: its outcome is not known, so call it neither sent nor failed, and never zero.
 
 Never a zero where nothing was recorded:
 - **"not computed"** is not zero. Analyzify records sends only from the day it began keeping these records; days before it, a store with no records, and a store whose records cannot be read yet read "not computed". Never say 0 orders were sent for them.
