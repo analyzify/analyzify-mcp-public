@@ -153,3 +153,4 @@ Flag any day with 0 conversions but normal clicks — likely tracking failure.
 - "Which tag is broken?" → outside Analyzify scope — suggest Google Tag Assistant or Analyzify dashboard
 - "Is my PMax campaign wasting money?" → first check that its conversions are being recorded (this playbook); then judge it with `references/judging-performance.md`
 - "How do I fix this?" → suggest checking Analyzify tracking setup in their dashboard
+- "Did Google Ads (or Meta, GA4) get my orders?" → `order_delivery` first (connector 0.4.17 or later, `SKILL.md`): what Analyzify sent from its server per order day; "sent" is the platform's API accepting it, not the platform counting it
