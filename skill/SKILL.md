@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.15
+version: 0.1.14
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
