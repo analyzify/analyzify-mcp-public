@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.16 (draft)
+
+- "Did Meta get my orders", "why does Meta show fewer purchases than Shopify" and "were my orders sent" go to the `order_delivery` tool first (Analyzify MCP 0.4.17 or later): per platform, integration and order day, how many orders Analyzify sent, held back by a rule, failed or still retries, with the reasons
+- "Sent" is the platform's API accepting the request, never the platform counting the order; "not computed", "no outcome recorded" and a platform with no records are never zero; partial days are never a delivery rate
+
 ## Skill 0.1.12 (2026-11-19)
 
 - "How is my store doing", a period against the one before or the year before, and sales, profit or MER up or down go to the `performance_summary` tool first (Analyzify MCP 0.4.12 or later): Shopify's sales and the profit report's figures for both periods, with each change or why it is not computed
