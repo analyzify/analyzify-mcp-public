@@ -116,27 +116,29 @@ For one figure by day or month (MER, profit, margin), use the profit report (`pl
 
 ## Did the platforms get my orders: `order_delivery` first
 
-For "did Meta get my orders", "why does Meta show fewer purchases than Shopify", "were my orders sent to TikTok", "why did an order not reach GA4" or "is the server-side tracking working", call the **`order_delivery`** tool (Analyzify MCP 0.4.17 or later) before you say orders were or were not sent. Give it `start_date` and `end_date` (YYYY-MM-DD, order days in the store's time zone, at most 31 days), or neither for the last 7 full days, and `platform` (`meta`, `tiktok`, `klaviyo`, `reddit`, `openai`, `bing`, `ga4` or `google_ads`) or nothing for all. In one call it gives, per platform, integration and kind (purchases, refunds), how many orders Analyzify sent from its server, and for each order day, from Analyzify's own record of each send.
+For "did Meta get my orders", "why does Meta show fewer purchases than Shopify", "were my orders sent to TikTok", "why did an order not reach GA4" or "is the server-side tracking working", call the **`order_delivery`** tool (Analyzify MCP 0.4.17 or later) before you say orders were or were not sent. Give it `start_date` and `end_date` (YYYY-MM-DD, order days in the store's time zone, at most 31 days), or neither for the last 7 full days, and `platform` (`meta`, `tiktok`, `klaviyo`, `reddit`, `openai`, `bing`, `ga4` or `google_ads`) or nothing for all. In one call it gives, per platform, integration and kind (purchases, refunds), and for each order day: how many orders Analyzify's server sent, held back by a rule, failed or still retries, with the most common reasons, from Analyzify's own record of each server-side send. The first number on each line counts every order with an outcome, not the orders sent. Each integration counts the same order again (a store with two Meta setups has each order under both), and refunds are counted apart from purchases: never add integrations or kinds together.
 
 Read each outcome as it is written:
 - **sent**: the platform's API accepted Analyzify's request. That is all it proves.
 - **held back by a rule**: a setting working as set up (consent, B2B orders, an excluded tag or source, an age limit), not a fault. Pass on the reason it gives.
-- **failed**: the platform refused the request or it could not be made. Pass on the most common reasons in plain words; they are what to fix.
+- **failed**: the platform refused the request, or Analyzify gave up retrying. Pass on the most common reasons in plain words.
 - **waiting for a retry**: not sent yet; Analyzify tries again. Not a failure yet.
 - **skipped (too old for GA4)**: GA4 does not take events past its age limit.
+- **in another state**: an outcome the connector does not name yet. Not sent, not a failure, and never zero: pass it on as written.
 
 Never a zero where nothing was recorded:
-- **"not computed"** is not zero. Analyzify records sends only from the day it began keeping these records; days before it, a store with no records, and a connector without the records read "not computed". Never say 0 orders were sent for them.
+- **"not computed"** is not zero. Analyzify records sends only from the day it began keeping these records; days before it, a store with no records, and a store whose records cannot be read yet read "not computed". Never say 0 orders were sent for them.
+- **An error from the tool** means nothing was read: never report 0 sent, and never guess the counts.
 - **"no outcome recorded"** for a day is not zero either: the store had no orders to send that day, or none was recorded.
 - **"partial"** days are from before the records were complete: never read them as a delivery rate.
 - **A platform with no records at all** is browser-only, not set up for server-side sends, had nothing to send, or Analyzify could not send at all. Say that, never "0 sent".
 - **Records that stopped** on a day: if the store had orders after it, the sends may have stopped; suggest checking the connection in Analyzify.
-- **Today, and a day that ended a few hours ago**, are not complete: Analyzify sends in batches every few hours.
+- **Today, and a day that ended less than 6 hours ago**, are not complete: Analyzify sends in batches every few hours.
 
 What it never claims:
-- **It proves what Analyzify sent, not what the platform counted.** A platform can accept an order and still not count it, or count it under its own attribution window and rules. Never say Meta (or any platform) recorded, counted or attributed an order because it reads "sent". For "Meta shows fewer purchases than Shopify", "sent" rules out Analyzify's sending side only; what the platform then counts is decided on its side (its attribution and its matching of the order).
+- **It proves what Analyzify sent, not what the platform counted.** A platform can accept an order and still not count it, or count it under its own attribution window and rules. Never say Meta (or any platform) recorded, counted or attributed an order because it reads "sent". For "Meta shows fewer purchases than Shopify", "sent" rules out Analyzify's server-side send for those orders only. On Analyzify's side, orders held back by a rule (consent, for example) and failed orders are causes of the gap; the browser tracking is not in these records, and what the platform then counts is decided on its side (its attribution and its matching of the order).
 - It counts orders with an outcome, not the store's orders: it is not Shopify's order count, and its totals are never a conversion rate.
-- A refund counts on its order's day, so refunds of older orders are not in the window's days (Google Ads refund adjustments count on the day they were sent).
+- A refund counts on its order's day, so refunds of older orders are not in the window's days (Google Ads refund adjustments count on the day of their latest outcome).
 
 For whether a platform's ad data is synced into Analyzify, use `source_status`; for Google Ads conversion actions that stopped recording, `playbooks/conversion-health-tracking.md`. With an older connector (no `order_delivery` tool), say that Analyzify's send records cannot be read from this connector and suggest the Analyzify app.
 
