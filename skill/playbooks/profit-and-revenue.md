@@ -126,4 +126,4 @@ Run the daily query and present as a time series. Highlight:
 - "Break it down by day/week/month" → daily rows as returned; for weeks, add up the days yourself; for months, `groupByFields: ["month"]`
 - "Compare to last month" → run same query with previous period dates
 - "Which ads are most profitable?" → pivot to `playbooks/ad-performance.md` (`v2GadsCampaigns` + `v2MetaCampaigns`); judge profit against break-even ROAS, not 1.0 (`references/judging-performance.md`)
-- "What's my best selling product?" → pivot to `ga4ProductPerformances` or `shopifyOrderAgg`
+- "What's my best selling product?" → Analyzify has no report that adds up sales per product: say so, then add up the order line items per product for the period (`shopifyOrders` → `orderLineItems`, see `playbooks/sales-and-orders.md`; many pages on a large store), or use `ga4ProductPerformances` (GA4's own item revenue, named as GA4's). `shopifyOrderAgg` does not group by product. Never answer it with an ad platform's numbers per product.
