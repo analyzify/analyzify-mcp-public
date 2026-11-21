@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.10
+version: 0.1.11
 description: >
   Complete skill for the Analyzify Shopify analytics and tracking app.
   Covers all Analyzify MCP features and workflows.
@@ -84,7 +84,7 @@ For "is my data OK", "is my data up to date", "is Meta connected", "why is my Ti
 
 Present its lines as they are written:
 - **A lag the tool calls normal is not a failure** (2 to 4 days, by source: Analyzify refreshes about every second day). Never call such a source failing, broken or out of date.
-- "failing", "stale" and "behind" are not up to date: name the day the data stops, and pass on why and what to do as the tool says (reconnect only when it says so). A source "failing for one account, its data is still current" is current: say a sync failed for one account, not that the data stops.
+- "failing", "stale" and "behind" are not up to date: name the day the data stops, and pass on why and what to do as the tool says (reconnect only when it says so). A source "failing for one account" (0.4.11 or later): its other accounts are current, but the failing account's recent numbers may be missing, so the source's totals may be too low. Say that, and never call that source fully up to date. A source "stopped until it is reconnected" does not fix itself, even while a sync of another account runs.
 - "no data (not zero)", "never synced" and "not connected" are never zero: never give a number for such a source.
 - An account whose currency differs from the shop's: its amounts are in its own currency. Say so, and never add them to the shop's amounts or convert them yourself.
 
@@ -171,7 +171,7 @@ These keep the same question giving the same, correct answer in every chat:
     - `behind`: a few days past the normal lag, up to 7, while syncs still run: either nothing new to report (no spend or activity) or the sync is not writing new days.
     - `stale`: more than 7 days behind, or the sync stopped or is stuck: either no spend or activity for that long, or a sync problem, and Analyzify cannot tell which. Tell the user the day the data stops and both causes; if there was activity after that day, suggest checking the connection in Analyzify.
     - Klaviyo has rows only on days something was sent, so a quiet week is normal while its syncs run.
-    - `failing`: the last sync failed. Either Analyzify stopped syncing the source until the account is reconnected in Analyzify, or (0.4.6 or later) it retries on schedule and stores nothing newer until a run succeeds; the line says which. When the line says the data is still current, one account failed and another still syncs. Also `syncing`, `no_data` (nothing stored yet), `not_connected` and `unknown`.
+    - `failing`: the last sync failed. Either Analyzify stopped syncing the source until the account is reconnected in Analyzify, or (0.4.6 or later) it retries on schedule and stores nothing newer until a run succeeds; the line says which. When the line says one account is failing and the other accounts are current, the source's totals may miss that account's recent days: never call it up to date. A failure that stops the sync reads `failing` even while another account's sync runs (0.4.11 or later). Also `syncing`, `no_data` (nothing stored yet), `not_connected` and `unknown`.
     - Never call a `stale`, `behind` or `failing` source healthy, current or "syncing normally": name the day its data stops.
     - Older connectors write `ok` (with the stored span) and `sync_failing` instead: read the dates the same way.
   - **Days outside the stored span:** days before the first stored day have no data. Days after the newest stored day are either no activity or not synced yet, and the report cannot tell which. Never call either zero: read the later days live where a live read exists, or say they are not known yet.
