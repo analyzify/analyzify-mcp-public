@@ -14,7 +14,7 @@ Combine cross-platform ad data with attribution and profit metrics, so the merch
 2. `v2GadsCustomerMetrics` / `v2GadsCampaigns` — Google Ads totals and campaigns
 3. `v2MetaCampaigns` — Meta spend, purchases and purchase value
 4. `v2TiktokCampaigns` — TikTok spend and conversions (no conversion value)
-5. `shopifyCampaignAttributionReport` — orders and revenue by channel as Shopify and Analyzify record them
+5. `shopifyCampaignAttributionReport` — orders and revenue by campaign as Shopify and Analyzify record them
 6. `ga4Channels` — organic vs paid traffic split
 7. `v2MarketingSourceStatuses` — make sure each source is connected and current before comparing them
 
@@ -69,7 +69,7 @@ Follow `references/judging-performance.md`. A campaign is only "below break-even
 
 Facts worth pointing out (not orders):
 - ROAS against break-even, for two settled periods
-- CPA and its trend against the store's average order value
+- A campaign's cost per purchase and its trend, against the store's gross profit per order. Gross profit per order is `grossProfit / orders`, each added up over `profitMerReport`'s rows for the same settled window. Cost per purchase is a campaign's spend / its own purchases: Meta's stored `cpa` (`v2MetaCampaigns`, spend / purchases), or for Google Ads the campaign's purchases from a live read by `segments.conversion_action_category` (conversion metrics only) and its spend from a second live read for the same campaign and dates, never stored spend (the purchases line of `channel_breakdown`, when it is there, is the whole account, not a campaign). Google Ads' primary conversions include non-purchase actions: with a Google Ads cost per purchase, say what share of its conversions were purchases. Compare them only when both are in the same currency (an ad account billing in another currency than the shop is never compared), and not when `costOfGoodsSold` is 0 or near it: then gross profit per order is not known (it would equal the average order value), so ask for the merchant's margin or leave the line out. Google Ads' stored conversions and TikTok's conversions are not purchases, so their cost per conversion is never set against an order figure. The platforms claim overlapping orders, and stored Meta days can stay below Meta's own report, so this is a pointer, not a verdict: below break-even is decided by the ROAS test in `references/judging-performance.md`
 - Meta frequency rising over recent weeks (`v2MetaAccountMetrics` daily rows; the period figure is roughly an average daily frequency, not a monthly one)
 - CPM rising faster than conversion rate
 

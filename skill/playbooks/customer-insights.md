@@ -42,12 +42,13 @@ query($input: ShopifyCampaignAttributionInput!) {
       campaignName source medium
       analyzifyNewCustomers analyzifyReturningCustomers
       analyzifyRevenue averageOrderValue
-      cost cpa roas
     }
     summary { totalOrders averageOrderValue }
   }
 }
 ```
+
+This report has no ad spend: for a campaign's spend next to its new customers, read the platform's campaign report (`v2GadsCampaigns`, `v2MetaCampaigns`, `v2TiktokCampaigns`) and match by campaign name.
 
 With `presetFilter: NEW_CUSTOMER_FIRST_TOUCH_ATTRIBUTION` to focus on first-touch channels.
 

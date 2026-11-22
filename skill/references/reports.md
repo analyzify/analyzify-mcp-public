@@ -699,18 +699,19 @@ Preset filters: `NEW_CUSTOMER_FIRST_TOUCH_ATTRIBUTION`, `HIGH_VALUE_ORDERS_UTM_T
 
 ### shopifyCampaignAttributionReport — Campaign-level attribution (paginated)
 
+The campaign and channel attribution reports carry no ad-platform figures: `cost`, `clicks`, `impressions`, `ctr`, `cpc`, `cpm`, `roas`, `cpa`, `sessions` and (campaign report) `campaignType` come back empty (`v2ShopifyChannelAttribution` gives 0), and a filter or sort on them is refused. Spend, ROAS and cost per conversion come from the ad platforms' own reports (`v2Gads*`, `v2Meta*`, `v2Tiktok*`) or the `channel_breakdown` tool.
+
 ```graphql
 query($input: ShopifyCampaignAttributionInput!) {
   shopifyCampaignAttributionReport(input: $input) {
     nodes {
-      campaignName source medium dated campaignType
+      campaignName source medium dated
       shopifyTotalOrders shopifyFirstTouchOrders shopifyLastTouchOrders
       shopifyRevenue shopifyNewCustomers shopifyReturningCustomers
       analyzifyTotalOrders analyzifyFirstTouchOrders analyzifyLastTouchOrders
       analyzifyFirstTouchRevenue analyzifyLastNonDirectRevenue analyzifyRevenue
       analyzifyNewCustomers analyzifyReturningCustomers
-      averageOrderValue totalUniqueCustomers sessions
-      cost clicks impressions ctr cpc cpm roas cpa
+      averageOrderValue totalUniqueCustomers
     }
     totalCount totalPage currentPage
     summary {
@@ -741,9 +742,8 @@ query($input: ShopifyChannelAttributionInput!) {
       channelName channelType dated
       shopifyTotalOrders shopifyRevenue shopifyNewCustomers shopifyReturningCustomers
       analyzifyTotalOrders analyzifyRevenue analyzifyNewCustomers analyzifyReturningCustomers
-      averageOrderValue totalUniqueCustomers sessions
-      cost clicks impressions ctr cpc cpm roas cpa
-      campaigns { campaignName source medium shopifyTotalOrders shopifyRevenue analyzifyTotalOrders analyzifyRevenue cost }
+      averageOrderValue totalUniqueCustomers
+      campaigns { campaignName source medium shopifyTotalOrders shopifyRevenue analyzifyTotalOrders analyzifyRevenue }
     }
     totalCount totalPage currentPage
     summary {
