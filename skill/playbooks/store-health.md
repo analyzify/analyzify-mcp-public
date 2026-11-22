@@ -42,7 +42,7 @@ Open with 4-6 key numbers:
 | Net Revenue (Shopify net sales) | $X |
 | − COGS | -$X |
 | − Ad Spend | -$X |
-| **= Net Profit** (the profit report's; shipping is not subtracted) | **$X (X% margin)** |
+| **= Net Profit** (the profit report's; shipping is not subtracted) | **$X** |
 
 ### Traffic & Conversion
 
@@ -94,7 +94,7 @@ After reviewing all data, highlight:
 
 When presenting comparisons:
 - **Default:** Same number of days in previous period
-- **"This month vs last month":** Use month boundaries
+- **"This month vs last month":** give the month before as `compare_start_date` / `compare_end_date` to `performance_summary`
 - **"This week vs last week":** Mon-Sun comparison
 - **"YoY":** Same dates previous year
 

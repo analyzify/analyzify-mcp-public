@@ -83,9 +83,9 @@ Present a clean summary table:
 | Gross Margin | X% |
 | MER | X.Xx |
 
-### Trend (when user asks "revenue trend" or "this month vs last")
+### Trend (when user asks "revenue trend")
 
-Run the daily query and present as a time series. Highlight:
+For "this month vs last", use `performance_summary` with the month before as `compare_start_date` / `compare_end_date`, and take its changes as given. For a trend, run the daily query and present as a time series. Highlight:
 - Best and worst days
 - Overall trend direction
 - Any significant spikes or drops
@@ -128,6 +128,6 @@ The report's `cpa` is a cost per order, not a platform's cost per conversion: ca
 ## Common Follow-ups
 
 - "Break it down by day/week/month" → daily rows as returned; for weeks, add up the days yourself; for months, `groupByFields: ["month"]`
-- "Compare to last month" → run same query with previous period dates
+- "Compare to last month" → `performance_summary` with the calendar month before as `compare_start_date` / `compare_end_date`
 - "Which ads are most profitable?" → pivot to `playbooks/ad-performance.md` (`v2GadsCampaigns` + `v2MetaCampaigns`); judge profit against break-even ROAS, not 1.0 (`references/judging-performance.md`)
 - "What's my best selling product?" → Analyzify has no report that adds up sales per product: say so, then add up the order line items per product for the period (`shopifyOrders` → `orderLineItems`, see `playbooks/sales-and-orders.md`; many pages on a large store), or use `ga4ProductPerformances` (GA4's own item revenue, named as GA4's). `shopifyOrderAgg` does not group by product. Never answer it with an ad platform's numbers per product.

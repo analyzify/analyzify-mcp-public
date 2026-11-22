@@ -200,7 +200,7 @@ For a campaign's spend, ROAS or cost per conversion, read the platform's campaig
 
 ## Common Follow-ups
 
-- "Show me just paid channels" → add the filter `{ "field": "CHANNEL_TYPE", "operator": "EQ", "value": "paid" }`
+- "Show me just paid channels" → add the filter `{ "field": "CHANNEL_TYPE", "operator": "EQ", "value": "PAID" }`
 - "Which campaign acquires the most new customers?" → sort by `analyzifyNewCustomers DESC`
 - "Show order-level detail for campaign X" → purchase attribution with `ANALYZIFY_ANY_CAMPAIGN` filter
 - "Compare first touch vs last touch" → run same query with different `attributionModel`

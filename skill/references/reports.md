@@ -114,7 +114,7 @@ Variables:
 }
 ```
 
-**Use when:** "What's my revenue?", "How many sessions?", "Conversion rate?", "Compare this month vs last month"
+**Use when:** GA4's own revenue, sessions or conversion rate, and their change against a period (a store's sales and their change: `performance_summary`)
 **Percentage diffs** compare current period vs previous period automatically.
 
 ### ga4Channels — Traffic by channel
