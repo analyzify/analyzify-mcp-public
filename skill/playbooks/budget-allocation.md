@@ -25,15 +25,15 @@ Use settled days for anything you compare (the window ends 8 days before today);
 
 ### Channel Efficiency Comparison
 
-| Channel | Spend | Revenue (Analyzify attribution) | Revenue / spend | New Customers | NCAC |
-|---------|-------|--------------------------------|-----------------|---------------|------|
-| Google Ads | $X | $X | X.Xx | X | $X |
-| Meta Ads | $X | $X | X.Xx | X | $X |
-| TikTok Ads | $X | $X | X.Xx | X | $X |
-| Organic | $0 | $X | — | X | — |
-| **Total** | **$X** | **$X** | **MER X.Xx** | **X** | **$X** |
+| Channel | Spend (platform) | ROAS (platform's own) | Orders (Analyzify attribution) | Order totals (Analyzify attribution) |
+|---------|------------------|-----------------------|--------------------------------|--------------------------------------|
+| Google Ads | $X | X.Xx | X | $X |
+| Meta Ads | $X | X.Xx | X | $X |
+| TikTok Ads | $X | not reported | X | $X |
+| Organic channels | — | — | X | $X |
+| **Store** | **$X** | **MER X.Xx** (net revenue / total ad spend) | **X** | |
 
-Take orders and revenue per channel from one attribution model (`channel_breakdown`'s Orders by channel block, or `shopifyCampaignAttributionReport` / `shopifyChannelAttributionReport`; say which model) so each order is counted once. Its revenue is order totals (with tax and shipping), so "revenue / spend" here is not the platform's ROAS: name it as Analyzify's attributed order totals over the platform's spend. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
+Spend and ROAS are each platform's own figures; orders and order totals are Analyzify's attribution under one model (`channel_breakdown`'s Orders by channel block, or the attribution reports; say which model), so each order is counted once. Two sources, two sets of columns: never divide one by the other (no attributed order totals over spend as a ROAS, no spend over attributed orders or new customers as a cost per order or NCAC). Meta's orders can sit on Facebook, Instagram and Meta rows. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
 
 ### Revenue Dependency Analysis
 

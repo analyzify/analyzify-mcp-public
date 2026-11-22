@@ -26,7 +26,7 @@ description: >
 
 Complete workflow guide for the Analyzify Shopify analytics platform. All operations go through MCP tools.
 
-**The connector's rules win.** The Analyzify connector sends its rules in the `whoami` answer. Where this skill says otherwise, follow the connector: its rules are newer. If a tool this skill names is missing, the connector is older than this skill: suggest `analyzify-mcp self-update`.
+**The connector's rules win.** The Analyzify connector sends its rules in the `whoami` answer. Where this skill says otherwise, follow the connector: its rules come with the connector. A rule this skill has and the connector lacks still holds. If a tool this skill names is missing, the connector is older than this skill: suggest `analyzify-mcp self-update`.
 
 **Two APIs — use the right tool:**
 

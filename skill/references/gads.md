@@ -105,7 +105,7 @@ Top items by spend (ranked on the item ID alone, so an item whose title changed 
 
 When the user asks for every item and there are thousands: give the exact count and the top items, and say the full list is too long for a chat. Never ask the user to narrow the question because the answer is long.
 
-Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is complete up to its last sync (its last ~8 days are still not settled, as with any Google Ads read); say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
+Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is complete up to its last sync (its newest days are not settled yet, as with any Google Ads read: conversions keep arriving for the conversion window, 30 days by default); say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
 
 ### List Accessible Customers
 ```graphql
@@ -124,4 +124,4 @@ Queries use GAQL syntax in the `body.query` field. Key concepts:
 - Always pass `body` as a JSON variable
 - `cost_micros` needs conversion: divide by 1,000,000 to get the actual amount
 - Present ROAS as `conversions_value / (cost_micros / 1000000)`
-- `googleAds` null in extMe means Google Ads is not connected, or its sync is failing or running: check whoami's source states (or `v2MarketingSourceStatuses`) before telling the user to connect it in the Analyzify dashboard
+- `googleAds` null in extMe means Google Ads is not connected, or its sync is failing or running: check whoami's source states (or the `source_status` tool) before telling the user to connect it in the Analyzify dashboard

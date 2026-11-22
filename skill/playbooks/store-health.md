@@ -39,11 +39,10 @@ Open with 4-6 key numbers:
 
 | | Amount |
 |---|-------|
-| Gross Revenue | $X |
+| Net Revenue (Shopify net sales) | $X |
 | − COGS | -$X |
 | − Ad Spend | -$X |
-| − Shipping | -$X |
-| **= Net Profit** | **$X (X% margin)** |
+| **= Net Profit** (the profit report's; shipping is not subtracted) | **$X (X% margin)** |
 
 ### Traffic & Conversion
 
@@ -74,7 +73,7 @@ Overall Conversion: X%
 | Google Ads | $X | $X | X.Xx |
 | Meta | $X | $X | X.Xx |
 | TikTok | $X | $X | X.Xx |
-| **Total** | **$X** | **$X** | **X.Xx (MER)** |
+| **Store** | **$X** | **Shopify net revenue $X** | **MER X.Xx** |
 
 ### Top Campaigns
 

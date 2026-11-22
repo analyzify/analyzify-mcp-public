@@ -27,9 +27,9 @@ Use the store's timezone (`shopifyIanaTimezone`) for day boundaries.
 
 ## Queries
 
-### 1. Revenue & Profit YoY
+### 1. Revenue & Profit: monthly trend and daily detail
 
-Run `profitMerReport` for both periods:
+The period's figures and their change against last year come from `performance_summary` (above): take them as given, never recompute a change. Use `profitMerReport` for a 12-month trend or for days inside a period:
 
 ```graphql
 query($input: ProfitMerInput!) {
@@ -44,8 +44,6 @@ query($input: ProfitMerInput!) {
   }
 }
 ```
-
-Run twice with current year dates and last year dates.
 
 For monthly figures, use `groupByFields: ["month"]`: one row per calendar month (`year` and `month`), with ratios from the month's totals. Without it rows are one per day: add them up for each period's totals, then compute ratios from the sums.
 

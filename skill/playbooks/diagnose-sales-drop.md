@@ -28,7 +28,7 @@ query($input: ProfitMerInput!) {
 }
 ```
 
-Run twice: once for the "bad" period, once for the "good" period the user is comparing to.
+Read it for the period of the drop to find the days that moved. The period's figures and each change are `performance_summary`'s: never recompute a change from these rows.
 
 Then run `ga4Scorecards` (gives automatic percentage diffs):
 

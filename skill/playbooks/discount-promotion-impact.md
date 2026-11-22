@@ -17,9 +17,9 @@ Business owners run promotions constantly but rarely measure whether they actual
 
 ## Queries
 
-### 1. Sales Metrics During Promotion vs Before
+### 1. Sales Metrics: daily detail inside the promotion
 
-Run `shopifyOrderAgg` for two periods — promotion period and same-length period before:
+The promotion's sales, discounts, AOV and their change against the period before come from `performance_summary` (above): take them as given. Use `shopifyOrderAgg` for the days inside the promotion:
 
 ```graphql
 query($input: ShopifyOrderAggInput!) {
@@ -41,9 +41,9 @@ query($input: ShopifyOrderAggInput!) {
 
 Run with `groupByDate: true` to see daily trend through the promotion.
 
-### 2. Profit Impact
+### 2. Profit Impact: daily detail
 
-Run `profitMerReport` for both periods:
+The period's profit and MER and their change come from `performance_summary`. Use `profitMerReport` for the days inside the promotion:
 
 ```graphql
 query($input: ProfitMerInput!) {

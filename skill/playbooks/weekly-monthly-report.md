@@ -10,7 +10,7 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **Required queries (run in sequence):**
 
-1. The `performance_summary` tool — the period's sales, orders, profit, MER and cost per order against the previous period, with each change (or why it is not computed)
+1. The `performance_summary` tool — the period's sales, orders, profit, MER and cost per order against the comparison period, with each change (or why it is not computed). Give `compare_start_date` / `compare_end_date` from the Period Defaults table below (the week before, the same days last week, the month before); the default (the same number of days just before) fits only "the last N days"
 2. The `channel_breakdown` tool — each ad platform's spend and results, and Analyzify's attributed orders per channel
 3. `profitMerReport` daily rows — only for the trend inside the period
 4. `ga4Scorecards` — traffic + conversion with auto-comparison
@@ -65,8 +65,7 @@ Present in this exact structure:
 | AOV | $X | $X | +X% |
 | New Customers | X | X | +X% |
 | New Customer % | X% | X% | |
-| CAC | $X | $X | |
-| Cost per order (`cpa`) | $X | $X | |
+| Cost per order | $X | $X | |
 
 #### Traffic & Conversion
 
@@ -115,7 +114,7 @@ After reviewing all data, provide 3-5 bullet points:
 - **Wins:** What improved and why (be specific)
 - **Concerns:** What declined and the likely cause
 - **Opportunities:** Untapped potential spotted in the data
-- **Action Items:** 2-3 specific things to do next week/month
+- **Worth a look:** 2-3 facts the merchant may want to act on, each with what was measured (no verdicts from a raw ROAS: `references/judging-performance.md`)
 
 ---
 

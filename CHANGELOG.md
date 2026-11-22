@@ -8,6 +8,7 @@
 - The playbooks call the dedicated tools first: `performance_summary` for a period and its change (weekly and monthly reports, store health, sales drops, year over year, promotions, sales, new customers), `channel_breakdown` for channels, `source_status` before any "drop" or "no spend", `product_performance` for ads per product; the raw reports stay for daily rows, campaigns and single orders
 - Settled days follow the connector: Google Ads for its conversion window (30 days by default), Meta and TikTok about 7 days; judge from 8 days back
 - The `never_synced` state; `metric_definitions` for "what does X mean"; the version notes for older connectors are gone, except where an answer line may be missing
+- No figure divides one source by another: the budget and attribution tables show each platform's spend and ROAS beside Analyzify's attributed orders, never attributed order totals over spend or spend over attributed orders or new customers; the weekly report compares with the period the request names (the week or month before), not only the days just before
 
 ## Skill 0.1.17 (2026-11-22)
 
