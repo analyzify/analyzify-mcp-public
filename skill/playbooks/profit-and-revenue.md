@@ -102,7 +102,7 @@ Run the daily query and present as a time series. Highlight:
 
 ### Unit Economics (when user asks about CAC, cost per order, AOV)
 
-The report's `cpa` is a cost per order, not a platform's cost per conversion: call it cost per order. For a platform's CPA (spend / its own conversions), use `ad-performance.md`.
+The report's `cpa` is a cost per order, not a platform's cost per conversion: call it cost per order. For a platform's CPA (spend / its own conversions), use `playbooks/ad-performance.md`.
 
 | Metric | Value | What It Means |
 |--------|-------|---------------|
