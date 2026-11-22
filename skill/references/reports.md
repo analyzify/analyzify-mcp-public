@@ -642,7 +642,7 @@ query($input: ShopifyOrderAggInput!) {
 - `averageOrderValue` = revenue / orders
 - `grossSales` = original price before discounts
 - `netSales` = gross sales minus discounts and returns, without tax and shipping
-- `totalSales` = net sales plus shipping, taxes, duties and fees, so after returns (unlike a live order's total, and unlike the attribution reports' `totalSales`, which are before returns)
+- `totalSales` = net sales plus shipping, taxes, duties and fees, so after returns: returns come off its net sales part, and tax and shipping on a refunded order can stay in it (unlike a live order's total, and unlike the attribution reports' `totalSales`, which are before returns)
 - `netPayment` = what actually collected
 
 ### shopifyOrders — Individual order list (paginated)
