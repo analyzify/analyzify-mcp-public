@@ -1,0 +1,40 @@
+name: Skill source check
+
+# skill/ is built from analyzify-mcp's release, which opens a skill-sync/<tag>
+# PR here. This check fails any other PR that changes skill/. It runs on every
+# PR (and passes at once when skill/ is untouched), so main's ruleset can
+# require it.
+#
+# pull_request_target: the workflow and its script come from main, so a PR
+# cannot change the check that judges it. It never checks out or runs the
+# PR's code: the script reads the PR through the API, with a read-only token.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  skill-source-check:
+    runs-on: ubuntu-latest
+    steps:
+      # No ref: under pull_request_target the checkout is main's tip at the
+      # event, not the PR's (possibly old) base.sha.
+      - name: Checkout main's scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+
+      - name: Check where skill/ changes come from
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: .github/scripts/skill-source-check.sh

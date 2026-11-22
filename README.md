@@ -54,6 +54,8 @@ After setup, restart Claude Desktop to activate.
 
 The Analyzify skill teaches your AI assistant how to use the MCP server effectively — what queries to run, how to present data, and how to handle different analytics questions.
 
+The skill is built from the connector's release: each MCP server release brings its `skill/` files here, and the same recipes are built into the server (its `recipe` tool and prompts). Changes to `skill/` are made in the connector's source, not in a pull request here; a check fails any other change.
+
 ### Claude Desktop
 
 1. Download the latest `analyzify-skill-v*.zip` from [Releases](https://github.com/analyzify/analyzify-mcp-public/releases)
