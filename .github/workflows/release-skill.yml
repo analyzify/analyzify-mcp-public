@@ -28,7 +28,7 @@ jobs:
           set -euo pipefail
           VERSION=$(.github/scripts/skill-version.sh skill/SKILL.md)
           TAG="skill-v$VERSION"
-          LATEST=$(git tag -l 'skill-v*' --sort=-v:refname | head -1)
+          LATEST=$(git tag -l 'skill-v*' --sort=-v:refname | sed -n 1p)
           if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
             echo "::error::$TAG exists already: a skill change needs a new version: in analyzify-mcp skill/SKILL.md"
             exit 1
