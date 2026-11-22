@@ -55,22 +55,24 @@ Setup checks the key and names the connector `analyzify-<store>`, so each store'
 ## Recipes and rules: built in
 
 There is no skill to install. Since v0.4.26 the MCP server carries Analyzify's answer rules and recipes itself
-(the `recipe` tool and one prompt per playbook), so every assistant that connects gets them. If you installed the
-Analyzify skill earlier, you can remove it; keep the server up to date with `analyzify-mcp self-update`.
+(the `recipe` tool, and one prompt per playbook in clients that show MCP prompts). If you installed the Analyzify
+skill earlier, you can remove it. Keep the server up to date with `analyzify-mcp self-update` (on Windows, run the
+install command again), then restart Claude Desktop.
 
 The `skill/` folder in this repo is a copy of the server's recipe source, synced at each release: changes go to the
 server's source, never here.
 
 ## Manual Configuration
 
-If you prefer to configure manually instead of using `analyzify-mcp setup`:
+If you prefer to configure manually instead of using `analyzify-mcp setup` (one entry per store key, each with its own
+name, such as `analyzify-<store>`):
 
 **Claude Desktop** (`claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
-    "analyzify": {
+    "analyzify-mystore": {
       "command": "analyzify-mcp",
       "args": ["serve"],
       "env": {
@@ -85,7 +87,7 @@ If you prefer to configure manually instead of using `analyzify-mcp setup`:
 
 ```json
 {
-  "analyzify": {
+  "analyzify-mystore": {
     "command": "analyzify-mcp",
     "args": ["serve"],
     "env": {
