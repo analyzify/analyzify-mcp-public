@@ -8,6 +8,8 @@
 
 **For a period's totals and its change against another period:** the `performance_summary` tool first; it reads the same profit report.
 
+**"Shipping costs?":** the store's own shipping costs (what it pays carriers) are not in Analyzify's data: say so. The profit report's `shippingCost` is shipping charged to customers, which is income, not a cost; give it only under that name.
+
 **For figures by day or by month:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view. First call the `source_status` tool: if a connected ad source's data stops before the end of the period, its spend may be missing from those days (or the account had no delivery), so name it and call the profit for those days provisional.
 
 **If profitMerReport returns empty:** check `source_status` first (not synced is not zero), then give Shopify's sales from `shopifyOrderAgg` and each platform's spend from `channel_breakdown`, each with its own source; never compute a profit from them.
@@ -78,7 +80,7 @@ Present a clean summary table:
 | Net Revenue | $X |
 | Ad Spend | $X (Google: $X, Meta: $X, TikTok: $X) |
 | COGS | $X |
-| Shipping | $X (shown for reference; not subtracted in net profit) |
+| Shipping charged to customers (income, not a cost) | $X |
 | **Net Profit** | **$X** |
 | Gross Margin | X% |
 | MER | X.Xx |
