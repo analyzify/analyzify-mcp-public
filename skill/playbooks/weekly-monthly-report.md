@@ -10,17 +10,18 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **Required queries (run in sequence):**
 
-1. `profitMerReport` — revenue, profit, costs, unit economics (one row per day: add up the days, then compute ratios from the sums)
-2. The same daily rows give the trend
-3. `ga4Scorecards` — traffic + conversion with auto-comparison
-4. `ga4Channels` — channel breakdown (groupByDate: false, groupByFields: ["channel_name"])
-5. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
-6. `v2MetaCampaigns` — top Meta campaigns (if Meta connected)
-7. `v2TiktokCampaigns` — top TikTok campaigns (if TikTok connected)
-8. `ga4ProductPerformances` — top products (groupByDate: false, groupByFields: ["item_name"])
-9. `shopifyCampaignAttributionReport` — attribution summary
+1. The `performance_summary` tool — the period's sales, orders, profit, MER and cost per order against the previous period, with each change (or why it is not computed)
+2. The `channel_breakdown` tool — each ad platform's spend and results, and Analyzify's attributed orders per channel
+3. `profitMerReport` daily rows — only for the trend inside the period
+4. `ga4Scorecards` — traffic + conversion with auto-comparison
+5. `ga4Channels` — channel breakdown (groupByDate: false, groupByFields: ["channel_name"])
+6. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
+7. `v2MetaCampaigns` — top Meta campaigns (if Meta connected)
+8. `v2TiktokCampaigns` — top TikTok campaigns (if TikTok connected)
+9. `ga4ProductPerformances` — top products (groupByDate: false, groupByFields: ["item_name"])
+10. `shopifyCampaignAttributionReport` — attribution by campaign
 
-**Only query channels that show as connected in extMe.**
+**Only query channels that whoami (or `source_status`) shows as connected.** Never recompute a figure or a change `performance_summary` gives, and never call a change it does not compute a drop.
 
 ## Report Template
 

@@ -6,9 +6,11 @@
 
 ## Strategy
 
-**Primary:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view. First read `v2MarketingSourceStatuses`: if a connected ad source's data stops before the end of the period, its spend may be missing from those days (or the account had no delivery), so name it and call the profit for those days provisional.
+**For a period's totals and its change against another period:** the `performance_summary` tool first; it reads the same profit report.
 
-**Fallback:** If profitMerReport returns empty (no data synced), use `shopifyOrderAgg` for revenue + `v2GadsCustomerMetrics`/`v2MetaAccountMetrics`/`v2TiktokAdvertiserMetrics` separately.
+**For figures by day or by month:** `profitMerReport` via Report API — this single query combines Shopify orders + Google Ads + Meta + TikTok into one unified profit view. First call the `source_status` tool: if a connected ad source's data stops before the end of the period, its spend may be missing from those days (or the account had no delivery), so name it and call the profit for those days provisional.
+
+**If profitMerReport returns empty:** check `source_status` first (not synced is not zero), then give Shopify's sales from `shopifyOrderAgg` and each platform's spend from `channel_breakdown`, each with its own source; never compute a profit from them.
 
 ## Queries
 

@@ -6,8 +6,10 @@
 
 ## Strategy
 
+**A period's new customers against another period:** the `performance_summary` tool first.
+
 **Primary:** Report API
-- `profitMerReport` — new customer count, new customer %, CAC, NCAC
+- `profitMerReport` — new customer count, new customer %, CAC, NCAC by day or month
 - `shopifyCampaignAttributionReport` — new vs returning by marketing channel
 - `shopifyPurchaseAttributionReport` — per-order new/returning flag
 - `segments` / `segmentTemplates` — the store's segments and templates (definitions and counts; the customers inside a segment are not available)

@@ -10,6 +10,7 @@ Silent tracking failures are one of the most expensive problems in ecommerce —
 
 **Queries to run:**
 
+0. The `source_status` tool — is Google Ads data stored and current? A stopped sync looks like a tracking failure.
 1. `gadsLastSeenConversions` — when each conversion action last fired (the critical check)
 2. `gadsConversions` — conversion action details and values
 3. `v2GadsCustomerMetrics` — overall conversion trend (is it dropping?)

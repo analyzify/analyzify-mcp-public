@@ -2,9 +2,11 @@
 
 ## Triggers
 
-"Where do my orders come from?", "Attribution report", "First touch vs last touch", "Which campaigns drive sales?", "Channel attribution", "Which marketing channels work?", "New customer acquisition channels", "What's working in my marketing?", "Organic vs paid?"
+"Where do my orders come from?", "Which channels bring the most orders?", "Attribution report", "First touch vs last touch", "Which campaigns drive sales?", "Channel attribution", "Which marketing channels work?", "New customer acquisition channels", "What's working in my marketing?", "Organic vs paid?"
 
 A platform's ROAS, spend or cost per conversion by campaign is not here: see `playbooks/ad-performance.md`.
+
+**Which channels bring the most orders: the `channel_breakdown` tool first.** Its "Orders by channel" block gives Analyzify's attributed orders per channel (last non-direct click), next to each platform's spend and ROAS, in one call. Rank from it and name the model. When the answer has no Orders by channel block (an older connector), use the channel attribution query below with `attributionModel: "LAST_NON_DIRECT"` and the filter `INCLUDE_DIRECT_TRAFFIC` (below): without it the report leaves out the orders with no channel, so its totals are not the store's orders. The queries below are also for another model, campaigns and single orders.
 
 ## Strategy
 
@@ -111,10 +113,14 @@ query($input: ShopifyChannelAttributionInput!) {
     "page": 1,
     "limit": 50,
     "attributionModel": "LAST_NON_DIRECT",
+    "filters": [{ "field": "INCLUDE_DIRECT_TRAFFIC", "operator": "EQ", "value": "true" }],
+    "sort": [{ "field": "ANALYZIFY_TOTAL_ORDERS", "direction": "DESC" }],
     "includeCampaigns": true
   }
 }
 ```
+
+With direct orders included, the summary's `totalOrders` is every order and a `DIRECT` row holds the orders with no channel: direct visits, returns from a payment page (PayPal, Klarna) and orders with no tracked visit (POS, draft, subscription). Never call them all direct visits. The orders credited to a channel are `totalOrders` minus the `DIRECT` row, not `summary.analyzifyAttributedOrders`, which counts by another rule. A channel is a name and a type (Google paid and Google organic are two rows), and `OTHER` is every source Analyzify did not recognise, not one channel. `analyzifyRevenue` is order totals (with tax and shipping, before returns), not net sales.
 
 ### 3. Purchase Attribution (order-level detail)
 

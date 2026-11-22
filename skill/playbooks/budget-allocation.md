@@ -10,13 +10,14 @@ Combine cross-platform ad data with attribution and profit metrics, so the merch
 
 **Queries to run:**
 
-1. `profitMerReport` — net revenue, gross profit, COGS and ad spend by platform, one row per day (add up the days, then compute MER and margin)
-2. `v2GadsCustomerMetrics` / `v2GadsCampaigns` — Google Ads totals and campaigns
-3. `v2MetaCampaigns` — Meta spend, purchases and purchase value
-4. `v2TiktokCampaigns` — TikTok spend and conversions (no conversion value)
-5. `shopifyCampaignAttributionReport` — orders and revenue by campaign as Shopify and Analyzify record them
-6. `ga4Channels` — organic vs paid traffic split
-7. `v2MarketingSourceStatuses` — make sure each source is connected and current before comparing them
+1. The `source_status` tool — make sure each source is connected and current before comparing them
+2. The `channel_breakdown` tool — each platform's spend, conversions and ROAS, the blended MER and cost per order, and Analyzify's attributed orders per channel, in one call
+3. `profitMerReport` — gross profit and margin, one row per day (add up the days, then compute margin from the sums)
+4. `v2GadsCampaigns` — Google Ads campaigns
+5. `v2MetaCampaigns` — Meta campaigns: spend, purchases and purchase value
+6. `v2TiktokCampaigns` — TikTok campaigns: spend and conversions (no conversion value)
+7. `shopifyCampaignAttributionReport` — orders and revenue by campaign as Shopify and Analyzify record them
+8. `ga4Channels` — organic vs paid traffic split
 
 Use settled days for anything you compare (the window ends 8 days before today); see `references/judging-performance.md`.
 
@@ -32,7 +33,7 @@ Use settled days for anything you compare (the window ends 8 days before today);
 | Organic | $0 | $X | — | X | — |
 | **Total** | **$X** | **$X** | **MER X.Xx** | **X** | **$X** |
 
-Take revenue per channel from one attribution model (`shopifyCampaignAttributionReport` / `shopifyChannelAttributionReport`, say which model) so each order is counted once. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
+Take orders and revenue per channel from one attribution model (`channel_breakdown`'s Orders by channel block, or `shopifyCampaignAttributionReport` / `shopifyChannelAttributionReport`; say which model) so each order is counted once. Its revenue is order totals (with tax and shipping), so "revenue / spend" here is not the platform's ROAS: name it as Analyzify's attributed order totals over the platform's spend. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
 
 ### Revenue Dependency Analysis
 

@@ -9,14 +9,14 @@
 This is the "catch-all" — when the user wants a general overview, run multiple queries in sequence and compose a comprehensive report.
 
 **Query sequence:**
-1. `profitMerReport` — profit, revenue, costs (one row per day: add up the days for the period's totals)
-2. `ga4Scorecards` — traffic + conversion metrics with period comparison
-3. `ga4Channels` — channel breakdown (top 5)
-4. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
-5. `v2MetaCampaigns` — Meta performance (if Meta connected)
-6. `shopifyCampaignAttributionReport` — top attribution sources
+1. The `source_status` tool — is every source connected and current (a stopped sync looks like a drop)
+2. The `performance_summary` tool — sales, orders, profit, MER and cost per order against the previous period
+3. `ga4Scorecards` — traffic + conversion metrics with period comparison
+4. `ga4Channels` — channel breakdown (top 5)
+5. The `channel_breakdown` tool — each ad platform's spend and results, and the attributed orders per channel
+6. `v2GadsCampaigns` / `v2MetaCampaigns` — top campaigns (if connected)
 
-Only query channels that are connected (check extMe response for null services).
+Only query channels that whoami (or `source_status`) shows as connected; a null service in extMe is not proof that it is not connected.
 
 ## How to Present
 

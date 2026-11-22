@@ -10,8 +10,8 @@ Business owners run promotions constantly but rarely measure whether they actual
 
 **Queries to run:**
 
-1. `shopifyOrderAgg` — has `totalDiscounts`, `grossSales`, `netSales`, `averageOrderValue`, `totalCount`
-2. `profitMerReport` — net profit including ad spend during promotion
+1. The `performance_summary` tool — the promotion period against the period before (`compare_start_date` / `compare_end_date`): orders, gross sales, discounts, net sales, AOV, profit and MER with each change
+2. `shopifyOrderAgg` / `profitMerReport` — only for detail the tool does not give (daily rows inside the promotion)
 3. `ga4Scorecards` — traffic and conversion during vs before promotion
 4. `ga4EcommFunnel` — did the promotion improve funnel conversion?
 

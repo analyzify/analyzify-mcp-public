@@ -12,7 +12,9 @@ This is a **diagnostic playbook** — the user noticed something went wrong and 
 
 ### Step 1: Identify What Changed (Big Picture)
 
-Run `profitMerReport` for current period AND the comparison period:
+First call the `source_status` tool: a failed or stopped sync looks exactly like a drop, and a source with no data after a day is never a fall to zero.
+
+Then call the `performance_summary` tool with the period of the drop (and `compare_start_date` / `compare_end_date` for a specific comparison period): it gives each figure for both periods and the change, or why a change is not computed. Never recompute its changes. Use the `profitMerReport` daily rows below only to find which days moved:
 
 ```graphql
 query($input: ProfitMerInput!) {
@@ -134,9 +136,9 @@ Also check `shopifyOrderAgg`:
 
 ### Step 2D: If Ad Performance Dropped → Platform Drill-down
 
-First check `v2MarketingSourceStatuses` (`references/reports.md`): a failed sync or a tracking break looks exactly like a performance drop. If a source failed or conversions stopped, that is the finding.
+First check the `source_status` tool: a failed sync or a tracking break looks exactly like a performance drop. If a source failed or conversions stopped, that is the finding. Then call `channel_breakdown` for both periods to see which platform's spend or results moved.
 
-Run each query with `default` = the period with the drop and `comparison` = the period before (same length). Recent days are not settled yet: conversions keep arriving for about 8 days (Meta: up to 28), so a drop in the last few days may partly fill in.
+Run each query with `default` = the period with the drop and `comparison` = the period before (same length). Recent days are not settled yet: conversions keep arriving after the click (Google Ads for its conversion window, 30 days by default; Meta and TikTok about 7 days), so a drop in the last few days may partly fill in.
 
 **Google Ads:**
 ```graphql
