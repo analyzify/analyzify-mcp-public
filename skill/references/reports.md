@@ -237,7 +237,7 @@ Every `v2*` report takes `{ "input": { "default": StandardQueryInput, "compariso
 - `meta`: `currencyCode`, `freshness` and `coverage` (latest synced date, gaps, `partialData`, `staleData`). Mention a gap or stale data in your answer.
 - `comparison`: the same `summary` and `rows` for the comparison range.
 
-Units in `v2*` reports: `cost` and `spend` are in the account currency (no micros). `ctr`, `cvr` and `linkCtr` are percentages (2.5 means 2.5%). `roas` = conversion value / cost. `cpa` = cost / conversions.
+Units in `v2*` reports: `cost` and `spend` are in the account currency (no micros). `ctr`, `cvr` and `linkCtr` are percentages (2.5 means 2.5%). `roas` = conversion value / cost. `cpa` = spend / the platform's own count, a cost per conversion: Google Ads cost / conversions, TikTok spend / conversions, Meta spend / purchases (a cost per purchase).
 
 Variables:
 ```json
@@ -641,7 +641,8 @@ query($input: ShopifyOrderAggInput!) {
 **Key calculated metrics:**
 - `averageOrderValue` = revenue / orders
 - `grossSales` = original price before discounts
-- `netSales` = total after discounts and returns
+- `netSales` = gross sales minus discounts and returns, without tax and shipping
+- `totalSales` = net sales plus shipping, taxes, duties and fees, so after returns (unlike a live order's total, and unlike the attribution reports' `totalSales`, which are before returns)
 - `netPayment` = what actually collected
 
 ### shopifyOrders — Individual order list (paginated)
@@ -727,6 +728,8 @@ query($input: ShopifyCampaignAttributionInput!) {
 Variables: `page: 1, limit: 50, attributionModel: LAST_NON_DIRECT`
 Attribution models: `FIRST_TOUCH`, `LAST_TOUCH`, `LAST_NON_DIRECT`, `LINEAR` (equal credit across touchpoints), `U_SHAPED` (40% first, 40% last, 20% split across the middle), `ANY_CLICK` (full order value to every touchpoint: not additive, the sum exceeds revenue). There is no `ALL` model; to compare models, run the report once per model.
 
+`summary.totalSales` is built from the order totals (taxes and shipping included) of the orders created in the range, so it is before returns and is not the order report's `totalSales`; `totalSalesWithoutTax` is those orders' net sales, also before returns. With `ANY_CLICK` each touchpoint gets the full order total, so the summary can be more than the orders' totals, and a filter or preset limits it to the matched campaigns.
+
 **Use when:** "Campaign attribution?", "Which campaigns drive new customers?"
 
 ### shopifyChannelAttributionReport — Channel-level attribution (paginated)
@@ -754,6 +757,8 @@ query($input: ShopifyChannelAttributionInput!) {
 ```
 
 Variables: `page: 1, limit: 50, includeCampaigns: true`
+
+`summary.totalSales` is built the same way: the order totals of the orders created in the range, before returns.
 
 **Use when:** "Channel attribution?", "Paid vs organic channels?"
 
@@ -836,11 +841,11 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 - `cac` = Customer Acquisition Cost (Total Ad Spend / customers who ordered, `totalCustomers`)
 - `ncac` = New Customer Acquisition Cost (Total Ad Spend / `newCustomers`)
 - `cvr` = orders / ad clicks × 100, a **percentage**
-- `cpa` = Cost Per Acquisition (Total Spend / Total Orders)
+- `cpa` = cost per order (total ad spend / Shopify orders), not a platform's cost per conversion
 - `aov` = Average Order Value
 - `grossMargin` = (Revenue - COGS) / Revenue × 100, a **percentage** (40 means 40%)
 
-**Rows are one per day**, whatever `groupByDate` says, or one per calendar month with `groupByFields: ["month"]`. On a monthly row every ratio is computed from the month's totals. For any other period, **add up the rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks × 100`. Never average daily ratios. `totalCustomers` counts customers per day, so summed over days a customer who ordered on two days counts twice. Dates must be `YYYY-MM-DD`. The newest day comes first, and at most 1,000 days are returned.
+**Rows are one per day**, whatever `groupByDate` says, or one per calendar month with `groupByFields: ["month"]`. On a monthly row every ratio is computed from the month's totals. For any other period, **add up the rows** (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`), then compute: MER = `netRevenue / totalAdSpend`, margin = `grossProfit / netRevenue`, AOV = `netRevenue / orders`, cost per order (`cpa`) = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers`, CVR = `orders / adClicks × 100`. Never average daily ratios. `totalCustomers` counts customers per day, so summed over days a customer who ordered on two days counts twice. Dates must be `YYYY-MM-DD`. The newest day comes first, and at most 1,000 days are returned.
 
 **Provisional days:** `adSpendComplete: false` means the ad spend of the sources in `incompleteAdSources` may not have synced yet for that row (today and up to two days before, in UTC). Its net profit may be too high: say so, or end the period before those days. On a monthly row the five ad ratios leave those days out while `netProfit` and `totalAdSpend` include them. `true` does not prove older days are complete: check `v2MarketingSourceStatuses` for the period. Only days with Shopify orders or refunds are in the report, so ad spend on a day with neither is not counted.
 

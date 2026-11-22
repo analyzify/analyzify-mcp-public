@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.16 (2026-11-22)
+
+- "Sales" names one of four figures: net sales; the order report's total sales (after returns); the attribution reports' total sales (before returns); or a live order's total (before returns). The old line called every order total "before returns"
+- CPA is a platform's cost per conversion (Meta's stored `cpa` is spend / purchases); the profit report's `cpa` is total ad spend / Shopify orders, a cost per order, and is no longer called a cost per acquisition
+
 ## Skill 0.1.12 (2026-11-19)
 
 - "How is my store doing", a period against the one before or the year before, and sales, profit or MER up or down go to the `performance_summary` tool first (Analyzify MCP 0.4.12 or later): Shopify's sales and the profit report's figures for both periods, with each change or why it is not computed

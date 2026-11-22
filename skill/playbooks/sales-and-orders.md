@@ -153,6 +153,7 @@ Highlight products with high views but low conversion (opportunity).
 
 - **Gross Sales** = Original price before any deductions
 - **Net Sales** = Gross - Discounts - Returns
+- **Total Sales** = Net Sales + Shipping + Taxes + Duties + Fees, after returns (a live order's total is before returns)
 - **Net Payment** = What you actually collected
 - **Gross Revenue** = Revenue after line item discounts
 
