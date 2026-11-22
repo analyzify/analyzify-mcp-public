@@ -121,12 +121,13 @@ For individual customer lookup — live proxy:
 
 ### Acquisition Channels for New Customers
 
-| Channel | New Customers | Revenue | CAC |
+| Channel | New Customers (Analyzify attribution) | Revenue (Analyzify attribution) | Spend (platform's own) |
 |---------|--------------|---------|-----|
 | Google Ads | X | $X | $X |
 | Meta Ads | X | $X | $X |
 | Organic | X | $X | — |
-| Direct | X | $X | — |
+
+Spend is each platform's own; new customers and revenue are Analyzify's attribution. Never divide one by the other (no spend over attributed new customers as a CAC or NCAC, no attributed revenue over spend as a ROAS). The campaign report leaves out orders with no channel (Analyzify's Direct) unless the input has the `INCLUDE_DIRECT_TRAFFIC` filter; with it, show that row as "No channel (Analyzify's Direct)", never as direct visits.
 
 ### New vs Returning Trend
 

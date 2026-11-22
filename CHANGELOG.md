@@ -9,6 +9,7 @@
 - Settled days follow the connector: Google Ads for its conversion window (30 days by default), Meta and TikTok about 7 days; judge from 8 days back
 - The `never_synced` state; `metric_definitions` for "what does X mean"; the version notes for older connectors are gone, except where an answer line may be missing
 - No figure divides one source by another: the budget and attribution tables show each platform's spend and ROAS beside Analyzify's attributed orders, never attributed order totals over spend or spend over attributed orders or new customers; the weekly report compares with the period the request names (the week or month before), not only the days just before
+- Shipping in the profit report is shipping charged to the customer, not a cost: the cost tables no longer list it; total ad spend is the report's figure; shares of paid and organic are by orders, or by the attribution report's own total sales, never over net sales
 
 ## Skill 0.1.17 (2026-11-22)
 

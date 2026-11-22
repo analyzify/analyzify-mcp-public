@@ -37,12 +37,13 @@ Spend and ROAS are each platform's own figures; orders and order totals are Anal
 
 ### Revenue Dependency Analysis
 
-| Source | Revenue | % of Total |
+| Source | Orders (Analyzify attribution) | % of the store's orders |
 |--------|---------|-----------|
-| Paid Channels | $X | X% |
-| Organic/Free | $X | X% |
+| Paid channels | X | X% |
+| Organic and free channels | X | X% |
+| No channel (Analyzify's Direct) | X | X% |
 
-State the split as a fact ("70% of revenue came through paid channels in this period") and compare with the store's own past periods, not with a fixed benchmark.
+Take the shares by orders from `channel_breakdown`'s Orders by channel block, or by revenue from the attribution report's own `summary.totalSales` with the `INCLUDE_DIRECT_TRAFFIC` filter (`playbooks/attribution.md`). Attributed revenue is order totals: never divide it by net sales. State the split as a fact ("70% of orders came through paid channels in this period") and compare with the store's own past periods, not with a fixed benchmark.
 
 ### Campaign-Level Efficiency
 
@@ -80,8 +81,8 @@ Don't say "cut", "pause", "scale" or "shift budget". If the merchant asks what t
 
 | Metric | This period | Previous period | Same period last year |
 |--------|-------------|-----------------|-----------------------|
-| Paid revenue share | X% | X% | X% |
-| Email/SMS revenue share | X% | X% | X% |
+| Paid channels' share of orders (or of the attribution report's total sales) | X% | X% | X% |
+| Email/SMS share of orders (or of the attribution report's total sales) | X% | X% | X% |
 | MER (net revenue / ad spend, from totals) | X.Xx | X.Xx | X.Xx |
 | NCAC (ad spend / new customers) | $X | $X | $X |
 

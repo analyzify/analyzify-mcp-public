@@ -54,8 +54,9 @@ Present in this exact structure:
 | Google Ads | $X | X% |
 | Meta Ads | $X | X% |
 | TikTok Ads | $X | X% |
-| Shipping | $X | X% |
-| **Total Costs** | **$X** | **X%** |
+| **Total ad spend** (the tool's, not a sum you make) | **$X** | **X%** |
+
+Shipping in the profit report is shipping charged to the customer, not a cost: never list it as one.
 
 #### Orders & Customers
 
@@ -77,13 +78,15 @@ Present in this exact structure:
 
 #### Channel Performance
 
-| Channel | Sessions | Revenue | Conv. Rate | ROAS |
-|---------|----------|---------|------------|------|
-| Organic Search | X | $X | X% | — |
-| Paid Search | X | $X | X% | X.Xx |
-| Paid Social | X | $X | X% | X.Xx |
-| Email/Direct | X | $X | X% | — |
-| Other | X | $X | X% | — |
+| Channel | Sessions | Revenue (GA4) | Conv. Rate |
+|---------|----------|---------|------------|
+| Organic Search | X | $X | X% |
+| Paid Search | X | $X | X% |
+| Paid Social | X | $X | X% |
+| Email/Direct | X | $X | X% |
+| Other | X | $X | X% |
+
+These are GA4's channels and revenue. Each ad platform's spend and ROAS come from `channel_breakdown`, in their own section.
 
 #### Top 5 Campaigns (by Revenue)
 
@@ -137,4 +140,4 @@ Use the store's timezone (`shopifyIanaTimezone` from extMe) to determine day bou
 - If a metric is missing (channel not connected), skip that section — don't show zeros
 - For weekly reports, use daily grouping for trend context
 - For monthly reports, use weekly grouping for trend context
-- End with actionable takeaways, not just numbers
+- End with "Worth a look": facts the merchant may want to act on, each with what was measured, not just numbers

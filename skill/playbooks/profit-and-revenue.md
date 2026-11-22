@@ -98,9 +98,10 @@ For "this month vs last", use `performance_summary` with the month before as `co
 | Google Ads | $X | X% |
 | Meta Ads | $X | X% |
 | TikTok Ads | $X | X% |
-| Shipping | $X | X% |
-| **Total Costs** | **$X** | **X%** |
-| **Net Profit** | **$X** | **X%** |
+| **Total ad spend** (`totalAdSpend`, not a sum you make) | **$X** | **X%** |
+| **Net Profit** (`netProfit`) | **$X** | **X%** |
+
+`shippingCost` is shipping charged to the customer, not a cost: never list it among the costs.
 
 ### Unit Economics (when user asks about CAC, cost per order, AOV)
 

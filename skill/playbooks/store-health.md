@@ -68,11 +68,11 @@ Overall Conversion: X%
 
 ### Marketing Performance
 
-| Platform | Spend | Revenue | ROAS |
+| Platform | Spend | Conversion value (platform's own) | ROAS (platform's own) |
 |----------|-------|---------|------|
 | Google Ads | $X | $X | X.Xx |
 | Meta | $X | $X | X.Xx |
-| TikTok | $X | $X | X.Xx |
+| TikTok | $X | — | not reported |
 | **Store** | **$X** | **Shopify net revenue $X** | **MER X.Xx** |
 
 ### Top Campaigns
@@ -98,7 +98,7 @@ When presenting comparisons:
 - **"This week vs last week":** Mon-Sun comparison
 - **"YoY":** Same dates previous year
 
-Calculate percentage change: `((current - previous) / |previous|) × 100`
+Take every figure and every change from `performance_summary` as given: never recompute a change, and never compute one the tool does not give.
 
 ## Common Follow-ups
 
