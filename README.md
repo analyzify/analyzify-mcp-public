@@ -50,32 +50,14 @@ analyzify-mcp setup --claude-code --api-key azfy_your-api-key
 
 After setup, restart Claude Desktop to activate.
 
-## Install Skill
+## Recipes and rules: built in
 
-The Analyzify skill teaches your AI assistant how to use the MCP server effectively — what queries to run, how to present data, and how to handle different analytics questions.
+There is no skill to install. Since v0.4.26 the MCP server carries Analyzify's answer rules and recipes itself
+(the `recipe` tool and one prompt per playbook), so every assistant that connects gets them. If you installed the
+Analyzify skill earlier, you can remove it; keep the server up to date with `analyzify-mcp self-update`.
 
-The skill is built from the connector's release: each MCP server release brings its `skill/` files here, and the same recipes are built into the server (its `recipe` tool and prompts). Changes to `skill/` are made in the connector's source, not in a pull request here; a check fails any other change.
-
-### Claude Desktop
-
-1. Download the latest `analyzify-skill-v*.zip` from [Releases](https://github.com/analyzify/analyzify-mcp-public/releases)
-2. Open Claude Desktop and go to **Settings > Customize > Skills**
-3. Click **+** then **Create skill** then **Upload a skill**
-4. Upload the zip file (no need to extract it)
-
-See [Claude's skill documentation](https://support.claude.com/en/articles/12512180-use-skills-in-claude) for more details.
-
-### ChatGPT
-
-1. Download the latest `analyzify-skill-v*.zip` from [Releases](https://github.com/analyzify/analyzify-mcp-public/releases)
-2. Extract the zip
-3. Upload the skill files to your project's custom instructions or knowledge
-
-### Claude Code
-
-```bash
-npx skills add analyzify/analyzify-mcp-public
-```
+The `skill/` folder in this repo is a copy of the server's recipe source, synced at each release: changes go to the
+server's source, never here.
 
 ## Manual Configuration
 
@@ -148,7 +130,6 @@ analyzify-mcp serve --transport sse --addr :8080  # Start MCP server (SSE HTTP)
 analyzify-mcp version                             # Print version
 analyzify-mcp self-update                         # Update to latest version
 analyzify-mcp self-update --check                 # Check for updates
-analyzify-mcp skill latest-version                # Check latest skill version
 analyzify-mcp search proxy                        # Search schema
 analyzify-mcp query '{ extMe { shopName } }'      # Execute a query
 ```
