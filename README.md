@@ -140,14 +140,22 @@ analyzify-mcp query '{ extMe { shopName } }'      # Execute a query
 
 ## MCP Tools
 
-| Tool | Description |
-|------|-------------|
-| `introspect_schema` | Search the schema for types, queries, and mutations |
-| `graphql_schema_full` | Returns the complete schema in SDL format |
-| `execute_graphql` | Execute a GraphQL query against the live API |
-| `introspect_report_schema` | Search the report schema for available report queries |
-| `report_schema_full` | Returns the complete report schema in SDL format |
-| `execute_report_graphql` | Execute a query against the Report API |
+The answers first; the raw reads are there for anything they don't cover.
+
+| Tool | What it answers |
+|------|-----------------|
+| `whoami` | The store, the key's rights, the connector version, every source's state, and the answer rules |
+| `performance_summary` | The store over a date range against a comparison period: orders, sales, profit, ad spend, MER |
+| `channel_breakdown` | Google Ads, Meta and TikTok side by side (spend, each platform's own conversions, ROAS) against Shopify's orders, plus Analyzify's attributed orders per channel |
+| `product_performance` | Google Ads spend and return per product |
+| `source_status` | Each data source's state: how fresh it is, the last successful sync, and why one fails |
+| `metric_definitions` | What each metric means, its unit and how it is computed |
+| `recipe` | Analyzify's recipes, such as the weekly report and channel comparisons |
+| `execute_graphql` | A read-only query against the live API (Shopify, Google Analytics, Search Console, Google Ads) |
+| `execute_report_graphql` | A read-only query against Analyzify's stored reports |
+| `introspect_schema`, `graphql_schema_full` | The live API's schema |
+| `introspect_report_schema`, `report_schema_full` | The stored reports' schema |
+| `fetch_more_results` | The other parts of a long result |
 
 ## Links
 
