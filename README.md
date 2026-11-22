@@ -42,13 +42,15 @@ This will ask for your API key and automatically update your Claude Desktop conf
 analyzify-mcp setup --api-key azfy_your-api-key
 ```
 
+Then restart Claude Desktop to activate.
+
 For Claude Code:
 
 ```bash
 analyzify-mcp setup --claude-code --api-key azfy_your-api-key
 ```
 
-After setup, restart Claude Desktop to activate.
+Setup checks the key and names the connector `analyzify-<store>`, so each store's key gets its own connector.
 
 ## Recipes and rules: built in
 
