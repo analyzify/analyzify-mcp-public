@@ -23,6 +23,8 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **Only query channels that whoami (or `source_status`) shows as connected.** Never recompute a figure or a change `performance_summary` gives, and never call a change it does not compute a drop.
 
+**The ad platforms' conversions for a recent week are not settled.** Google Ads keeps crediting conversions to the day of the click for each conversion action's window (30 days by default), so last week's and last month's Google Ads conversions, conversion value and ROAS will still rise: say so for Google Ads, give them as provisional, and never read their change against the period before as final. Meta and TikTok credit within their attribution setting (7 days after the click by default), so their part of a week that ended more than 7 days ago is nearly settled. Spend is final once it is synced, and Shopify's orders and sales are known.
+
 ## Report Template
 
 Present in this exact structure:
@@ -98,7 +100,7 @@ These are GA4's channels and revenue. Each ad platform's spend and ROAS come fro
 | Campaign D | TikTok | $X | — | — |
 | Campaign E | Meta | $X | $X | X.Xx |
 
-Revenue and ROAS here are the platform's own numbers (TikTok reports conversions but no value). A recent week isn't settled yet: say so instead of calling a campaign weak.
+Revenue and ROAS here are the platform's own numbers (TikTok reports conversions but no value). A recent week's Google Ads conversions aren't settled yet (above): say so instead of calling a campaign weak.
 
 #### Top 5 Products (by Revenue)
 

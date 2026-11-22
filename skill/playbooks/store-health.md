@@ -42,7 +42,7 @@ Open with 4-6 key numbers:
 | Net Revenue (Shopify net sales) | $X |
 | − COGS | -$X |
 | − Ad Spend | -$X |
-| **= Net Profit** (the profit report's; shipping is not subtracted) | **$X** |
+| **= Net Profit** (the profit report's: after product cost and ads; the store's own shipping costs are not in the data) | **$X** |
 
 ### Traffic & Conversion
 
