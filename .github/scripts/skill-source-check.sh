@@ -49,10 +49,12 @@ skill_md() { gh api -H "Accept: application/vnd.github.raw+json" "repos/$REPO/co
 head_md=$(skill_md "$HEAD_SHA") || fail "The PR's skill/SKILL.md could not be read (removed?)."
 NEW=$("$HERE/skill-version.sh" <<<"$head_md") || fail "The PR's skill/SKILL.md has no x.y.z version line."
 # main may have no SKILL.md yet (a 404); any other read error fails the check.
-if ! base_md=$(skill_md "$BASE_REF" 2>&1); then
-  grep -q 'HTTP 404' <<<"$base_md" || fail "$BASE_REF's skill/SKILL.md could not be read: $base_md."
+err=$(mktemp)
+if ! base_md=$(skill_md "$BASE_REF" 2>"$err"); then
+  grep -q 'HTTP 404' "$err" || fail "$BASE_REF's skill/SKILL.md could not be read: $(cat "$err")."
   base_md=""
 fi
+rm -f "$err"
 OLD=$("$HERE/skill-version.sh" <<<"$base_md" 2>/dev/null) || OLD=0.0.0
 LATEST=$(gh api --paginate "repos/$REPO/tags" --jq '.[].name | select(startswith("skill-v")) | ltrimstr("skill-v")' | sort -V | tail -1)
 LATEST=${LATEST:-0.0.0}
