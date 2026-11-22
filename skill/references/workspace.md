@@ -1,6 +1,6 @@
 # Workspace & Account Info
 
-Run extMe first (below), then the `whoami` tool (Analyzify MCP 0.4.0 or later): whoami answers "which store is this", "what can you see" and "what is connected" in one call, with every stored source's state and whether customer-level data is available. The extMe query below gives the IDs other queries need; it runs via `execute_graphql`.
+Call the `whoami` tool first, then run extMe (below): whoami answers "which store is this", "what can you see" and "what is connected" in one call, with every stored source's state and whether customer-level data is available. The extMe query below gives the IDs other queries need; it runs via `execute_graphql`.
 
 ## Get Full Workspace Info
 
@@ -31,7 +31,7 @@ Run extMe first (below), then the `whoami` tool (Analyzify MCP 0.4.0 or later): 
 
 - "What is my space ID?" → `workspaceId`
 - "What is my store?" → `shopName` + `shopUrl`
-- "What accounts are connected?" → whoami: each live source, and each stored source with its state (see the STATUS states in SKILL.md: fresh, behind_by_design, behind, stale, failing, syncing, no_data, not_connected; older connectors say ok or sync_failing) and the dates its data covers. Without whoami (an older connector): check `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` and `klaviyo` in extMe. Non-null means connected and enabled (as of the last status copy, up to 30 minutes old). Null means not connected, or its sync is failing or running, so confirm with `v2MarketingSourceStatuses` before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
+- "What accounts are connected?" → whoami: each live source, and each stored source with its state (the states are in whoami's answer: fresh, behind_by_design, behind, stale, failing, syncing, no_data, never_synced, not_connected) and the dates its data covers. A null `ga4`, `googleAds`, `googleSearchConsole`, `meta`, `tiktok` or `klaviyo` in extMe means not connected, or its sync is failing or running: go by whoami's states (or `source_status`) before saying a source is not connected. Meta, TikTok and Klaviyo data come only from the stored reports
 - "What's my GA4 property?" → `ga4.propertyID` + `ga4.accountName`
 - "What timezone is my store in?" → `shopifyIanaTimezone`
 - "What can this API key do?" → whoami (or `capabilities` in extMe). Customer contact details and segment customers need the `pii` capability

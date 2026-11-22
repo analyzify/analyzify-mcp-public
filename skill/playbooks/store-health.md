@@ -9,14 +9,14 @@
 This is the "catch-all" — when the user wants a general overview, run multiple queries in sequence and compose a comprehensive report.
 
 **Query sequence:**
-1. `profitMerReport` — profit, revenue, costs (one row per day: add up the days for the period's totals)
-2. `ga4Scorecards` — traffic + conversion metrics with period comparison
-3. `ga4Channels` — channel breakdown (top 5)
-4. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
-5. `v2MetaCampaigns` — Meta performance (if Meta connected)
-6. `shopifyCampaignAttributionReport` — top attribution sources
+1. The `source_status` tool — is every source connected and current (a stopped sync looks like a drop)
+2. The `performance_summary` tool — sales, orders, profit, MER and cost per order against the previous period
+3. `ga4Scorecards` — traffic + conversion metrics with period comparison
+4. `ga4Channels` — channel breakdown (top 5)
+5. The `channel_breakdown` tool — each ad platform's spend and results, and the attributed orders per channel
+6. `v2GadsCampaigns` / `v2MetaCampaigns` — top campaigns (if connected)
 
-Only query channels that are connected (check extMe response for null services).
+Only query channels that whoami (or `source_status`) shows as connected; a null service in extMe is not proof that it is not connected.
 
 ## How to Present
 
@@ -39,11 +39,10 @@ Open with 4-6 key numbers:
 
 | | Amount |
 |---|-------|
-| Gross Revenue | $X |
+| Net Revenue (Shopify net sales) | $X |
 | − COGS | -$X |
 | − Ad Spend | -$X |
-| − Shipping | -$X |
-| **= Net Profit** | **$X (X% margin)** |
+| **= Net Profit** (the profit report's; shipping is not subtracted) | **$X** |
 
 ### Traffic & Conversion
 
@@ -69,12 +68,12 @@ Overall Conversion: X%
 
 ### Marketing Performance
 
-| Platform | Spend | Revenue | ROAS |
+| Platform | Spend | Conversion value (platform's own) | ROAS (platform's own) |
 |----------|-------|---------|------|
 | Google Ads | $X | $X | X.Xx |
 | Meta | $X | $X | X.Xx |
-| TikTok | $X | $X | X.Xx |
-| **Total** | **$X** | **$X** | **X.Xx (MER)** |
+| TikTok | $X | — | not reported |
+| **Store** | **$X** | **Shopify net revenue $X** | **MER X.Xx** |
 
 ### Top Campaigns
 
@@ -95,11 +94,11 @@ After reviewing all data, highlight:
 
 When presenting comparisons:
 - **Default:** Same number of days in previous period
-- **"This month vs last month":** Use month boundaries
+- **"This month vs last month":** give the month before as `compare_start_date` / `compare_end_date` to `performance_summary`
 - **"This week vs last week":** Mon-Sun comparison
 - **"YoY":** Same dates previous year
 
-Calculate percentage change: `((current - previous) / |previous|) × 100`
+Take every figure and every change from `performance_summary` as given: never recompute a change, and never compute one the tool does not give.
 
 ## Common Follow-ups
 

@@ -2,9 +2,11 @@
 
 ## Triggers
 
-"Where do my orders come from?", "Attribution report", "First touch vs last touch", "Which campaigns drive sales?", "Channel attribution", "Which marketing channels work?", "New customer acquisition channels", "What's working in my marketing?", "Organic vs paid?"
+"Where do my orders come from?", "Which channels bring the most orders?", "Attribution report", "First touch vs last touch", "Which campaigns drive sales?", "Channel attribution", "Which marketing channels work?", "New customer acquisition channels", "What's working in my marketing?", "Organic vs paid?"
 
 A platform's ROAS, spend or cost per conversion by campaign is not here: see `playbooks/ad-performance.md`.
+
+**Which channels bring the most orders: the `channel_breakdown` tool first.** Its "Orders by channel" block gives Analyzify's attributed orders per channel (last non-direct click), next to each platform's spend and ROAS, in one call. Rank from it and name the model. When the answer has no Orders by channel block (an older connector), use the channel attribution query below with `attributionModel: "LAST_NON_DIRECT"` and the filter `INCLUDE_DIRECT_TRAFFIC` (below): without it the report leaves out the orders with no channel, so its totals are not the store's orders. The queries below are also for another model, campaigns and single orders (for campaigns add `"includeCampaigns": true`; it is slow on a long list of channels).
 
 ## Strategy
 
@@ -111,10 +113,13 @@ query($input: ShopifyChannelAttributionInput!) {
     "page": 1,
     "limit": 50,
     "attributionModel": "LAST_NON_DIRECT",
-    "includeCampaigns": true
+    "filters": [{ "field": "INCLUDE_DIRECT_TRAFFIC", "operator": "EQ", "value": "true" }],
+    "sort": [{ "field": "ANALYZIFY_TOTAL_ORDERS", "direction": "DESC" }]
   }
 }
 ```
+
+With direct orders included and a single-touch model (`LAST_NON_DIRECT`, `LAST_TOUCH`, `FIRST_TOUCH`), the summary's `totalOrders` is every order and a `DIRECT` row holds the orders with no channel: direct visits, returns from a payment page (PayPal, Klarna) and orders with no tracked visit (POS, draft, subscription). Never call them all direct visits. The orders credited to a channel are `totalOrders` minus the `DIRECT` row, at most the other rows' sum (an order with no campaign is on no row: say so), not `summary.analyzifyAttributedOrders`, which counts by another rule. The multi-touch models (`LINEAR`, `U_SHAPED`, `ANY_CLICK`) never have a `DIRECT` row: there, never read the summary's total as credited orders. Meta's orders can sit on Facebook, Instagram and Meta rows. A channel is a name and a type (Google paid and Google organic are two rows), and `OTHER` is every source Analyzify did not recognise, not one channel. `analyzifyRevenue` is order totals (with tax and shipping, before returns), not net sales.
 
 ### 3. Purchase Attribution (order-level detail)
 
@@ -171,10 +176,10 @@ Use these to answer specific questions fast:
 | Google Ads | X | $X | X |
 | Meta Ads | X | $X | X |
 | Organic Search | X | $X | X |
-| Direct | X | $X | X |
+| No channel (Analyzify's Direct) | X | $X | X |
 | **Total** | **X** | **$X** | **X** |
 
-Orders and revenue are Analyzify's attribution of Shopify orders under the model you ran; name the model. For spend, ROAS or cost per conversion next to them, take each platform's own figures from `channel_breakdown` and show them as the platform's numbers, in their own columns or a second table. Analyzify-attributed revenue divided by spend is not the platform's ROAS: if you show it, label it as such.
+Orders and revenue are Analyzify's attribution of Shopify orders under the model you ran; name the model. For spend, ROAS or cost per conversion next to them, take each platform's own figures from `channel_breakdown` and show them as the platform's numbers, in their own columns or a second table. Never divide Analyzify's attributed order totals by a platform's spend as its ROAS, or a platform's spend by attributed orders as its cost per order.
 
 ### Campaign Breakdown
 
@@ -195,7 +200,7 @@ For a campaign's spend, ROAS or cost per conversion, read the platform's campaig
 
 ## Common Follow-ups
 
-- "Show me just paid channels" → add filter `channelType: "Paid"`
-- "Which campaign acquires the most new customers?" → sort by `analyzifyNewCustomers DESC`
+- "Show me just paid channels" → add the filter `{ "field": "CHANNEL_TYPE", "operator": "EQ", "value": "PAID" }`
+- "Which campaign acquires the most new customers?" → sort `[{ "field": "ANALYZIFY_NEW_CUSTOMERS", "direction": "DESC" }]`
 - "Show order-level detail for campaign X" → purchase attribution with `ANALYZIFY_ANY_CAMPAIGN` filter
 - "Compare first touch vs last touch" → run same query with different `attributionModel`

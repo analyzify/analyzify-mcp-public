@@ -10,17 +10,18 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **Required queries (run in sequence):**
 
-1. `profitMerReport` — revenue, profit, costs, unit economics (one row per day: add up the days, then compute ratios from the sums)
-2. The same daily rows give the trend
-3. `ga4Scorecards` — traffic + conversion with auto-comparison
-4. `ga4Channels` — channel breakdown (groupByDate: false, groupByFields: ["channel_name"])
-5. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
-6. `v2MetaCampaigns` — top Meta campaigns (if Meta connected)
-7. `v2TiktokCampaigns` — top TikTok campaigns (if TikTok connected)
-8. `ga4ProductPerformances` — top products (groupByDate: false, groupByFields: ["item_name"])
-9. `shopifyCampaignAttributionReport` — attribution summary
+1. The `performance_summary` tool — the period's sales, orders, profit, MER and cost per order against the comparison period, with each change (or why it is not computed). Give `compare_start_date` / `compare_end_date` from the Period Defaults table below (the week before, the same days last week, the month before); the default (the same number of days just before) fits only "the last N days"
+2. The `channel_breakdown` tool — each ad platform's spend and results, and Analyzify's attributed orders per channel
+3. `profitMerReport` daily rows — only for the trend inside the period
+4. `ga4Scorecards` — traffic + conversion with auto-comparison
+5. `ga4Channels` — channel breakdown (groupByDate: false, groupByFields: ["channel_name"])
+6. `v2GadsCampaigns` — top campaigns (if Google Ads connected)
+7. `v2MetaCampaigns` — top Meta campaigns (if Meta connected)
+8. `v2TiktokCampaigns` — top TikTok campaigns (if TikTok connected)
+9. `ga4ProductPerformances` — top products (groupByDate: false, groupByFields: ["item_name"])
+10. `shopifyCampaignAttributionReport` — attribution by campaign
 
-**Only query channels that show as connected in extMe.**
+**Only query channels that whoami (or `source_status`) shows as connected.** Never recompute a figure or a change `performance_summary` gives, and never call a change it does not compute a drop.
 
 ## Report Template
 
@@ -53,8 +54,9 @@ Present in this exact structure:
 | Google Ads | $X | X% |
 | Meta Ads | $X | X% |
 | TikTok Ads | $X | X% |
-| Shipping | $X | X% |
-| **Total Costs** | **$X** | **X%** |
+| **Total ad spend** (the tool's, not a sum you make) | **$X** | **X%** |
+
+Shipping in the profit report is shipping charged to the customer, not a cost: never list it as one.
 
 #### Orders & Customers
 
@@ -64,8 +66,7 @@ Present in this exact structure:
 | AOV | $X | $X | +X% |
 | New Customers | X | X | +X% |
 | New Customer % | X% | X% | |
-| CAC | $X | $X | |
-| Cost per order (`cpa`) | $X | $X | |
+| Cost per order | $X | $X | |
 
 #### Traffic & Conversion
 
@@ -77,13 +78,15 @@ Present in this exact structure:
 
 #### Channel Performance
 
-| Channel | Sessions | Revenue | Conv. Rate | ROAS |
-|---------|----------|---------|------------|------|
-| Organic Search | X | $X | X% | — |
-| Paid Search | X | $X | X% | X.Xx |
-| Paid Social | X | $X | X% | X.Xx |
-| Email/Direct | X | $X | X% | — |
-| Other | X | $X | X% | — |
+| Channel | Sessions | Revenue (GA4) | Conv. Rate |
+|---------|----------|---------|------------|
+| Organic Search | X | $X | X% |
+| Paid Search | X | $X | X% |
+| Paid Social | X | $X | X% |
+| Email/Direct | X | $X | X% |
+| Other | X | $X | X% |
+
+These are GA4's channels and revenue. Each ad platform's spend and ROAS come from `channel_breakdown`, in their own section.
 
 #### Top 5 Campaigns (by Revenue)
 
@@ -114,7 +117,7 @@ After reviewing all data, provide 3-5 bullet points:
 - **Wins:** What improved and why (be specific)
 - **Concerns:** What declined and the likely cause
 - **Opportunities:** Untapped potential spotted in the data
-- **Action Items:** 2-3 specific things to do next week/month
+- **Worth a look:** 2-3 facts the merchant may want to act on, each with what was measured (no verdicts from a raw ROAS: `references/judging-performance.md`)
 
 ---
 
@@ -137,4 +140,4 @@ Use the store's timezone (`shopifyIanaTimezone` from extMe) to determine day bou
 - If a metric is missing (channel not connected), skip that section — don't show zeros
 - For weekly reports, use daily grouping for trend context
 - For monthly reports, use weekly grouping for trend context
-- End with actionable takeaways, not just numbers
+- End with "Worth a look": facts the merchant may want to act on, each with what was measured, not just numbers

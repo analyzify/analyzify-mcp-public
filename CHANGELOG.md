@@ -1,5 +1,16 @@
 # Changelog
 
+## Skill 0.1.18 (2026-11-22)
+
+- The connector's rules (in the `whoami` answer) win where this skill says otherwise; a tool the skill names but the connector lacks means the connector is older (`analyzify-mcp self-update`)
+- Session start is `whoami` first, then extMe, as the connector asks
+- "Which channels bring the most orders" goes to `channel_breakdown`, whose Orders by channel block gives Analyzify's attributed orders per channel (last non-direct click), never divided by a platform's spend as a ROAS or a cost per order; the attribution playbook's channel query includes orders with no channel, so its totals are the store's orders
+- The playbooks call the dedicated tools first: `performance_summary` for a period and its change (weekly and monthly reports, store health, sales drops, year over year, promotions, sales, new customers), `channel_breakdown` for channels, `source_status` before any "drop" or "no spend", `product_performance` for ads per product; the raw reports stay for daily rows, campaigns and single orders
+- Settled days follow the connector: Google Ads for its conversion window (30 days by default), Meta and TikTok about 7 days; judge from 8 days back
+- The `never_synced` state; `metric_definitions` for "what does X mean"; the version notes for older connectors are gone, except where an answer line may be missing
+- No figure divides one source by another: the budget and attribution tables show each platform's spend and ROAS beside Analyzify's attributed orders, never attributed order totals over spend or spend over attributed orders or new customers; the weekly report compares with the period the request names (the week or month before), not only the days just before
+- Shipping in the profit report is shipping charged to the customer, not a cost: the cost tables no longer list it; total ad spend is the report's figure; shares of paid and organic are by orders, or by the attribution report's own total sales, never over net sales
+
 ## Skill 0.1.17 (2026-11-22)
 
 - The attribution reports carry no ad-platform figures (cost, clicks, impressions, CTR, CPC, CPM, ROAS, CPA, sessions, campaign type): the queries no longer ask for them, and the presentation tables drop the ROAS and CPA columns. Spend, ROAS and cost per conversion come from `channel_breakdown` or the `v2*` ad reports, shown as the platform's figures

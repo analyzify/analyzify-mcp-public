@@ -88,10 +88,10 @@ Count of items with spend (path `customers/{accountID}/googleAds:search`):
   }
 }
 ```
-- Each page holds up to 10,000 items. A long page comes back in parts: part 1 already says how many rows the page has (`_rowsInThisAnswer`, with Analyzify MCP 0.4.0 or later), so you don't need the other parts to count items. A short page comes back whole, without `_rowsInThisAnswer`: count the rows in its `results` (a table's `rows`).
+- Each page holds up to 10,000 items. A long page comes back in parts: part 1 already says how many rows the page has (`_rowsInThisAnswer`), so you don't need the other parts to count items. A short page comes back whole, without `_rowsInThisAnswer`: count the rows in its `results` (a table's `rows`).
 - If the answer has a `nextPageToken`, send it as `"pageToken"` in the same body for the next page. Read every page: there is no count until the page without a `nextPageToken` is read.
-- **The total comes from the connector, not from your own sum.** With Analyzify MCP 0.4.5 or later, from page 2 on a `MORE PAGES` line says how many rows the pages read so far hold together, and the last page says `ALL PAGES READ` with the total: give that number as the count. A query that fits in one page (no `nextPageToken`) gets no such line: its row count is the count.
-- With an older connector (no `ALL PAGES READ` line), write each page's row count down as you read it (page 1: 10,000; page 2: 10,000; …) and check the sum: every page but the last holds exactly 10,000 rows, so the total is 10,000 × (pages − 1) + the last page's rows. A total that does not match leaves a page out.
+- **The total comes from the connector, not from your own sum.** From page 2 on, a `MORE PAGES` line says how many rows the pages read so far hold together, and the last page says `ALL PAGES READ` with the total: give that number as the count. A query that fits in one page (no `nextPageToken`) gets no such line: its row count is the count.
+- When the answer has no `ALL PAGES READ` line (an older connector), write each page's row count down as you read it (page 1: 10,000; page 2: 10,000; …) and check the sum: every page but the last holds exactly 10,000 rows, so the total is 10,000 × (pages − 1) + the last page's rows. A total that does not match leaves a page out.
 - Use `googleAds:search`, not `searchStream`: search answers one page at a time with a row count per page.
 
 Top items by spend (ranked on the item ID alone, so an item whose title changed during the period still counts once; get titles for the top IDs in a second call with `segments.product_title` and `WHERE segments.product_item_id IN (...)`):
@@ -105,7 +105,7 @@ Top items by spend (ranked on the item ID alone, so an item whose title changed 
 
 When the user asks for every item and there are thousands: give the exact count and the top items, and say the full list is too long for a chat. Never ask the user to narrow the question because the answer is long.
 
-Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is complete up to its last sync (its last ~8 days are still not settled, as with any Google Ads read); say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
+Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is complete up to its last sync (its newest days are not settled yet, as with any Google Ads read: conversions keep arriving for the conversion window, 30 days by default); say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
 
 ### List Accessible Customers
 ```graphql
@@ -124,4 +124,4 @@ Queries use GAQL syntax in the `body.query` field. Key concepts:
 - Always pass `body` as a JSON variable
 - `cost_micros` needs conversion: divide by 1,000,000 to get the actual amount
 - Present ROAS as `conversions_value / (cost_micros / 1000000)`
-- `googleAds` null in extMe means Google Ads is not connected, or its sync is failing or running: check whoami's source states (or `v2MarketingSourceStatuses`) before telling the user to connect it in the Analyzify dashboard
+- `googleAds` null in extMe means Google Ads is not connected, or its sync is failing or running: check whoami's source states (or the `source_status` tool) before telling the user to connect it in the Analyzify dashboard

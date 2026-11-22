@@ -10,13 +10,14 @@ Combine cross-platform ad data with attribution and profit metrics, so the merch
 
 **Queries to run:**
 
-1. `profitMerReport` — net revenue, gross profit, COGS and ad spend by platform, one row per day (add up the days, then compute MER and margin)
-2. `v2GadsCustomerMetrics` / `v2GadsCampaigns` — Google Ads totals and campaigns
-3. `v2MetaCampaigns` — Meta spend, purchases and purchase value
-4. `v2TiktokCampaigns` — TikTok spend and conversions (no conversion value)
-5. `shopifyCampaignAttributionReport` — orders and revenue by campaign as Shopify and Analyzify record them
-6. `ga4Channels` — organic vs paid traffic split
-7. `v2MarketingSourceStatuses` — make sure each source is connected and current before comparing them
+1. The `source_status` tool — make sure each source is connected and current before comparing them
+2. The `channel_breakdown` tool — each platform's spend, conversions and ROAS, the blended MER and cost per order, and Analyzify's attributed orders per channel, in one call
+3. `profitMerReport` — gross profit and margin, one row per day (add up the days, then compute margin from the sums)
+4. `v2GadsCampaigns` — Google Ads campaigns
+5. `v2MetaCampaigns` — Meta campaigns: spend, purchases and purchase value
+6. `v2TiktokCampaigns` — TikTok campaigns: spend and conversions (no conversion value)
+7. `shopifyCampaignAttributionReport` — orders and revenue by campaign as Shopify and Analyzify record them
+8. `ga4Channels` — organic vs paid traffic split
 
 Use settled days for anything you compare (the window ends 8 days before today); see `references/judging-performance.md`.
 
@@ -24,24 +25,25 @@ Use settled days for anything you compare (the window ends 8 days before today);
 
 ### Channel Efficiency Comparison
 
-| Channel | Spend | Revenue (Analyzify attribution) | Revenue / spend | New Customers | NCAC |
-|---------|-------|--------------------------------|-----------------|---------------|------|
-| Google Ads | $X | $X | X.Xx | X | $X |
-| Meta Ads | $X | $X | X.Xx | X | $X |
-| TikTok Ads | $X | $X | X.Xx | X | $X |
-| Organic | $0 | $X | — | X | — |
-| **Total** | **$X** | **$X** | **MER X.Xx** | **X** | **$X** |
+| Channel | Spend (platform) | ROAS (platform's own) | Orders (Analyzify attribution) | Order totals (Analyzify attribution) |
+|---------|------------------|-----------------------|--------------------------------|--------------------------------------|
+| Google Ads | $X | X.Xx | X | $X |
+| Meta Ads | $X | X.Xx | X | $X |
+| TikTok Ads | $X | not reported | X | $X |
+| Organic channels | — | — | X | $X |
+| **Store** | **$X** | **MER X.Xx** (net revenue / total ad spend) | **X** | |
 
-Take revenue per channel from one attribution model (`shopifyCampaignAttributionReport` / `shopifyChannelAttributionReport`, say which model) so each order is counted once. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
+Spend and ROAS are each platform's own figures; orders and order totals are Analyzify's attribution under one model (`channel_breakdown`'s Orders by channel block, or the attribution reports; say which model), so each order is counted once. Two sources, two sets of columns: never divide one by the other (no attributed order totals over spend as a ROAS, no spend over attributed orders or new customers as a cost per order or NCAC). Meta's orders can sit on Facebook, Instagram and Meta rows. Don't add up the platforms' own conversion values: they claim overlapping orders. The total uses MER = Shopify net revenue / total ad spend from `profitMerReport`.
 
 ### Revenue Dependency Analysis
 
-| Source | Revenue | % of Total |
+| Source | Orders (Analyzify attribution) | % of the store's orders |
 |--------|---------|-----------|
-| Paid Channels | $X | X% |
-| Organic/Free | $X | X% |
+| Paid channels | X | X% |
+| Organic and free channels | X | X% |
+| No channel (Analyzify's Direct) | X | X% |
 
-State the split as a fact ("70% of revenue came through paid channels in this period") and compare with the store's own past periods, not with a fixed benchmark.
+Take the shares by orders from `channel_breakdown`'s Orders by channel block, or by revenue from the attribution report's own `summary.totalSales` with the `INCLUDE_DIRECT_TRAFFIC` filter (`playbooks/attribution.md`). Attributed revenue is order totals: never divide it by net sales. State the split as a fact ("70% of orders came through paid channels in this period") and compare with the store's own past periods, not with a fixed benchmark.
 
 ### Campaign-Level Efficiency
 
@@ -79,8 +81,8 @@ Don't say "cut", "pause", "scale" or "shift budget". If the merchant asks what t
 
 | Metric | This period | Previous period | Same period last year |
 |--------|-------------|-----------------|-----------------------|
-| Paid revenue share | X% | X% | X% |
-| Email/SMS revenue share | X% | X% | X% |
+| Paid channels' share of orders (or of the attribution report's total sales) | X% | X% | X% |
+| Email/SMS share of orders (or of the attribution report's total sales) | X% | X% | X% |
 | MER (net revenue / ad spend, from totals) | X.Xx | X.Xx | X.Xx |
 | NCAC (ad spend / new customers) | $X | $X | $X |
 

@@ -21,9 +21,10 @@ In a legacy report, don't read CTR, CPC, CPM, CPA, ROAS, conversion rate, MER, m
 
 ## 2. Settled days only
 
-Ad platforms keep adding conversions for days after the click. A Google Ads read of the last 7 days can be 30% short or more, and Meta restates its numbers for up to 28 days.
+Ad platforms keep crediting conversions to the day of the click after that day has passed: Google Ads for as long as each conversion action's window (30 days by default, up to 90), most of them in the first days; Meta and TikTok within their attribution setting (7 days after the click by default). A Google Ads read of the last 7 days can be 30% short or more.
 
-- End a judging window at least **8 days before today** for Google Ads and TikTok. Meta can restate for 28 days: treat a Meta window ending less than 28 days ago as provisional and say so.
+- End a judging window at least **8 days before today**. For complete Google Ads figures Google advises 30 days, or the account's longest conversion window.
+- A stored Meta or TikTok day is read again only for about 3 days after it, so a stored figure can stay below the platform's own report even for a settled day. Say so when the user compares the two.
 - If the user asks about the last few days, give the numbers but say they are not settled yet, and don't judge them.
 
 ## 3. Break-even is not ROAS 1.0

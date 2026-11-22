@@ -48,8 +48,8 @@ Report API queries are pre-aggregated in ClickHouse — they're fast and don't h
 
 - **For Google Ads, Meta and TikTok, use the `v2*` reports** (section "Marketing Reports (v2)" below). They return a `summary` with rates already computed from totals, plus `meta` that says how fresh and complete the data is.
 - **Rates come from totals.** In the legacy ad reports, don't read a rate field (CTR, CPC, CPM, CPA, cost per conversion, conversion rate, frequency) from a row covering more than one day: compute it from the totals in the same row. When you combine rows, add up the totals first, then divide. For `profitMerReport`, see its section below.
-- **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Read the STATUS line for that source at the top of the result (Analyzify MCP 0.4.0 or later), or check `v2MarketingSourceStatuses` (below), before saying "you spent nothing" or "no orders".
-- **A result in parts is incomplete.** If it starts with `RESULT IN PARTS`, fetch the other parts with `fetch_more_results` before you total, rank or compare (`SKILL.md`, answer rules).
+- **Empty is not zero.** No rows, or zero spend, can mean the source isn't connected, its sync is failing, or the date range isn't synced yet. Read the STATUS line for that source at the top of the result, or check `v2MarketingSourceStatuses` (below), before saying "you spent nothing" or "no orders".
+- **A result in parts is incomplete.** If it starts with `RESULT IN PARTS`, fetch the other parts with `fetch_more_results` before you total, rank or compare.
 - **A failed read is not zero.** If a query returns errors, say the data couldn't be read and why. Never present a failed read as 0.
 - **Say where a number came from:** stored report (refreshed about every second day) or live read, and up to which date.
 - **Before calling anything "losing money"** or suggesting cuts, follow `references/judging-performance.md`.
@@ -114,7 +114,7 @@ Variables:
 }
 ```
 
-**Use when:** "What's my revenue?", "How many sessions?", "Conversion rate?", "Compare this month vs last month"
+**Use when:** GA4's own revenue, sessions or conversion rate, and their change against a period (a store's sales and their change: `performance_summary`)
 **Percentage diffs** compare current period vs previous period automatically.
 
 ### ga4Channels — Traffic by channel
@@ -308,7 +308,7 @@ Variables:
 
 - Without `groupByFields`, rows are one per item **per campaign** (`item_id`, `product_title`, `campaign_name`), and `pageInfo.totalCount` counts those item × campaign rows, not items. Use `groupByFields: ["item_id", "product_title"]` (exactly these names) for one row per item; then leave out `campaignId` and `campaignName` (they would show one arbitrary campaign).
 - With that grouping, `pageInfo.totalCount` counts every item stored for the range, including items with no impressions or spend. An item whose title changed in the range can appear twice (once per title). For "how many products had spend", use the live count in `references/gads.md` ("Products (items) over a period").
-- `summary.uniqueItems` (connector 0.4.13 or later) counts item ID and title pairs in the filtered rows, so a retitled item counts once per title too. Even with a cost filter it can be well above Google's count of items with spend (by half or more on a store that retitles often). Never give it as the number of products; count live.
+- `summary.uniqueItems` counts item ID and title pairs in the filtered rows, so a retitled item counts once per title too. Even with a cost filter it can be well above Google's count of items with spend (by half or more on a store that retitles often). Never give it as the number of products; count live.
 - Any `groupByFields` value other than the ones above, or a grouping without `item_id` and `product_title`, is refused with an error that names the allowed keys. Retry with an allowed key; never read the error as "no data".
 - An item is a variant, not a product. To answer "by product", follow the roll-up recipe in `playbooks/product-optimization.md`.
 - `limit` defaults to 20 and must be 1000 or less (a larger value quietly falls back to 20). Check `pageInfo.totalCount` before saying "these are all your products".

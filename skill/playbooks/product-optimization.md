@@ -10,10 +10,13 @@ Combine GA4 product data (views → cart → purchase funnel) with Shopify order
 
 **Queries to run:**
 
-1. `ga4ProductPerformances` — view/cart/purchase funnel per product
-2. `shopifyOrderAgg` — revenue and order metrics
-3. `v2GadsProducts` — Google Shopping/PMax performance per item (variant), if connected. For counts or complete lists of items with spend, use the live Shopping performance view instead (`references/gads.md`, "Products (items) over a period")
-4. `v2MetaProducts` — Meta catalogue ads per product (spend and purchases, no purchase value), if connected
+1. The `product_performance` tool — first, for which products get the most ad spend and the best or worst return on Google Ads or Meta (each platform's own figures; not sales per product)
+2. `ga4ProductPerformances` — view/cart/purchase funnel per product
+3. `shopifyOrderAgg` — revenue and order metrics
+4. `v2GadsProducts` — Google Shopping/PMax performance per item (variant), if connected. For counts or complete lists of items with spend, use the live Shopping performance view instead (`references/gads.md`, "Products (items) over a period")
+5. `v2MetaProducts` — Meta catalogue ads per product (spend and purchases, no purchase value), if connected
+
+Items 4 and 5 are for one platform's full list, a ranking above a spend the user names, or by variant.
 
 ## Queries
 

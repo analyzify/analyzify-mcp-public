@@ -6,13 +6,13 @@
 
 ## Strategy
 
-**Channels compared** ("how are my channels doing", ROAS or spend by channel): call the `channel_breakdown` tool first (Analyzify MCP 0.4.8 or later; see SKILL.md, "Channels compared"). It already returns each channel against Shopify, the currency check and each channel's state. The queries below are for one channel's detail, and for an older connector without that tool.
+**Channels compared** ("how are my channels doing", ROAS or spend by channel): call the `channel_breakdown` tool first. It already returns each channel against Shopify, the currency check, each channel's state and Analyzify's attributed orders per channel. The queries below are for one channel's detail.
 
 **Primary:** the `v2*` Report API queries: `v2GadsCustomerMetrics`, `v2GadsCampaigns`, `v2MetaCampaigns`, `v2MetaAccountMetrics`, `v2TiktokCampaigns`, `v2TiktokAdvertiserMetrics`. Their `summary` and rows already compute CTR, CPC, CPA and ROAS from totals. Don't read rates from multi-day rows of the legacy reports (`gadsCampaignsPerformance`, `fbCampaignInsights`, `tiktokCampaignInsights`): those are added up across days.
 
 **For cross-platform totals:** add up spend across platforms only when every platform's `meta.currencyCode` is the same as the shop's (otherwise give each platform's spend in its own currency and say a total needs converting first), but **don't add up the platforms' conversion value or compute a "blended ROAS"**: each platform claims the same orders, so the sum overstates sales. For an overall figure use MER = Shopify net revenue / total ad spend from `profitMerReport` (computed from its totals).
 
-**If a platform comes back empty:** check `v2MarketingSourceStatuses` before saying there was no spend (see `references/reports.md`).
+**If a platform comes back empty:** call the `source_status` tool before saying there was no spend.
 
 **Fallback to live proxy:** Only if report data isn't synced yet or user needs very recent (today's) data. Say the number is a live read and not settled. Exception: counts and complete lists of Google Ads items with spend always come from the live Shopping performance view (`references/gads.md`, "Products (items) over a period").
 

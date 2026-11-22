@@ -6,6 +6,8 @@
 
 ## Strategy
 
+**A period's sales and orders, or a change against another period:** the `performance_summary` tool first.
+
 **Primary:** Report API
 - `shopifyOrderAgg` for aggregated sales metrics
 - `ga4ProductPerformances` for product-level data

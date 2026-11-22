@@ -10,6 +10,8 @@ Business owners need historical context — is a dip seasonal or a real problem?
 
 **Key principle:** Always compare equal-length periods. When doing YoY, match the exact number of days.
 
+**A period against the year before: the `performance_summary` tool first,** with `compare: previous_year` (or `compare_start_date` / `compare_end_date`). It gives each figure for both periods and the change, or why a change is not computed (a period only partly stored, a source that started later). Never recompute its changes. The queries below are for a 12-month trend and for detail the tool does not give.
+
 ## Date Range Patterns
 
 | Comparison | Current Period | Previous Period |
@@ -25,9 +27,9 @@ Use the store's timezone (`shopifyIanaTimezone`) for day boundaries.
 
 ## Queries
 
-### 1. Revenue & Profit YoY
+### 1. Revenue & Profit: monthly trend and daily detail
 
-Run `profitMerReport` for both periods:
+The period's figures and their change against last year come from `performance_summary` (above): take them as given, never recompute a change. Use `profitMerReport` for a 12-month trend or for days inside a period:
 
 ```graphql
 query($input: ProfitMerInput!) {
@@ -42,8 +44,6 @@ query($input: ProfitMerInput!) {
   }
 }
 ```
-
-Run twice with current year dates and last year dates.
 
 For monthly figures, use `groupByFields: ["month"]`: one row per calendar month (`year` and `month`), with ratios from the month's totals. Without it rows are one per day: add them up for each period's totals, then compute ratios from the sums.
 
