@@ -65,7 +65,7 @@ Present in this exact structure:
 | New Customers | X | X | +X% |
 | New Customer % | X% | X% | |
 | CAC | $X | $X | |
-| CPA | $X | $X | |
+| Cost per order (`cpa`) | $X | $X | |
 
 #### Traffic & Conversion
 

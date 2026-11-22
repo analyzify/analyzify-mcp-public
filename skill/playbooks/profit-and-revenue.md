@@ -47,15 +47,15 @@ query($input: ProfitMerInput!) {
 
 ### 2. Monthly Summary (for period comparison)
 
-Same query with `groupByFields: ["month"]`: one row per calendar month (`year` and `month`), and every ratio on it (MER, margin, AOV, CPA, NCAC, CAC, CVR) is computed from the month's totals. A month that is not fully inside the date range covers only the days in the range.
+Same query with `groupByFields: ["month"]`: one row per calendar month (`year` and `month`), and every ratio on it (MER, margin, AOV, cost per order `cpa`, NCAC, CAC, CVR) is computed from the month's totals. A month that is not fully inside the date range covers only the days in the range.
 
 ### 3. Period Totals
 
 There is no single "totals" row: `groupByDate` is ignored and rows are one per day (or one per month, above). For a period, add up the rows (`netRevenue`, `grossProfit`, `costOfGoodsSold`, `shippingCost`, `totalAdSpend` and each platform's spend, `orders`, `newCustomers`, `totalCustomers`, `adClicks`, `netProfit`).
 
-**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, CPA = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers` and CVR = `orders / adClicks × 100` **over the days with `adSpendComplete: true` only** (every sum in them from those days), the rule the monthly rows and `channel_breakdown`'s blended line use, so every answer gives one figure for one period; say how many days were left out. Gross margin = `grossProfit / netRevenue` and AOV = `netRevenue / orders` from all rows. Never average the daily `mer`, `grossMargin` or `aov`. `totalCustomers` counts customers per day, so summed over days a customer who ordered on two days counts twice. `grossMargin` is a percentage (40 means 40%).
+**Compute ratios from those sums:** MER = `netRevenue / totalAdSpend`, cost per order (`cpa`) = `totalAdSpend / orders`, NCAC = `totalAdSpend / newCustomers`, CAC = `totalAdSpend / totalCustomers` and CVR = `orders / adClicks × 100` **over the days with `adSpendComplete: true` only** (every sum in them from those days), the rule the monthly rows and `channel_breakdown`'s blended line use, so every answer gives one figure for one period; say how many days were left out. Gross margin = `grossProfit / netRevenue` and AOV = `netRevenue / orders` from all rows. Never average the daily `mer`, `grossMargin` or `aov`. `totalCustomers` counts customers per day, so summed over days a customer who ordered on two days counts twice. `grossMargin` is a percentage (40 means 40%).
 
-**Ad spend not synced yet:** a row with `adSpendComplete: false` (today and up to two days before it, in UTC) may be missing the spend of the sources in `incompleteAdSources` (or the account simply had no delivery), so its net profit may be too high and its ad spend too low. Leave them out of MER and CPA (above), say those days are provisional, or end the period before them. Older days are never flagged: a source whose data stops early (check `v2MarketingSourceStatuses`) counts as no spend there, so say its MER may be too high. On a monthly row, `mer`, `cpa`, `ncac`, `cac` and `cvr` leave those days out while `netProfit` and `totalAdSpend` include them: for the current month, end the period before the flagged days and add up the daily rows. A monthly ratio of 0 with `adSpendComplete: false` means "not known yet", not zero.
+**Ad spend not synced yet:** a row with `adSpendComplete: false` (today and up to two days before it, in UTC) may be missing the spend of the sources in `incompleteAdSources` (or the account simply had no delivery), so its net profit may be too high and its ad spend too low. Leave them out of MER and cost per order (above), say those days are provisional, or end the period before them. Older days are never flagged: a source whose data stops early (check `v2MarketingSourceStatuses`) counts as no spend there, so say its MER may be too high. On a monthly row, `mer`, `cpa`, `ncac`, `cac` and `cvr` leave those days out while `netProfit` and `totalAdSpend` include them: for the current month, end the period before the flagged days and add up the daily rows. A monthly ratio of 0 with `adSpendComplete: false` means "not known yet", not zero.
 
 **Ad spend in another currency:** `currency` is the currency of the store's orders (the shop's currency on a store that sells in one currency; a store that sells in several can mix currencies in its revenue too), and each source's spend is its ad account's own amount, never converted. A row with `currencyMismatch: true` has spend from the sources in `currencyMismatchAdSources` (for example a Canadian-dollar Google Ads account on a US-dollar shop) in their own currency, so that row's `totalAdSpend`, `netProfit`, `mer`, `cpa`, `ncac` and `cac` add or divide amounts in different currencies. Don't report them, and don't add such rows into a period's total. Say which sources bill in another currency, give revenue and orders and each source's spend in its own currency, and say a combined profit or MER needs the spend converted first. Read each of those sources' own billing currency from `v2MarketingSourceStatuses` (`currencyCode`, one call for every source) or from its own `v2*` report's `meta.currencyCode`, and name it: never ask the user for it, and never label that source's amounts in the shop's currency. If it is empty, say that source's currency is not known. With several accounts of one source, it is the newest account's currency. Never estimate a converted figure yourself: no rough, approximate or converted MER, profit or ROAS range across currencies. If one day of the period has the flag, the period's sums mix currencies too. Only the source's most recently stored account is checked, so with several accounts of one source in different currencies, the others are not: `currencyMismatch: false` means no mismatch was found, not proof of none.
 
@@ -100,12 +100,14 @@ Run the daily query and present as a time series. Highlight:
 | **Total Costs** | **$X** | **X%** |
 | **Net Profit** | **$X** | **X%** |
 
-### Unit Economics (when user asks about CAC, CPA, AOV)
+### Unit Economics (when user asks about CAC, cost per order, AOV)
+
+The report's `cpa` is a cost per order, not a platform's cost per conversion: call it cost per order. For a platform's CPA (spend / its own conversions), use `playbooks/ad-performance.md`.
 
 | Metric | Value | What It Means |
 |--------|-------|---------------|
 | AOV | $X | Average order value |
-| CPA | $X | Cost to acquire one order |
+| Cost per order (`cpa`) | $X | Total ad spend per Shopify order |
 | CAC | $X | Cost to acquire one customer |
 | NCAC | $X | Cost to acquire one NEW customer |
 | MER | X.Xx | $X revenue per $1 ad spend |
@@ -116,7 +118,7 @@ Run the daily query and present as a time series. Highlight:
 - **MER** = Net Revenue / Total Ad Spend (higher is better; whether it is "good" depends on the margin: compare with break-even, `references/judging-performance.md`)
 - **Gross Margin** = (Revenue - COGS) / Revenue × 100
 - **Net Profit** = Net Revenue - COGS - Ad Spend (as the report computes it; shipping costs, fees and other costs are not subtracted, so say "profit after product cost and ads")
-- **CPA** = Total Ad Spend / Total Orders
+- **Cost per order** (`cpa`) = Total Ad Spend / Total Orders
 - **CAC** = Total Ad Spend / Total Customers
 - **NCAC** = Total Ad Spend / New Customers Only
 - **CVR** = Orders / Total Clicks × 100
