@@ -699,7 +699,7 @@ Preset filters: `NEW_CUSTOMER_FIRST_TOUCH_ATTRIBUTION`, `HIGH_VALUE_ORDERS_UTM_T
 
 ### shopifyCampaignAttributionReport — Campaign-level attribution (paginated)
 
-The campaign and channel attribution reports carry no ad-platform figures: `cost`, `clicks`, `impressions`, `ctr`, `cpc`, `cpm`, `roas`, `cpa`, `sessions` and (campaign report) `campaignType` come back empty (`v2ShopifyChannelAttribution` gives 0), and a filter or sort on them is refused. Spend, ROAS and cost per conversion come from the `v2*` ad reports or the `channel_breakdown` tool.
+The campaign and channel attribution reports carry no ad-platform figures: `cost`, `clicks`, `impressions`, `ctr`, `cpc`, `cpm`, `roas`, `cpa`, `sessions` and (campaign report) `campaignType` come back empty (`v2ShopifyChannelAttribution` gives 0), and a filter or sort on them is refused. Spend, ROAS and cost per conversion come from the ad platforms' own reports (`v2Gads*`, `v2Meta*`, `v2Tiktok*`) or the `channel_breakdown` tool.
 
 ```graphql
 query($input: ShopifyCampaignAttributionInput!) {

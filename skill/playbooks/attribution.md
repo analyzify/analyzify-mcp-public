@@ -17,7 +17,7 @@ Three levels of attribution available:
 
 Start with campaign or channel attribution for overview. Drill into purchase attribution for order-level detail.
 
-**No ad-platform figures here.** The attribution reports carry Shopify's orders, revenue and customers by campaign or channel, and Analyzify's attribution of them. They do not carry ad spend: `cost`, `clicks`, `impressions`, `ctr`, `cpc`, `cpm`, `roas`, `cpa`, `sessions` and (campaign report) `campaignType` come back empty (`v2ShopifyChannelAttribution` gives 0), and a filter or sort on them is refused. For spend, ROAS and cost per conversion by channel use the `channel_breakdown` tool; by campaign, the `v2*` campaign reports (`playbooks/ad-performance.md`).
+**No ad-platform figures here.** The attribution reports carry Shopify's orders, revenue and customers by campaign or channel, and Analyzify's attribution of them. They do not carry ad spend: `cost`, `clicks`, `impressions`, `ctr`, `cpc`, `cpm`, `roas`, `cpa`, `sessions` and (campaign report) `campaignType` come back empty (`v2ShopifyChannelAttribution` gives 0), and a filter or sort on them is refused. For spend, ROAS and cost per conversion by channel use the `channel_breakdown` tool; by campaign, the ad platforms' campaign reports (`v2GadsCampaigns`, `v2MetaCampaigns`, `v2TiktokCampaigns`; `playbooks/ad-performance.md`).
 
 ## Attribution Models
 
@@ -183,7 +183,7 @@ Orders and revenue are Analyzify's attribution of Shopify orders under the model
 | Brand Search | google | X | $X | X |
 | Summer Sale | facebook | X | $X | X |
 
-For a campaign's spend, ROAS or cost per conversion, read the platform's `v2*` campaign report and match by campaign name; say the two come from different sources.
+For a campaign's spend, ROAS or cost per conversion, read the platform's campaign report (`v2GadsCampaigns`, `v2MetaCampaigns`, `v2TiktokCampaigns`) and match by campaign name; say the two come from different sources.
 
 ### Attribution Comparison
 
