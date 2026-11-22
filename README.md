@@ -147,7 +147,7 @@ The answers first; the raw reads are there for anything they don't cover.
 | `whoami` | The store, the key's rights, the connector version, every source's state, and the answer rules |
 | `performance_summary` | The store over a date range against a comparison period: orders, sales, profit, ad spend, MER |
 | `channel_breakdown` | Google Ads, Meta and TikTok side by side (spend, each platform's own conversions, ROAS) against Shopify's orders, plus Analyzify's attributed orders per channel |
-| `product_performance` | Google Ads spend and return per product |
+| `product_performance` | Ad spend and return per product, in Google Ads' and Meta's own numbers |
 | `source_status` | Each data source's state: how fresh it is, the last successful sync, and why one fails |
 | `metric_definitions` | What each metric means, its unit and how it is computed |
 | `recipe` | Analyzify's recipes, such as the weekly report and channel comparisons |
