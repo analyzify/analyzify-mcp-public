@@ -121,7 +121,7 @@ Follow `references/judging-performance.md`. In short:
 - State the facts and what they don't mean. Don't say pause, cut or scale.
 
 Signals worth pointing out as facts (not verdicts):
-- CPA above the store's average order value
+- Cost per purchase (Meta's stored `cpa`, or Google Ads' live purchases on `channel_breakdown`'s purchases line) above the store's gross profit per order (`grossProfit / orders` from `profitMerReport`, same settled window): each attributed purchase costs more than an order earns before ads. Never use Google Ads' cost per conversion or TikTok's here: their conversions are not purchases
 - Many impressions and a CTR well below the account's
 - Many clicks and few conversions (look at the landing page)
 

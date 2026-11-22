@@ -69,7 +69,7 @@ Follow `references/judging-performance.md`. A campaign is only "below break-even
 
 Facts worth pointing out (not orders):
 - ROAS against break-even, for two settled periods
-- CPA and its trend against the store's average order value
+- Cost per purchase (a platform's spend / its own purchases: Meta's stored `cpa`, or Google Ads' purchases read live on `channel_breakdown`'s purchases line) and its trend, against the store's gross profit per order (`grossProfit / orders`, each added up over `profitMerReport`'s rows for the same settled window). Both are amounts per order, so they compare. Google Ads' stored conversions and TikTok's conversions are not purchases, so their cost per conversion is never set against an order figure. The platforms claim overlapping orders, so a cost per purchase below gross profit per order is not proof the spend pays
 - Meta frequency rising over recent weeks (`v2MetaAccountMetrics` daily rows; the period figure is roughly an average daily frequency, not a monthly one)
 - CPM rising faster than conversion rate
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## Skill 0.1.17 (2026-11-22)
+
+- The attribution reports carry no ad-platform figures (cost, clicks, impressions, CTR, CPC, CPM, ROAS, CPA, sessions, campaign type): the queries no longer ask for them, and the presentation tables drop the ROAS and CPA columns. Spend, ROAS and cost per conversion come from `channel_breakdown` or the `v2*` ad reports, shown as the platform's figures
+- A platform's cost is compared with an order figure only as a cost per purchase against the store's gross profit per order, never a Google Ads or TikTok cost per conversion against average order value
+
 ## Skill 0.1.16 (2026-11-22)
 
 - "Sales" names one of four figures: net sales; the order report's total sales (after returns); the attribution reports' total sales (before returns); or a live order's total (before returns). The old line called every order total "before returns"

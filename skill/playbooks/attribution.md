@@ -2,7 +2,9 @@
 
 ## Triggers
 
-"Where do my orders come from?", "Attribution report", "First touch vs last touch", "Which campaigns drive sales?", "Channel attribution", "Which marketing channels work?", "New customer acquisition channels", "Show me campaign ROAS", "What's working in my marketing?", "Organic vs paid?"
+"Where do my orders come from?", "Attribution report", "First touch vs last touch", "Which campaigns drive sales?", "Channel attribution", "Which marketing channels work?", "New customer acquisition channels", "What's working in my marketing?", "Organic vs paid?"
+
+A platform's ROAS, spend or cost per conversion by campaign is not here: see `playbooks/ad-performance.md`.
 
 ## Strategy
 
@@ -14,6 +16,8 @@ Three levels of attribution available:
 3. **Channel Attribution** — aggregated by marketing channel (Paid, Organic, etc.)
 
 Start with campaign or channel attribution for overview. Drill into purchase attribution for order-level detail.
+
+**No ad-platform figures here.** The attribution reports carry Shopify's orders, revenue and customers by campaign or channel, and Analyzify's attribution of them. They do not carry ad spend: `cost`, `clicks`, `impressions`, `ctr`, `cpc`, `cpm`, `roas`, `cpa`, `sessions` and (campaign report) `campaignType` come back empty (`v2ShopifyChannelAttribution` gives 0), and a filter or sort on them is refused. For spend, ROAS and cost per conversion by channel use the `channel_breakdown` tool; by campaign, the `v2*` campaign reports (`playbooks/ad-performance.md`).
 
 ## Attribution Models
 
@@ -38,13 +42,12 @@ There is no `ALL` model. To compare models, run the report once per model and sh
 query($input: ShopifyCampaignAttributionInput!) {
   shopifyCampaignAttributionReport(input: $input) {
     nodes {
-      campaignName source medium campaignType dated
+      campaignName source medium dated
       analyzifyTotalOrders analyzifyFirstTouchOrders analyzifyLastTouchOrders
       analyzifyRevenue analyzifyFirstTouchRevenue analyzifyLastNonDirectRevenue
       analyzifyNewCustomers analyzifyReturningCustomers
       shopifyTotalOrders shopifyRevenue
       averageOrderValue totalUniqueCustomers
-      cost clicks impressions ctr cpc cpm roas cpa
     }
     totalCount totalPage currentPage
     summary {
@@ -85,7 +88,6 @@ query($input: ShopifyChannelAttributionInput!) {
       analyzifyNewCustomers analyzifyReturningCustomers
       shopifyTotalOrders shopifyRevenue
       averageOrderValue totalUniqueCustomers
-      cost clicks impressions ctr cpc cpm roas cpa
     }
     totalCount totalPage currentPage
     summary {
@@ -164,20 +166,24 @@ Use these to answer specific questions fast:
 
 ### Channel Overview
 
-| Channel | Orders | Revenue | New Customers | ROAS | CPA |
-|---------|--------|---------|---------------|------|-----|
-| Google Ads | X | $X | X | X.Xx | $X |
-| Meta Ads | X | $X | X | X.Xx | $X |
-| Organic Search | X | $X | X | — | — |
-| Direct | X | $X | X | — | — |
-| **Total** | **X** | **$X** | **X** | — | — |
+| Channel | Orders | Revenue | New Customers |
+|---------|--------|---------|---------------|
+| Google Ads | X | $X | X |
+| Meta Ads | X | $X | X |
+| Organic Search | X | $X | X |
+| Direct | X | $X | X |
+| **Total** | **X** | **$X** | **X** |
+
+Orders and revenue are Analyzify's attribution of Shopify orders under the model you ran; name the model. For spend, ROAS or cost per conversion next to them, take each platform's own figures from `channel_breakdown` and show them as the platform's numbers, in their own columns or a second table. Analyzify-attributed revenue divided by spend is not the platform's ROAS: if you show it, label it as such.
 
 ### Campaign Breakdown
 
-| Campaign | Source | Orders | Revenue | ROAS | CPA | New Customers |
-|----------|--------|--------|---------|------|-----|---------------|
-| Brand Search | google | X | $X | X.Xx | $X | X |
-| Summer Sale | facebook | X | $X | X.Xx | $X | X |
+| Campaign | Source | Orders | Revenue | New Customers |
+|----------|--------|--------|---------|---------------|
+| Brand Search | google | X | $X | X |
+| Summer Sale | facebook | X | $X | X |
+
+For a campaign's spend, ROAS or cost per conversion, read the platform's `v2*` campaign report and match by campaign name; say the two come from different sources.
 
 ### Attribution Comparison
 
