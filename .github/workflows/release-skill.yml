@@ -1,21 +1,14 @@
 name: Release Skill
 
+# skill/ is built from analyzify-mcp's release: merging its skill-sync PR
+# runs this. The version is SKILL.md's frontmatter version: (the one the
+# installed-skill check reads), so the tag and the files always agree.
 on:
   push:
     branches: [main]
     paths:
       - "skill/**"
   workflow_dispatch:
-    inputs:
-      bump:
-        description: "Version bump type"
-        required: false
-        default: "patch"
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
 
 permissions:
   contents: write
@@ -29,33 +22,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Determine next version
+      - name: Read the version from SKILL.md
         id: version
         run: |
-          BUMP="${{ github.event.inputs.bump || 'patch' }}"
-
-          # Find latest skill-v* tag
+          set -euo pipefail
+          VERSION=$(.github/scripts/skill-version.sh skill/SKILL.md)
+          TAG="skill-v$VERSION"
           LATEST=$(git tag -l 'skill-v*' --sort=-v:refname | head -1)
-
-          if [ -z "$LATEST" ]; then
-            MAJOR=0; MINOR=1; PATCH=0
-          else
-            VER="${LATEST#skill-v}"
-            MAJOR=$(echo "$VER" | cut -d. -f1)
-            MINOR=$(echo "$VER" | cut -d. -f2)
-            PATCH=$(echo "$VER" | cut -d. -f3)
-
-            case "$BUMP" in
-              major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
-              minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
-              patch) PATCH=$((PATCH + 1)) ;;
-            esac
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "::error::$TAG exists already: a skill change needs a new version: in analyzify-mcp skill/SKILL.md"
+            exit 1
           fi
-
-          VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          if [ -n "$LATEST" ] && [ "$(printf '%s\n%s\n' "$TAG" "$LATEST" | sort -V | tail -1)" != "$TAG" ]; then
+            echo "::error::$VERSION is below the last skill tag, $LATEST"
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=skill-v$VERSION" >> "$GITHUB_OUTPUT"
-          echo "Next version: $VERSION (bump: $BUMP, previous: ${LATEST:-none})"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Version $VERSION from skill/SKILL.md (previous: ${LATEST:-none})"
 
       - name: Zip skill directory
         run: cd skill && zip -r "../analyzify-skill-v${{ steps.version.outputs.version }}.zip" .
@@ -65,6 +49,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "${{ steps.version.outputs.tag }}" \
+            --target "$GITHUB_SHA" \
             --title "Analyzify Skill ${{ steps.version.outputs.version }}" \
             --generate-notes \
             "analyzify-skill-v${{ steps.version.outputs.version }}.zip"
