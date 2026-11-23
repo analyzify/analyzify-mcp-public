@@ -46,20 +46,25 @@ ASSET="${BINARY}_${OS}_${ARCH}.tar.gz"
 URL="https://github.com/${REPO}/releases/download/${TAG}/${ASSET}"
 
 echo "Downloading ${BINARY} ${TAG} for ${OS}/${ARCH}..."
+SUDO=""
 tmpdir=$(mktemp -d)
-trap 'rm -rf "$tmpdir"' EXIT
+STAGED=""
+trap 'rm -rf "$tmpdir"; [ -z "$STAGED" ] || $SUDO rm -f "$STAGED" 2>/dev/null || true' EXIT
 curl -fsSL "$URL" -o "$tmpdir/$ASSET" || { echo "Error: could not download $URL" && exit 1; }
 tar xzf "$tmpdir/$ASSET" -C "$tmpdir"
 chmod 755 "$tmpdir/$BINARY"
 
-# ~ for the messages
+# ~ for the messages; a path with spaces is quoted so it can be pasted
 case "$INSTALL_DIR" in
   "$HOME"/*) SHOW_DIR="~${INSTALL_DIR#"$HOME"}" ;;
   *) SHOW_DIR="$INSTALL_DIR" ;;
 esac
+case "$SHOW_DIR" in
+  *" "*) CMD="\"${INSTALL_DIR}/${BINARY}\"" ;;
+  *) CMD="${SHOW_DIR}/${BINARY}" ;;
+esac
 
 echo "Installing to ${SHOW_DIR}/${BINARY}..."
-SUDO=""
 mkdir -p "$INSTALL_DIR" 2>/dev/null || true
 if [ ! -d "$INSTALL_DIR" ] || [ ! -w "$INSTALL_DIR" ]; then
   echo "${SHOW_DIR} is not writable by you: using sudo (the connector cannot update itself there)."
@@ -67,8 +72,10 @@ if [ ! -d "$INSTALL_DIR" ] || [ ! -w "$INSTALL_DIR" ]; then
   $SUDO mkdir -p "$INSTALL_DIR"
 fi
 # copy next to the target, then rename over it: a running copy is never overwritten in place
-$SUDO cp "$tmpdir/$BINARY" "$INSTALL_DIR/.${BINARY}.new.$$"
-$SUDO mv -f "$INSTALL_DIR/.${BINARY}.new.$$" "$INSTALL_DIR/$BINARY"
+STAGED="$INSTALL_DIR/.${BINARY}.new.$$"
+$SUDO cp "$tmpdir/$BINARY" "$STAGED"
+$SUDO mv -f "$STAGED" "$INSTALL_DIR/$BINARY"
+STAGED=""
 
 echo "Done: ${BINARY} ${TAG} is in ${SHOW_DIR}."
 
@@ -92,5 +99,5 @@ fi
 
 echo ""
 echo "Next, connect your store (it asks for your Analyzify API key):"
-echo "  Claude Desktop: ${SHOW_DIR}/${BINARY} setup"
-echo "  Claude Code:    ${SHOW_DIR}/${BINARY} setup --claude-code"
+echo "  Claude Desktop: ${CMD} setup"
+echo "  Claude Code:    ${CMD} setup --claude-code"
