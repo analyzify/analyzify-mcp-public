@@ -103,7 +103,7 @@ Top items by spend (ranked on the item ID alone, so an item whose title changed 
 }
 ```
 
-When the user asks for every item and there are thousands: give the exact count and the top items, and say the full list is too long for a chat. Never ask the user to narrow the question because the answer is long.
+When the user asks for every item: give every row as a compact table when it fits (a few hundred rows); when it does not, give the exact count and the top rows, and offer the next rows on request. Never ask the user to narrow the question because the answer is long.
 
 Which source when: counts and complete lists of items with spend come from this live view. A top-items table or a roll-up to products can use the stored report instead (`v2GadsProducts`, `playbooks/product-optimization.md`), which is complete up to its last sync (its newest days are not settled yet, as with any Google Ads read: conversions keep arriving for the conversion window, 30 days by default); say which one you used and its date range. Use the live view for days the stored report doesn't have yet.
 
