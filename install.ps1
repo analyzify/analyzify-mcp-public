@@ -1,5 +1,7 @@
 # Analyzify MCP installer for Windows
 $ErrorActionPreference = "Stop"
+# Windows PowerShell 5.1 on older setups does not offer TLS 1.2 by default; GitHub needs it
+[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
 $REPO = "analyzify/analyzify-mcp-public"
 $BINARY = "analyzify-mcp"
@@ -22,7 +24,7 @@ $URL = "https://github.com/$REPO/releases/download/$TAG/$ASSET"
 
 Write-Host "Downloading $BINARY $TAG for windows/$ARCH..."
 
-$tmpDir = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "analyzify-mcp-install")
+$tmpDir = New-Item -ItemType Directory -Path (Join-Path $env:TEMP "analyzify-mcp-install") -Force
 $zipPath = Join-Path $tmpDir "$ASSET"
 
 Invoke-WebRequest -Uri $URL -OutFile $zipPath
