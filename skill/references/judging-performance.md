@@ -70,6 +70,7 @@ All of these must hold, or the answer is "not enough to judge", with the reason:
   - The margin comes from products with a cost set.
 - Offer questions, not actions: "Is this a promotion, a new launch, or a brand you protect on purpose?"
 - For campaigns just below break-even (ROAS between break-even ÷ 1.5 and break-even), give a count only, no names: "3 campaigns are slightly below break-even". Credit shared with other channels, freight and fees can move them either way. Name a campaign only when it is further below than that.
+- For "which campaigns lose money" or a ROAS review, also show what was measured: the campaigns that carry most of the spend, each with its spend and ROAS against the break-even (a small tail may be grouped). That list is not a verdict: the count-only rule above applies only to calling a campaign below break-even. A store under 30 conversions a month gets no campaign list (below).
 - When you can, add what Analyzify itself recorded: orders and revenue for the same campaign from `shopifyCampaignAttributionReport` (matched by campaign name). It is a floor, not the full picture, but it is the store's own record rather than the platform's claim.
 - A store with fewer than 30 conversions a month in total gets account-level figures only: MER and break-even, and the sentence "not enough volume to judge single campaigns".
 
