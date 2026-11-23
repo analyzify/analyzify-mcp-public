@@ -42,51 +42,37 @@ This will ask for your API key and automatically update your Claude Desktop conf
 analyzify-mcp setup --api-key azfy_your-api-key
 ```
 
+Then restart Claude Desktop to activate.
+
 For Claude Code:
 
 ```bash
 analyzify-mcp setup --claude-code --api-key azfy_your-api-key
 ```
 
-After setup, restart Claude Desktop to activate.
+Setup checks the key and names the connector `analyzify-<store>`, so each store's key gets its own connector.
 
-## Install Skill
+## Recipes and rules: built in
 
-The Analyzify skill teaches your AI assistant how to use the MCP server effectively — what queries to run, how to present data, and how to handle different analytics questions.
+There is no skill to install. Since v0.4.26 the MCP server carries Analyzify's answer rules and recipes itself
+(the `recipe` tool, and one prompt per playbook in clients that show MCP prompts). If you installed the Analyzify
+skill earlier, you can remove it. Keep the server up to date with `analyzify-mcp self-update` (on Windows, run the
+install command again), then restart Claude Desktop.
 
-The skill is built from the connector's release: each MCP server release brings its `skill/` files here, and the same recipes are built into the server (its `recipe` tool and prompts). Changes to `skill/` are made in the connector's source, not in a pull request here; a check fails any other change.
-
-### Claude Desktop
-
-1. Download the latest `analyzify-skill-v*.zip` from [Releases](https://github.com/analyzify/analyzify-mcp-public/releases)
-2. Open Claude Desktop and go to **Settings > Customize > Skills**
-3. Click **+** then **Create skill** then **Upload a skill**
-4. Upload the zip file (no need to extract it)
-
-See [Claude's skill documentation](https://support.claude.com/en/articles/12512180-use-skills-in-claude) for more details.
-
-### ChatGPT
-
-1. Download the latest `analyzify-skill-v*.zip` from [Releases](https://github.com/analyzify/analyzify-mcp-public/releases)
-2. Extract the zip
-3. Upload the skill files to your project's custom instructions or knowledge
-
-### Claude Code
-
-```bash
-npx skills add analyzify/analyzify-mcp-public
-```
+The `skill/` folder in this repo is a copy of the server's recipe source, synced at each release: changes go to the
+server's source, never here.
 
 ## Manual Configuration
 
-If you prefer to configure manually instead of using `analyzify-mcp setup`:
+If you prefer to configure manually instead of using `analyzify-mcp setup` (one entry per store key, each with its own
+name, such as `analyzify-<store>`):
 
 **Claude Desktop** (`claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
-    "analyzify": {
+    "analyzify-mystore": {
       "command": "analyzify-mcp",
       "args": ["serve"],
       "env": {
@@ -101,7 +87,7 @@ If you prefer to configure manually instead of using `analyzify-mcp setup`:
 
 ```json
 {
-  "analyzify": {
+  "analyzify-mystore": {
     "command": "analyzify-mcp",
     "args": ["serve"],
     "env": {
@@ -148,21 +134,28 @@ analyzify-mcp serve --transport sse --addr :8080  # Start MCP server (SSE HTTP)
 analyzify-mcp version                             # Print version
 analyzify-mcp self-update                         # Update to latest version
 analyzify-mcp self-update --check                 # Check for updates
-analyzify-mcp skill latest-version                # Check latest skill version
 analyzify-mcp search proxy                        # Search schema
 analyzify-mcp query '{ extMe { shopName } }'      # Execute a query
 ```
 
 ## MCP Tools
 
-| Tool | Description |
-|------|-------------|
-| `introspect_schema` | Search the schema for types, queries, and mutations |
-| `graphql_schema_full` | Returns the complete schema in SDL format |
-| `execute_graphql` | Execute a GraphQL query against the live API |
-| `introspect_report_schema` | Search the report schema for available report queries |
-| `report_schema_full` | Returns the complete report schema in SDL format |
-| `execute_report_graphql` | Execute a query against the Report API |
+The answers first; the raw reads are there for anything they don't cover.
+
+| Tool | What it answers |
+|------|-----------------|
+| `whoami` | The store, the key's rights, the connector version, every source's state, and the answer rules |
+| `performance_summary` | The store over a date range against a comparison period: orders, sales, profit, ad spend, MER |
+| `channel_breakdown` | Google Ads, Meta and TikTok side by side (spend, each platform's own conversions, ROAS) against Shopify's orders, plus Analyzify's attributed orders per channel |
+| `product_performance` | Ad spend and return per product, in Google Ads' and Meta's own numbers |
+| `source_status` | Each data source's state: how fresh it is, the last successful sync, and why one fails |
+| `metric_definitions` | What each metric means, its unit and how it is computed |
+| `recipe` | Analyzify's recipes, such as the weekly report and channel comparisons |
+| `execute_graphql` | A read-only query against the live API (Shopify, Google Analytics, Search Console, Google Ads) |
+| `execute_report_graphql` | A read-only query against Analyzify's stored reports |
+| `introspect_schema`, `graphql_schema_full` | The live API's schema |
+| `introspect_report_schema`, `report_schema_full` | The stored reports' schema |
+| `fetch_more_results` | The other parts of a long result |
 
 ## Links
 
