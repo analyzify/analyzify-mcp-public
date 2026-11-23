@@ -12,6 +12,18 @@ Connects AI assistants to your Shopify store data, Google Analytics 4, Google Se
 curl -sL https://raw.githubusercontent.com/analyzify/analyzify-mcp-public/main/install.sh | sh
 ```
 
+It installs the latest stable release to `~/.local/bin/analyzify-mcp`, a folder you own, without sudo. It does not
+change your shell settings: when `~/.local/bin` is not on your `PATH`, it prints the line to add it, for example
+
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+```
+
+and it prints the setup command with the full path (`~/.local/bin/analyzify-mcp setup`), which works either way.
+To install elsewhere, set `ANALYZIFY_MCP_INSTALL_DIR` (for example `/usr/local/bin`, which uses sudo). If an older
+copy is in `/usr/local/bin`, run setup once more so Claude uses the new copy; you can then remove the old one with
+`sudo rm /usr/local/bin/analyzify-mcp`.
+
 ### Windows (PowerShell)
 
 ```powershell
@@ -25,8 +37,10 @@ Download from the [Releases](https://github.com/analyzify/analyzify-mcp-public/r
 ### Verify
 
 ```bash
-analyzify-mcp version
+~/.local/bin/analyzify-mcp version
 ```
+
+(`analyzify-mcp version` once `~/.local/bin` is on your `PATH`; on Windows, `analyzify-mcp version` in a new terminal.)
 
 ## Setup
 

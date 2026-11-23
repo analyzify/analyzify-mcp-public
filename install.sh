@@ -3,7 +3,9 @@ set -e
 
 REPO="analyzify/analyzify-mcp-public"
 BINARY="analyzify-mcp"
-INSTALL_DIR="/usr/local/bin"
+# A folder the user owns, so the connector can update itself (no sudo). Another
+# folder only when asked: ANALYZIFY_MCP_INSTALL_DIR=/usr/local/bin (that one uses sudo).
+INSTALL_DIR="${ANALYZIFY_MCP_INSTALL_DIR:-$HOME/.local/bin}"
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
@@ -45,10 +47,50 @@ URL="https://github.com/${REPO}/releases/download/${TAG}/${ASSET}"
 
 echo "Downloading ${BINARY} ${TAG} for ${OS}/${ARCH}..."
 tmpdir=$(mktemp -d)
-curl -sL "$URL" | tar xz -C "$tmpdir"
+trap 'rm -rf "$tmpdir"' EXIT
+curl -fsSL "$URL" -o "$tmpdir/$ASSET" || { echo "Error: could not download $URL" && exit 1; }
+tar xzf "$tmpdir/$ASSET" -C "$tmpdir"
+chmod 755 "$tmpdir/$BINARY"
 
-echo "Installing to ${INSTALL_DIR}/${BINARY}..."
-sudo mv "$tmpdir/$BINARY" "$INSTALL_DIR/$BINARY"
-rm -rf "$tmpdir"
+# ~ for the messages
+case "$INSTALL_DIR" in
+  "$HOME"/*) SHOW_DIR="~${INSTALL_DIR#"$HOME"}" ;;
+  *) SHOW_DIR="$INSTALL_DIR" ;;
+esac
 
-echo "Done! Run '${BINARY} version' to verify."
+echo "Installing to ${SHOW_DIR}/${BINARY}..."
+SUDO=""
+mkdir -p "$INSTALL_DIR" 2>/dev/null || true
+if [ ! -d "$INSTALL_DIR" ] || [ ! -w "$INSTALL_DIR" ]; then
+  echo "${SHOW_DIR} is not writable by you: using sudo (the connector cannot update itself there)."
+  SUDO="sudo"
+  $SUDO mkdir -p "$INSTALL_DIR"
+fi
+# copy next to the target, then rename over it: a running copy is never overwritten in place
+$SUDO cp "$tmpdir/$BINARY" "$INSTALL_DIR/.${BINARY}.new.$$"
+$SUDO mv -f "$INSTALL_DIR/.${BINARY}.new.$$" "$INSTALL_DIR/$BINARY"
+
+echo "Done: ${BINARY} ${TAG} is in ${SHOW_DIR}."
+
+case ":$PATH:" in
+  *":$INSTALL_DIR:"*) ;;
+  *)
+    case "$(basename "${SHELL:-sh}")" in
+      zsh) RC="~/.zshrc" ;;
+      bash) if [ "$OS" = "darwin" ]; then RC="~/.bash_profile"; else RC="~/.bashrc"; fi ;;
+      *) RC="~/.profile" ;;
+    esac
+    echo "${SHOW_DIR} is not on your PATH. To run ${BINARY} by name, add it: echo 'export PATH=\"${INSTALL_DIR}:\$PATH\"' >> ${RC}"
+    ;;
+esac
+
+OLD="/usr/local/bin/${BINARY}"
+if [ "$INSTALL_DIR" != "/usr/local/bin" ] && [ -e "$OLD" ]; then
+  echo ""
+  echo "An older copy is in ${OLD}: run setup once more so Claude uses the new copy; you can then remove the old one with sudo rm ${OLD}"
+fi
+
+echo ""
+echo "Next, connect your store (it asks for your Analyzify API key):"
+echo "  Claude Desktop: ${SHOW_DIR}/${BINARY} setup"
+echo "  Claude Code:    ${SHOW_DIR}/${BINARY} setup --claude-code"
