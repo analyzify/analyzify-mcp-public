@@ -6,12 +6,14 @@ $BINARY = "analyzify-mcp"
 
 $ARCH = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "arm64" } else { "amd64" }
 
-# Get latest release tag
-$releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$REPO/releases"
-$TAG = ($releases | Where-Object { $_.tag_name -match "^v\d" } | Select-Object -First 1).tag_name
+# The newest stable connector release: a tag vX.Y.Z that is neither a draft nor a
+# prerelease. A new release is a prerelease until it has been checked, and skill
+# releases (skill-v*) are not the connector.
+$releases = Invoke-RestMethod -Uri "https://api.github.com/repos/$REPO/releases?per_page=100"
+$TAG = ($releases | Where-Object { -not $_.draft -and -not $_.prerelease -and $_.tag_name -match '^v\d+\.\d+\.\d+$' } | Select-Object -First 1).tag_name
 
 if (-not $TAG) {
-    Write-Error "No release found"
+    Write-Error "No stable release found"
     exit 1
 }
 

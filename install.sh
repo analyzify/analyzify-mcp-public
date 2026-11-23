@@ -19,13 +19,25 @@ case "$OS" in
   *) echo "Unsupported OS: $OS" && exit 1 ;;
 esac
 
-TAG=$(curl -sL "https://api.github.com/repos/${REPO}/releases" \
-  | grep -o '"tag_name": *"v[^"]*"' \
-  | head -1 \
-  | cut -d'"' -f4)
+# The newest stable connector release: a tag vX.Y.Z that is neither a draft nor a
+# prerelease. A new release is a prerelease until it has been checked, and skill
+# releases (skill-v*) are not the connector.
+RELEASES=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases?per_page=100") || {
+  echo "Error: could not read the releases from GitHub (rate limit or network); try again in a few minutes" && exit 1
+}
+TAG=$(printf '%s\n' "$RELEASES" \
+  | grep -oE '"(tag_name|draft|prerelease)": *("[^"]*"|true|false)' \
+  | awk -F': *' '
+      function flush() {
+        if (tag ~ /^v[0-9]+\.[0-9]+\.[0-9]+$/ && draft == "false" && pre == "false") { print tag; found = 1; exit }
+      }
+      $1 == "\"tag_name\"" { if (tag != "") flush(); tag = $2; gsub(/"/, "", tag); draft = ""; pre = ""; next }
+      $1 == "\"draft\"" { draft = $2; next }
+      $1 == "\"prerelease\"" { pre = $2; next }
+      END { if (!found && tag != "") flush() }')
 
 if [ -z "$TAG" ]; then
-  echo "Error: No release found" && exit 1
+  echo "Error: No stable release found" && exit 1
 fi
 
 ASSET="${BINARY}_${OS}_${ARCH}.tar.gz"
