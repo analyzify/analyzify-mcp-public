@@ -25,6 +25,8 @@ Compose data from multiple queries into a structured business report. Run all qu
 
 **The ad platforms' conversions for a recent week are not settled.** Google Ads keeps crediting conversions to the day of the click for each conversion action's window (30 days by default), so last week's and last month's Google Ads conversions, conversion value and ROAS will still rise: say so for Google Ads, give them as provisional, and never read their change against the period before as final. Meta and TikTok credit within their attribution setting (7 days after the click by default), so their part of a week that ended more than 7 days ago is nearly settled. Spend is final once it is synced, and Shopify's orders and sales are known.
 
+**GA4 and Search Console days not stored yet:** Analyzify's stored GA4 and Search Console data can stop a few days before today. When it stops before the end of the asked range (source_status gives the newest stored day), read the missing days live, at most 3 days: GA4 with `ga4Proxy` (`properties/{propertyID}:runReport`, `references/ga4.md`), Search Console with `gscProxy` (`searchAnalytics/query` with `"dataState": "all"`, `references/gsc.md`), for those days only. Label those figures "read live, provisional" and name the days. Google publishes Search Console data about 2 to 3 days late: a day with no rows in the live read is a day Google has not published yet, so name it as not published yet, never 0. With more than 3 days missing, or when source_status says the source is failing, read none live: name the missing days as not known yet, never 0.
+
 ## Report Template
 
 Present in this exact structure:

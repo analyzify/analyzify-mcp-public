@@ -12,6 +12,8 @@ Business owners need historical context — is a dip seasonal or a real problem?
 
 **A period against the year before: the `performance_summary` tool first,** with `compare: previous_year` (or `compare_start_date` / `compare_end_date`). It gives each figure for both periods and the change, or why a change is not computed (a period only partly stored, a source that started later). Never recompute its changes. The queries below are for a 12-month trend and for detail the tool does not give.
 
+**GA4 and Search Console days not stored yet:** Analyzify's stored GA4 and Search Console data can stop a few days before today. When it stops before the end of the asked range (source_status gives the newest stored day), read the missing days live, at most 3 days: GA4 with `ga4Proxy` (`properties/{propertyID}:runReport`, `references/ga4.md`), Search Console with `gscProxy` (`searchAnalytics/query` with `"dataState": "all"`, `references/gsc.md`), for those days only. Label those figures "read live, provisional" and name the days. Google publishes Search Console data about 2 to 3 days late: a day with no rows in the live read is a day Google has not published yet, so name it as not published yet, never 0. With more than 3 days missing, or when source_status says the source is failing, read none live: name the missing days as not known yet, never 0.
+
 ## Date Range Patterns
 
 | Comparison | Current Period | Previous Period |

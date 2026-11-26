@@ -67,7 +67,7 @@ There is no single "totals" row: `groupByDate` is ignored and rows are one per d
 
 **Days without orders:** only days with Shopify orders or refunds are in the report. Ad spend on a day with neither is not counted, so `totalAdSpend` can be a little lower than the ad platforms show.
 
-**Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit, margin and net profit come out too high. If `costOfGoodsSold` is 0 or looks low for the store, say so.
+**Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit, margin and net profit come out too high. If `costOfGoodsSold` is under 30% of `netRevenue` over the same rows (0 included), say so and ask the merchant for their usual margin before a break-even.
 
 ## How to Present
 
@@ -133,4 +133,4 @@ The report's `cpa` is a cost per order, not a platform's cost per conversion: ca
 - "Break it down by day/week/month" → daily rows as returned; for weeks, add up the days yourself; for months, `groupByFields: ["month"]`
 - "Compare to last month" → `performance_summary` with the calendar month before as `compare_start_date` / `compare_end_date`
 - "Which ads are most profitable?" → pivot to `playbooks/ad-performance.md` (`v2GadsCampaigns` + `v2MetaCampaigns`); judge profit against break-even ROAS, not 1.0 (`references/judging-performance.md`)
-- "What's my best selling product?" → Analyzify has no report that adds up sales per product: say so, then add up the order line items per product for the period (`shopifyOrders` → `orderLineItems`, see `playbooks/sales-and-orders.md`; many pages on a large store), or use `ga4ProductPerformances` (GA4's own item revenue, named as GA4's). `shopifyOrderAgg` does not group by product. Never answer it with an ad platform's numbers per product.
+- "What's my best selling product?" → Analyzify has no report that adds up sales per product: say so, then add up the order line items' `discountedTotal` per product for the period (`shopifyOrders` → `orderLineItems`, see `playbooks/sales-and-orders.md`; many pages on a large store), or use `ga4ProductPerformances` (GA4's own item revenue, named as GA4's). `shopifyOrderAgg` does not group by product. Never answer it with an ad platform's numbers per product.

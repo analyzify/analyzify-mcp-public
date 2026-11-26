@@ -1,6 +1,6 @@
 ---
 name: analyzify
-version: 0.1.20
+version: 0.1.21
 description: >
   Retired. The Analyzify connector now carries the rules and the playbooks,
   so this skill is no longer needed. Use it only to tell the user to update
