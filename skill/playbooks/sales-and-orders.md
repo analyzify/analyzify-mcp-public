@@ -15,6 +15,8 @@
 
 **Fallback:** `shopifyProxy` via Main API for live Shopify Admin data (product catalog, inventory, etc.)
 
+**GA4 and Search Console days not stored yet:** Analyzify's stored GA4 and Search Console data can stop a few days before today. When it stops before the end of the asked range (source_status gives the newest stored day), read the missing days live, at most 3 days: GA4 with `ga4Proxy` (`properties/{propertyID}:runReport`, `references/ga4.md`), Search Console with `gscProxy` (`searchAnalytics/query` with `"dataState": "all"`, `references/gsc.md`), for those days only. Label those figures "read live, provisional" and name the days. Google publishes Search Console data about 2 to 3 days late: a day with no rows in the live read is a day Google has not published yet, so name it as not published yet, never 0. With more than 3 days missing, or when source_status says the source is failing, read none live: name the missing days as not known yet, never 0.
+
 ## Queries
 
 ### 1. Sales Overview (aggregated)
@@ -85,7 +87,7 @@ query($input: ShopifyOrderInput!) {
       finalSource finalUtmSource finalUtmMedium finalUtmCampaign
       billingCountry billingCity
       netPayment netSales
-      orderLineItems { name sku quantity variantPrice }
+      orderLineItems { name sku quantity discountedTotal }
     }
     totalCount totalPage currentPage
   }
@@ -122,7 +124,7 @@ Use Main API when user asks about product details, inventory, collections:
 }
 ```
 
-The `products` query has no best-selling sort (only a collection's products can be sorted `BEST_SELLING`). For best sellers, add up the order line items above.
+The `products` query has no best-selling sort (only a collection's products can be sorted `BEST_SELLING`). For best sellers, add up the order line items above by `discountedTotal`, the line's own price after line-level discounts (discount codes, order-level discounts and returns are not taken off; tax included where prices include tax), never `quantity × variantPrice`: that is the catalog price, wrong for B2B price lists, draft orders and a price changed since. Where the store granted Analyzify `read_reports` (not granted by default; `currentAppInstallation { accessScopes { handle } }` lists it), Shopify's own net sales by product is one live read instead: `shopifyqlQuery(query: "FROM sales SHOW net_sales GROUP BY product_title SINCE -30d ORDER BY net_sales DESC LIMIT 10") { tableData { columns { name } rows } parseErrors }`; without it, add up the line items.
 
 ## How to Present
 

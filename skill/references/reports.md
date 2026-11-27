@@ -660,7 +660,7 @@ query($input: ShopifyOrderInput!) {
       finalSource finalUtmSource finalUtmMedium finalUtmCampaign
       billingCountry billingCity
       netPayment netSales
-      orderLineItems { name sku quantity variantPrice }
+      orderLineItems { name sku quantity discountedTotal }
     }
     totalCount totalPage currentPage
   }
@@ -670,7 +670,7 @@ query($input: ShopifyOrderInput!) {
 Variables: `page: 1, limit: 50`
 Filters: `[{ field: ORDER_NAME, operator: CONTAINS, value: "1234" }]`
 
-**Use when:** "Show recent orders", "Find order #1234"
+**Use when:** "Show recent orders", "Find order #1234". For sales per product, add up `discountedTotal` (the line's own price after line-level discounts; discount codes, order-level discounts and returns are not taken off), never `quantity × variantPrice` (the catalog price).
 
 ### shopifyPurchaseAttributionReport — Order-level attribution (paginated)
 
@@ -849,7 +849,7 @@ This is the **most valuable report** — it combines data from Shopify orders + 
 
 **Provisional days:** `adSpendComplete: false` means the ad spend of the sources in `incompleteAdSources` may not have synced yet for that row (today and up to two days before, in UTC). Its net profit may be too high: say so, or end the period before those days. On a monthly row the five ad ratios leave those days out while `netProfit` and `totalAdSpend` include them. `true` does not prove older days are complete: check `v2MarketingSourceStatuses` for the period. Only days with Shopify orders or refunds are in the report, so ad spend on a day with neither is not counted.
 
-**Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit and margin come out too high. If `costOfGoodsSold` is 0 or very low, say so and ask the merchant for their margin.
+**Missing product costs:** a product without a cost in Shopify counts as zero COGS, so gross profit and margin come out too high. If `costOfGoodsSold` is under 30% of `netRevenue` over the same rows (0 included), say so and ask the merchant for their margin.
 
 ---
 

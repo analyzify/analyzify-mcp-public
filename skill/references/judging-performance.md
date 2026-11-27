@@ -35,7 +35,7 @@ ROAS 1.0 means the platform credited sales equal to the spend. The product cost,
 
 - **margin** = `grossProfit / netRevenue`, each added up over the rows of `profitMerReport` for the same settled 30 days or more. A daily row's `grossMargin` is that one day's figure, as a percentage (40 means 40%): don't use it for a period.
 - **net share** = how much of the value the platform reports is net sales. **Default to 1** (the value sent is net sales), which gives the lowest, most cautious break-even. Only if the merchant confirms the conversion value includes tax and shipping, use `netSales / totalSales` from `shopifyOrderAgg` for the same window. If you don't know, show both break-evens and say which assumption each makes.
-- **Missing product costs make the margin too high.** A product without a cost in Shopify counts as zero cost. If `costOfGoodsSold` is 0 or close to it, or the merchant says many products have no cost set, ask for their usual margin and use that. Always say which margin you used.
+- **Missing product costs make the margin too high.** A product without a cost in Shopify counts as zero cost. If `costOfGoodsSold` is under 30% of `netRevenue` over the same rows (0 included), or the merchant says many products have no cost set, ask for their usual margin and use that. Always say which margin you used.
 
 Example: margin 40% and net share 1 give break-even ROAS = 1 / (0.40 × 1) = 2.5. If the value sent includes tax and shipping and net sales are 80% of it, break-even = 1 / (0.40 × 0.80) ≈ 3.1.
 
